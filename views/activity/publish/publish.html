@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="320" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../../css/app.css" />
+		<link rel="stylesheet" href="../../../css/mui.picker.min.css" />
+		<style type="text/css">
+			#showImage {
+				max-height: 500px;
+				/*background-size: 100% 100%;*/
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<button id="act-pub-btn" class="mui-btn mui-btn-link mui-btn-mini mui-pull-right mui-icon mui-icon-compose">发布</button>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发布活动</h1>
+		</header>
+
+		<div class="mui-content act-pub">
+			<div class="order-preview">
+				<div class="order-preview-row">
+					<img id="showImage" src="">
+				</div>
+				<div class="order-preview-row act-pub-row">
+					<div class="mui-input-row" style="flex: 1;">
+						<input type="text" class="mui-input-clear" placeholder="活动主题">
+					</div>
+					<img id="add-show-img" src="../../../img/add-img.png" />
+				</div>
+
+				<div class="order-preview-row act-pub-row">
+					<div class="mui-input-row">
+						<label>开始时间</label>
+						<input type="text" class="mui-input-clear choose-time" placeholder="活动开始时间">
+					</div>
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>结束时间</label>
+						<input type="text" class="mui-input-clear choose-time" placeholder="活动结束时间">
+					</div>
+
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>截止报名</label>
+						<input type="text" class="mui-input-clear choose-time" placeholder="截止报名时间">
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script src="../../../js/njcq.plugin.camera.js"></script>
+		<script type="text/javascript">
+			var camera = new camera();
+			var cameraFiles = [];
+			var config = config();
+			var dtPicker = new mui.DtPicker({});
+
+			mui.init();
+			mui.plusReady(function() {
+				//时间选择
+				mui('.act-pub').on('click', '.choose-time', function(event) {
+					var target = event.target;
+					target.blur();
+					dtPicker.show(function(selectedItem) {
+						var selected_time = selectedItem.y.value +
+							'-' + selectedItem.m.value +
+							'-' + selectedItem.d.value +
+							' ' + selectedItem.h.value +
+							':' + selectedItem.i.value;
+
+						target.value = selected_time;
+					});
+				}, false);
+
+			});
+
+			//选择相册或者拍照
+			document.getElementById("add-show-img").addEventListener('tap', function() {
+				var btnArray = [{
+					title: "拍照"
+				}, {
+					title: "从相册选择"
+				}];
+				plus.nativeUI.actionSheet({
+					title: "选择照片",
+					cancel: "取消",
+					buttons: btnArray
+				}, function(e) {
+					var index = e.index;
+					switch(index) {
+						case 0:
+							text += "取消";
+							break;
+						case 1:
+							//拍照或者录像
+							camera.fGetImage(function(imageurl) {
+								//拍照之后的图片路径
+								var target = document.getElementById("showImage");
+								//								target.style.background = 'url(' + imageurl + ')';
+								target.setAttribute("src", imageurl);
+								//文件名
+								var fileName = imageurl.substr(imageurl.lastIndexOf('/') + 1);
+								
+								if(cameraFiles.length > 0) cameraFiles = [];
+
+								cameraFiles.push({
+									name: fileName,
+									path: imageurl
+								});
+
+							});
+							break;
+						case 2:
+							text += "选取现有的";
+							break;
+					}
+				});
+			});
+
+			//活动发布事件
+			document.getElementById("act-pub-btn").addEventListener('tap', function(e) {
+				upload();
+			}, false);
+
+			//拍照或从相册选择 共用一个上传方法
+			function upload() {
+				var uploadurl = host.api + "/Upload/Activity/Image";
+				if(cameraFiles.length == 0) {
+					plus.nativeUI.alert('请先拍照或从相册选择照片');
+					return;
+				}else{
+				}
+				var wt = plus.nativeUI.showWaiting();
+				var task = plus.uploader.createUpload(uploadurl, {
+					method: "POST"
+				}, function(t, s) { //t.返回结果 s：返回状态
+					wt.close();
+					if(s == 200) {
+						console.info(JSON.stringify(t.responseText));
+					}
+				});
+
+				for(var i = 0; i < cameraFiles.length; i++) {
+					//执行压缩
+					camera.fZipImage({
+						localPathUrl: cameraFiles[i].path,
+						callback: function(e) {
+							task.addFile(e, {
+								key: cameraFiles[i].name
+							});
+						}
+					});
+				}
+				task.start();
+			}
+		</script>
+	</body>
+
+</html>

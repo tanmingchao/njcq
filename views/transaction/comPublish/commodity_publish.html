@@ -1,0 +1,489 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.pub-content-box textarea {
+				border: 0px;
+				font-size: 14px;
+				margin: 0px;
+				padding: 0px 15px;
+			}
+			
+			#choose-type {
+				/*border-bottom: 1px solid #5c5c8a;*/
+			}
+			
+			.mui-popover {
+				height: 280px;
+			}
+			
+			#typePop li a {
+				font-size: 14px;
+				font-weight: normal;
+				display: block;
+				height: 100%;
+				width: 100%;
+			}
+			
+			.input-row {
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				padding: 0px 10px;
+			}
+			
+			.input-row input {
+				padding: 5px;
+				height: 40px;
+				font-size: 14px;
+				border: 0px;
+				border-radius: 0px;
+				border-bottom: 1px solid #EFEFF4;
+				margin: 0px;
+			}
+			
+			.input-row span {
+				padding: 5px;
+				height: 40px;
+				font-size: 12px;
+				color: #999999;
+				line-height: 30px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+			<h1 class="mui-title">商品发布</h1>
+		</header>
+
+		<div class="mui-content circle-mui-content">
+
+			<div class="input-row">
+				<input type="text" name="" id="comtitle" value="" placeholder="标题 品牌或者名称或型号" />
+			</div>
+			<div class="input-row">
+				<input type="text" name="" id="comprice" value="" placeholder="预售价格" />
+			</div>
+			<div class="pub-content-box">
+				<textarea id="input-text" rows="3" placeholder="商品描述内容"></textarea>
+			</div>
+			<div class="circle-images">
+
+			</div>
+			<div class="input-row" style="border-top: 1px solid #EFEFF4;border-bottom:10px solid #efeff4;align-items: center;">
+				<span id="choose-location" class="mui-icon mui-icon-location">
+				江苏省南京市 浦口区
+				
+				</span>
+			</div>
+
+		</div>
+		<footer class="circle-footer">
+			<div class="footer-options">
+				<span id="getimg" class="mui-icon mui-icon-image"></span>
+				<span>
+					<a href="#bottomPopover" id="choose-type" type="button" class="mui-btn circle-publish-btn ">选择分类</a>
+				</span>
+				<!--<span id="getvideo" class="mui-icon mui-icon-videocam"></span>-->
+				<span class="mui-icon "></span>
+				<span>
+					<button id="circle-publish-btn" type="button" class="mui-btn mui-btn-blue circle-publish-btn">发布</button>
+				</span>
+			</div>
+		</footer>
+
+		<!--右下角弹出菜单-->
+		<div id="bottomPopover" class="mui-popover mui-popover-bottom">
+			<div class="mui-popover-arrow"></div>
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="typePop" class="mui-table-view">
+
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.camera.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var wv = null,
+				wo = null,
+				tKey = null,
+				descImageArray = [],
+				config = config(),
+				type = {
+					key: '',
+					text: ''
+				},
+				showImages = '',
+				isNewLocation = false,
+
+				localtion = config.fGetLocaltion(),
+				camera = new camera();
+
+			mui.init()
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				fCloseView();
+				fGetImage();
+				//				fGetVideo();
+				_fRemoveImage();
+				FPublish();
+				fnGetType();
+				fnPopoverSelected();
+				fnChooseLocation();
+				if(!isNewLocation)
+					mui('#choose-location')[0].innerText = localtion.address.province + ' ' + localtion.address.city + ' ' + localtion.address.district;
+
+				//自定义事件，勇于接收 地图子页面回传的地理信息数据
+				window.addEventListener('getLocation', function(e) {
+					//{"citycode":"025","city":"南京市","adname":"浦口区","adcode":"","pname":"江苏省",
+					//"lng":"118.735911","lat":"32.155846\t\t\t","name":"沿江街道京新路628号(浦口浦洲路南侧)",
+					//"address":"苏宁天润城十三街区"} 
+					isNewLocation = true;
+					localtion = e.detail.location;
+					mui('#choose-location')[0].innerText = localtion.pname + ' ' + localtion.city + ' ' + localtion.adname /* + ' ' + localtion.name || ''*/ ;
+				});
+
+			});
+
+			/*------子方法-----------*/
+
+			function fnChooseLocation() {
+				document.getElementById('choose-location')
+					.addEventListener('tap', function() {
+						mui.openWindow({
+							url: '../../common/map_choose_location.html',
+							id: "map_choose_location.html",
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					});
+			}
+
+			function fnPopoverSelected() {
+				mui('#typePop').on('tap', 'li.mui-table-view-cell>a', function() {
+					type.key = this.getAttribute('rel');
+					type.text = this.innerText;
+					if(type.key && type.text) {
+						mui('.mui-popover').popover('hide');
+						mui('#choose-type')[0].innerText = type.text;
+					}
+				});
+			}
+
+			function fnGetType() {
+				var parentNode = document.getElementById('typePop');
+				var data = [];
+				if(localStorage.getItem("transType")) {
+					data = JSON.parse(localStorage.getItem('transType'));
+					for(var i = 0; i < data.length; i++) {
+						var li = document.createElement('li');
+						li.setAttribute('class', 'mui-table-view-cell');
+						var html = '<a rel=' + data[i].PrimaryKey + ' href="#">' + data[i].TypeName + '</a>';
+						li.innerHTML = html;
+						parentNode.appendChild(li);
+					}
+				} else {
+					config.fGet({
+						link: '',
+						callback: function(res) {
+							data = JSON.parse(res).Data;
+							if(data && data.length > 0) {
+								localStorage.setItem("transType", JSON.stringify(data));
+								for(var i = 0; i < data.length; i++) {
+									var li = document.createElement('li');
+									li.setAttribute('class', 'mui-table-view-cell');
+									var html = '<a rel=' + data[i].PrimaryKey + ' href="#">' + data[i].TypeName + '</a>';
+									li.innerHTML = html;
+									parentNode.appendChild(li);
+								}
+							}
+						}
+					});
+				}
+			}
+
+			function FPublish() {
+				document.querySelector('#circle-publish-btn')
+					.addEventListener('tap', function() {
+						var title = mui('#comtitle')[0].value;
+						var price = mui('#comprice')[0].value;
+						if(title.length == 0) {
+							plus.nativeUI.toast('请输入标题');
+							return;
+						}
+						if(price.length == 0) {
+							plus.nativeUI.toast('请输入价格');
+							return;
+						}
+						if(type.key.length == 0) {
+							plus.nativeUI.toast('请输入选择商品分类');
+							return;
+						}
+
+						var inputText = document.getElementById('input-text').value;
+						if(inputText.length == 0 && descImageArray.length == 0) {
+							plus.nativeUI.toast('说点什么描述一下您的商品吧？');
+							return;
+						}
+
+						if(descImageArray == null || descImageArray.length == 0) {
+							plus.nativeUI.toast('选几张图片展示用吧');
+							return;
+						}
+
+						plus.nativeUI.showWaiting('商品发布中，请稍后...');
+						//上传图片
+						if(descImageArray && descImageArray.length > 0)
+							fUploadImages(function(serverPaths) {
+								_fSubmit(serverPaths, inputText);
+							});
+						else {
+							_fSubmit('', inputText);
+						}
+					});
+			}
+
+			function _fSubmit(serverPaths, inputText) {
+				var title = mui('#comtitle')[0].value;
+				var price = mui('#comprice')[0].value;
+
+				var local = config.fGetLocaltion();
+				if(serverPaths && serverPaths != '') {
+					var tempArray = serverPaths.split(',');
+					for(var i = 0; i < tempArray.length; i++) {
+						showImages += ('/Commodity/' + tempArray[i] + ',');
+					}
+				}
+				showImages = showImages.substring(0, showImages.length - 1);
+
+				var data = {
+					PrimaryKey: '12321321321321321',
+					CommodityTypeKey: type.key,
+					CommodityTypeName: type.text,
+					CommoditySellStatus: 1,
+					CustomerKey: config.fGetLoginUserInfo().PrimaryKey,
+					CommodityTitle: title,
+					CommodityPrice: price,
+					ShowImage: showImages,
+					ShowVideo: "",
+					ClickGood: 0,
+					ShareCount: 0,
+					CommodityDesc: document.getElementById('input-text').value,
+					AdName: localtion ? (isNewLocation ? localtion.adname : localtion.address.district) : '', //区
+					AdCode: '',
+					CityCode: localtion ? (isNewLocation ? localtion.citycode : localtion.address.cityCode) : null,
+					CommodityLocation: localtion ? (isNewLocation ? localtion.address : localtion.addresses) : '',
+					CommodityLocationDesc: localtion ? (isNewLocation ? localtion.address : localtion.addresses) : '',
+					ActLocationLagAndLngDesc: " ", //JSON.stringify(localtion),
+					Longitude: localtion ? (isNewLocation ? localtion.lng : localtion.coords.longitude) : '',
+					Latitude: localtion ? (isNewLocation ? localtion.lat : localtion.coords.latitude) : ''
+				};
+				console.info(JSON.stringify(data));
+
+				config.fPost({
+					link: '/CommodityInfo/Create',
+					params: data,
+					callback: function(res) {
+						plus.nativeUI.closeWaiting();
+						var data = JSON.parse(res).Data;
+						if(data) {
+							plus.nativeUI.toast('发布成功！');
+							wv.close();
+						} else {
+							plus.nativeUI.toast('发布失败！');
+							return;
+						}
+					}
+				});
+			}
+
+			function fUploadImages(callback) {
+				var resultStr = "";
+				//1.上传descImageArray 中的 图片
+				var task = plus.uploader.createUpload(host.api + "/Upload/Commodity/Image", {
+					method: 'POST',
+					headers: {
+						"Content-Type": "multipart/form-data"
+					}
+				}, function(t, status) {
+					if(status == 200) {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+							plus.nativeUI.toast('图片上传成功！');
+						}, 1500);
+						var result = JSON.parse(t.responseText);
+						var imageServerPaths = JSON.parse(result).Data;
+						return callback(imageServerPaths);
+					} else {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+							plus.nativeUI.toast('图片上传失败！发布失败！');
+							return;
+						}, 1500);
+
+						console.error("上传失败", t.responseText);
+					}
+				});
+				for(var i = 0; i < descImageArray.length; i++) {
+					var f = descImageArray[i];
+					if(f.path && f.name) {
+						task.addData("uid", Math.floor(Math.random() * 100000000 + 10000000).toString()) //随机数
+						task.addFile(f.path, {
+							key: f.name
+						});
+					}
+				}
+				task.addEventListener("statechanged", onStateChanged, false);
+				task.start();
+
+				return resultStr;
+			}
+			// 监听上传任务状态
+			function onStateChanged(upload, status) {
+				if(upload.state == 4 && status == 200) {
+					// 上传完成
+					console.info('上传成功');
+				}
+			}
+			/**
+			 * 移除图片 
+			 */
+			function _fRemoveImage() {
+				mui('.circle-images').on('tap', 'i.mui-icon-minus', function() {
+					var parentNode = this.parentNode;
+					mui.confirm('确认移除该张图片？', '操作提示', ['否', '是'], function(e) {
+						if(e.index == 1) {
+							var imageBoxContainer = document.querySelector('.circle-images');
+
+							var image_tar = parentNode.querySelector('img');
+							var image_src = image_tar.getAttribute('src');
+
+							imageBoxContainer.removeChild(parentNode);
+							_fRemoveFromArray(image_src);
+						}
+					})
+				});
+			}
+
+			function fGetImage() {
+				document.getElementById('getimg').addEventListener('tap', function() {
+
+					if(!descImageArray && descImageArray.length >= 9) {
+						plus.nativeUI.toast('只可选择小于等于9张图片');
+						return;
+					}
+					var parentImageItemNode = document.querySelector('.circle-images');
+
+					var bts = [{
+						title: "拍照"
+					}, {
+						title: "从相册选择"
+					}];
+					plus.nativeUI.actionSheet({
+							title: "选择操作",
+							cancel: "取消",
+							buttons: bts
+						},
+						function(e) {
+							switch(e.index) {
+								case 1:
+									camera.fGetImage(function(path) {
+										if(descImageArray.length <= 9) {
+											//1.拍照
+											_fCreateImage(parentImageItemNode, path);
+											//2. 将path装到 对象，提交时候统一上传
+											_fPushImageToArray(path);
+										}
+									});
+									break;
+								case 2:
+									camera.fGalleryImg(function(paths) {
+										if(paths && paths.length)
+											for(var i = 0; i < paths.length; i++) {
+												if(descImageArray.length <= 9) {
+													var path = paths[i];
+													_fCreateImage(parentImageItemNode, path);
+													// 将path装到 对象，提交时候统一上传
+													_fPushImageToArray(path);
+												} else {
+													plus.nativeUI.toast('只可选择小于等于9张图片,多余张数将抛弃不显示不上传');
+													return;
+												}
+											}
+									});
+									break;
+							}
+						}
+					);
+				});
+			}
+
+			//拼接image html
+			function _fCreateImage(parentNode, imagePath) {
+				var imageBox = document.createElement('div');
+				imageBox.setAttribute('class', 'image-box');
+				var html = '';
+				html += '<img src="' + imagePath + '">';
+				html += '<i class="mui-icon mui-icon-minus"></i>';
+				imageBox.innerHTML = html;
+				parentNode.appendChild(imageBox);
+			}
+
+			//将图片放到数组中
+			function _fPushImageToArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				//push之前先执行移除操作
+				_fRemoveFromArray(imagePath);
+				descImageArray.push({
+					name: objName,
+					path: imagePath
+				});
+			}
+			//移除图片数组中，指定的图片
+			function _fRemoveFromArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				for(var i = 0; i < descImageArray.length; i++) {
+					if(descImageArray[i].name == objName) {
+						descImageArray.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+			function fCloseView() {
+				//关闭事件监听
+				document.getElementById('mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				});
+			}
+
+			mui.back = function() {
+				wv.hide('fade-out');
+				wv.close();
+			}
+		</script>
+	</body>
+
+</html>

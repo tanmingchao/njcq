@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.mui-content {
+				position: absolute;
+				height: 100%;
+			}
+			
+			#bcid {
+				width: 100%;
+				text-align: center;
+				display: flex;
+				display: -webkit-flex;
+				align-items: center;
+				justify-content: center;
+			}
+			
+			.mui-control-content {
+				width: 100%;
+				height: 100%;
+				position: static;
+			}
+			
+			footer {
+				width: 100%;
+				height: 44px;
+				/*position: absolute;*/
+				bottom: 0px;
+				line-height: 44px;
+				text-align: center;
+				color: #FFF;
+				margin: 30px auto;
+			}
+			
+			.fbt {
+				width: 50%;
+				height: 100%;
+				background-color: #FFCC33;
+				/*float: left;*/
+				display: inline-block;
+			}
+			
+			.fbt:active {
+				-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+				box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.5);
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">验票凭证</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row flex-direction-column">
+				<div class="mui-segmented-control">
+					<a class="mui-control-item mui-active" href="#item1">扫码验票</a>
+					<a class="mui-control-item" href="#item2">输入凭证编码</a>
+				</div>
+
+				<div class="cq-row flex-direction-column">
+					<div id="item1" class="mui-control-content mui-active">
+						<div id="bcid">
+
+						</div>
+						<footer>
+							<div id="do-to-scan" class="fbt">扫码验票</div>
+						</footer>
+					</div>
+					<div id="item2" class="mui-control-content">
+						<div class="cq-row flex-direction-column">
+							<p>凭证编码：待扫描凭证上方的 数字校验码</p>
+							<input type="text" style="font-size: 14px;" name="pinghengCode" id="pinghengCode" value="" placeholder="请输入凭证编码" />
+							<div class="cq-row">
+								<button type="button" id="yanzheng-btn" class="mui-btn mui-btn-blue mui-btn-block" style="height: 35px;line-height: 0px;font-size: 14px;">验证凭证</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var ws = null,
+				wo = null,
+				scan = null,
+				config = config();
+
+			mui.init();
+			mui.plusReady(function() {
+				func.fnBack();
+				func.fnDoToScan();
+
+				func.fnDoToInputScan();
+
+			});
+
+			var func = {
+				fnDoToInputScan: function() {
+					document.getElementById('yanzheng-btn')
+						.addEventListener('tap', function() {
+							var inputCode = document.getElementById('pinghengCode').value;
+							console.info(inputCode);
+							if(inputCode.length == 0) {
+								plus.nativeUI.toast('请输入您的凭证编码');
+								return;
+							} else {
+								config.fGet({
+									link: '/ActivityOrderPingZheng/' + inputCode + '/GetPingZhengByPingZhengCode',
+									callback: function(res) {
+										var obj = JSON.parse(res).Data;
+										if(obj && obj.length > 0) {
+											var result = 'actOrder&' + obj[0].ActivityOrder.PrimaryKey +
+												'&' + obj[0].ActivityOrder.Activity.CustomerKey + '&' + obj[0].PrimaryKey;
+											fnScanResult(result);
+										} else {
+											plus.nativeUI.toast('您输入的 凭证编码查不相应数据，请确认后再试！');
+											return;
+										}
+									}
+								});
+							}
+						}, false);
+				},
+				fnDoToScan: function() {
+					document.querySelector('#do-to-scan')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "barcode_scan.html",
+								id: 'barcode_scan.html',
+								preload: false,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: true, //自动显示等待框，默认为true
+								}
+							});
+						}, false);
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							ws = ws == null ? plus.webview.currentWebview() : ws;
+							try {
+								scan.close();
+							} catch(e) {
+								//TODO handle the exception
+							}
+							ws.close();
+						}, false);
+				}
+			}
+
+			var //处理扫描结果
+				fnScanResult = function(result) {
+					var resultArr = result.split('&');
+					if(resultArr[0] === 'actOrder') {
+						// 调用验票方法
+						var actCreatorKey = resultArr[2]; // 活动创建人key
+						var orderKey = resultArr[1]; // 订单key
+						var pzKey = resultArr[3]; // 凭证key
+						userInfo = config.fGetLoginUserInfo();
+						if(userInfo.PrimaryKey === actCreatorKey) {
+							// ② 订单是否存在或订单状态是否为正常状态，是否已经被逻辑删除
+							var hasPingZheng = false;
+							isNormalOrder(orderKey, function(orderInfo) {
+								// if (orderInfo.IsDeleted == false) {//取消或删除订单时候，已经将所有的凭证的状态 已经
+								// 更改为 作废状态
+								// 凭证信息
+								console.info(JSON.stringify(orderInfo));
+								var pingZhengInfo = null;
+								mui.each(orderInfo.PingZhengCollection, function(index, item) {
+									var cpzKey = item.PrimaryKey;
+									if(pzKey == cpzKey) {
+										pingZhengInfo = item;
+									}
+								});
+
+								// 凭证详细信息，判断是否已经扫描过
+								if(pingZhengInfo != null) {
+									if(pingZhengInfo.ScanStatus == 0) {
+										//验票之前弹出confirm信息
+										var btnArray = ['否', '是'];
+										mui.confirm('确定验证该凭证？', '验票提示', btnArray, function(e) {
+											if(e.index == 1) {
+												// ③执行验票
+												config.fGet({
+													link: '/ActivityOrderPingZheng/' + pzKey + '/222222222/12321321/YanPiao',
+													callback: function(res) {
+														// 直接跳转到验票成功页面
+														// justep.Shell.showPage(url)
+														var data = JSON.parse(res).Data;
+														if(data > 0) {
+															plus.nativeUI.toast('验票成功');
+															func.fnBack();
+														} else {
+															plus.nativeUI.toast('服务器异常，验票失败，请稍后再试！');
+															setTimeout(func.fnBack, 1000);
+															return;
+														}
+													}
+												});
+											} else {
+												plus.nativeUI.toast('您取消了验票操作');
+												setTimeout(func.fnBack, 1000);
+											}
+										})
+									}
+									if(pingZhengInfo.ScanStatus == -1) { // 已作废
+										plus.nativeUI.toast('该凭证已作废，无法完成验票');
+										setTimeout(func.fnBack, 1000);
+										return;
+									}
+									if(pingZhengInfo.ScanStatus == 1) { // 已取消
+										plus.nativeUI.toast('该凭证已被验验票，无法再次验票，验票失败');
+										setTimeout(func.fnBack, 1000);
+										return;
+									}
+								} else {
+									plus.nativeUI.toast('无法识别 非 本平台活动订单凭证二维码');
+									setTimeout(func.fnBack, 1000);
+									return;
+								}
+							});
+
+						} else {
+							plus.nativeUI.toast('该活动不是您所发布,无法验票,验票失败');
+							setTimeout(func.fnBack, 1000);
+							return;
+						}
+
+					} else {
+						plus.nativeUI.toast('该功能仅用作活动发布者活动验票！无法用于扫描其他功能二维码。');
+						setTimeout(func.fnBack, 1000);
+						return;
+					}
+				}
+		</script>
+	</body>
+
+</html>

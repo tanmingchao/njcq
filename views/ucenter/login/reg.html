@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../../../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<link href="css/style.css" rel="stylesheet" />
+		<style>
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			input {
+				flex: 1;
+				font-size: 14px;
+			}
+			
+			.mui-icon-checkmarkempty {
+				border-radius: 50%;
+				border: 1px solid #efeff4;
+				font-size: 17px;
+			}
+			
+			.cq-row {
+				padding: 2px 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">注册</h1>
+		</header>
+		<div class="mui-content">
+			<form class="mui-input-group">
+				<div class="cq-row flex-direction-row" style="justify-content: center;">
+					<div class="cq-row-nopadding flex-direction-row" style="flex: 1;align-items: center;">
+						<span>
+							用户昵称：
+						</span>
+						<input type="text" name="nickname" id="nickname" value="" placeholder="给自己起一个昵称吧" />
+					</div>
+				</div>
+				<div class="cq-row flex-direction-row" style="justify-content: center;border-top: 1px solid #efeff4;">
+					<div class="cq-row-nopadding flex-direction-row" style="flex: 1;align-items: center;">
+						<span>
+							手机号码：
+						</span>
+						<input type="number" name="account" id="account" value="" placeholder="请输入手机号码" />
+					</div>
+					<!--<span class="mui-icon mui-icon-checkmarkempty" style="align-self: center;background: #75d62e;color: #FFFFFF;"></span>-->
+				</div>
+				<div class="cq-row flex-direction-row" style="justify-content: center;border-top: 1px solid #efeff4;">
+					<div class="cq-row-nopadding flex-direction-row" style="flex: 1;align-items: center;">
+						<span>
+							密码：
+						</span>
+						<input type="password" name="password" id="password" value="" placeholder="请输入密码" />
+					</div>
+					<span class="mui-icon mui-icon-eye" style="align-self: center;font-size: 18px;color: #999999;"></span>
+				</div>
+				<div class="cq-row flex-direction-row" style="justify-content: center;border-top: 1px solid #efeff4;">
+					<div class="cq-row-nopadding flex-direction-row" style="flex: 1;align-items: center;">
+						<span>
+							验证码：
+						</span>
+						<input type="number" name="validCode" id="validCode" value="" placeholder="请输入验证码" />
+					</div>
+					<button id="getMsgCode" type="button" class="mui-btn mui-btn-yellow mui-btn-outlined">获取验证码</button>
+				</div>
+			</form>
+			<div class="mui-content-padded">
+				<button id='reg' style="height: 34px;line-height: 0px;font-size: 14px;" class="mui-btn mui-btn-block mui-btn-primary">注册</button>
+			</div>
+
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script src="js/app.js"></script>
+		<script>
+			var t = 30;
+			var config = config();
+			mui.plusReady(function() {
+
+				document.getElementById('mui-action-back')
+					.addEventListener('tap', function() {
+						plus.webview.currentWebview().close();
+					}, false);
+
+				document.querySelector('.mui-icon-eye')
+					.addEventListener('tap', function() {
+						var self = this;
+						var pwd = self.parentNode.querySelector('#password');
+						var type = pwd.getAttribute('type');
+						if(type == "password") {
+							pwd.setAttribute('type', 'text');
+						} else {
+							pwd.setAttribute('type', 'password');
+						}
+					}, false);
+
+				document.querySelector('#getMsgCode')
+					.addEventListener('tap', function() {
+						if(!config.isTestInvariment) { //非测试环境可用
+							config.fPost({
+								link: '/Common/SendPhoneMsg',
+								params: {
+									action: 'send',
+									mobile: document.querySelector('#account').value,
+									content: '【南京车趣】您正在进行注册验证，验证码' + MathRand() + '，请在15分钟内按页面提示提交验证码，切勿将验证码泄露于他人。',
+								},
+								callback: function(res) {
+									var obj = JSON.parse(res).Data;
+									if(obj == 'ok') {
+										plus.nativeUI.toast('验证码已发送，请注意查收！');
+										var btn = document.querySelector('#getMsgCode');
+										btn.disabled = true;
+										for(var j = 1; j <= t; j++) { //t=30
+											(function(e) {
+												setTimeout(function() {
+													if(t === e) {
+														btn.disabled = false;
+														btn.innerText = '获取验证码';
+													} else {
+														btn.innerText = (t - e) + '秒后重发';
+													}
+												}, e * 1000);
+											})(j);
+										}
+									} else {
+										plus.nativeUI.toast('服务器错误，短信发送失败！');
+									}
+								}
+							})
+						}
+					}, false);
+
+			});
+
+			(function($, doc) {
+				$.init();
+				$.plusReady(function() {
+					var settings = app.getSettings();
+					var regButton = doc.getElementById('reg');
+					var accountBox = doc.getElementById('account');
+					var passwordBox = doc.getElementById('password');
+					var validCode = doc.getElementById('validCode');
+					var nickname = doc.getElementById('nickname');
+
+					regButton.addEventListener('tap', function(event) {
+						regButton.disabled = true;
+						var regInfo = {
+							account: accountBox.value,
+							password: passwordBox.value,
+							validCode: validCode.value,
+							nickname: nickname.value
+						};
+						app.reg(regInfo, function(err) {
+							regButton.disabled = false;
+							if(err) {
+								plus.nativeUI.toast(err);
+								return;
+							}
+							
+							plus.nativeUI.toast('注册成功');
+							plus.webview.currentWebview().close();
+
+						});
+					});
+				});
+			}(mui, document));
+
+			function MathRand() {
+				var Num = "";
+				for(var i = 0; i < 6; i++) {
+					Num += Math.floor(Math.random() * 10);
+				}
+				localStorage.setItem('valideCode', Num);
+				return Num;
+			}
+			
+		</script>
+	</body>
+
+</html>

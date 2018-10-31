@@ -1,0 +1,615 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>自驾分享</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../../css/app.css" />
+		<style type="text/css">
+			.textarea {
+				margin: 0px;
+			}
+			
+			.mui-icon-videocam {
+				display: none;
+			}
+			
+			.desc-box {
+				width: 100%;
+				margin-bottom: 30px;
+			}
+			
+			.desc-box-item {
+				margin-top: 10px;
+			}
+			
+			.desc-box-item:first-child {
+				margin-top: 0px;
+			}
+			
+			.desc-box-item .mui-input-row .textarea {
+				font-size: 12px;
+				border-radius: 0px;
+				border-color: #EFEFF4;
+			}
+			
+			.desc-box-item .mui-input-row {
+				display: flex;
+				display: -webkit-flex;
+				;
+				flex-direction: column;
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts {
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				justify-content: space-between;
+				background: #fff;
+				padding: 5px 10px;
+				align-items:
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts span {
+				font-size: 20px;
+				padding: 0px 10px;
+				color: #ababab;
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts span.mui-icon-plusempty {
+				border: 1px solid #efeff4;
+				border-radius: 50%;
+				padding: 0px;
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts span.mui-icon-closeempty {
+				border: 1px solid #efeff4;
+				border-radius: 50%;
+				padding: 0px;
+				margin-right: 10px;
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts .opts {
+				display: flex;
+				display: -webkit-flex;
+				;
+				flex-direction: row;
+				font-size: 12px;
+				baseline;
+				flex: 1;
+				align-items: baseline;
+			}
+			
+			.desc-box-item .mui-input-row .desc-box-item-opts .opts label {
+				padding: 0px;
+				width: auto;
+				color: #ababab;
+			}
+			
+			.desc-box-item-imgs {
+				background: #fff;
+				padding: 5px 0px 0px 0px;
+			}
+			
+			.desc-box-item-imgs .item-img {
+				position: relative;
+				display: inline-block;
+				margin-right: 5px;
+			}
+			
+			.desc-box-item-imgs .item-img img {
+				height: 50px;
+				width: auto;
+				padding: 5px 0px 0px 5px;
+			}
+			
+			.desc-box-item-imgs .item-img i {
+				border: 1px solid #EFEFF4;
+				padding: 0px;
+				margin: 0px;
+				border-radius: 50%;
+				font-size: 14px;
+				text-align: center;
+				line-height: 1;
+				color: red;
+				position: absolute;
+				right: -10px;
+				top: -3px;
+				background: khaki;
+			}
+			
+			.desc-box-item-imgs .item-img i.mui-icon-closeempty:before {
+				text-align: center;
+			}
+			
+			.ariticle-title {
+				padding: 0px 6px;
+			}
+			
+			#article-title {
+				font-size: 14px;
+				border: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button id="act-pub-btn" class="mui-btn mui-btn-link mui-btn-mini mui-pull-right">完成</button>
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">编辑分享我的自驾游</h1>
+		</header>
+
+		<div class="mui-content">
+			<div style="display: flex;display: -webkit-flex;padding: 5px 10px;justify-content: flex-start;flex-direction: column ;">
+				<div style="margin-bottom: 0px;font-size: xx-small;color: coral;display: block;">
+					<i class="mui-icon mui-icon-info" style="font-size: 14px;"></i> 提示1：为了展示美观,建议每段内容点击+创建新的输入区域(最多6块)
+				</div>
+				<div style="margin-bottom: 0px;font-size: xx-small;color: coral;display: block;">
+					<i class="mui-icon mui-icon-info" style="font-size: 14px;"></i> 提示2：每块区域可以添加过张图片，如果重复将自动去重。
+				</div>
+			</div>
+
+			<div class="ariticle-title">
+				<div class="mui-input-row">
+					<input type="text" name="article-title" id="article-title" value="" placeholder="请输入文章标题" />
+				</div>
+			</div>
+
+			<div class="desc-box">
+				<!--每一项-->
+				<div class="desc-box-item">
+					<div class="mui-input-row" style="margin: 0px 5px 0px 5px;">
+						<textarea class="textarea" rows="3" placeholder="描述信息"></textarea>
+						<div class="desc-box-item-imgs"></div>
+						<div class="desc-box-item-opts">
+							<div class="opts">
+								<label>插入媒体:</label>
+								<div>
+									<!--图片-->
+									<span class="mui-icon mui-icon-image"></span>
+									<!--视频-->
+									<span class="mui-icon mui-icon-videocam"></span>
+								</div>
+							</div>
+							<div class="add-or-remove">
+								<span class="mui-icon mui-icon-plusempty"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.camera.js"></script>
+		<script type="text/javascript" src="../../../js/common.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/imagecropper/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.base64.js"></script>
+		<script type="text/javascript">
+			var descImageArray = []; //用于存放desc详情中的 图片路径（手机的完整路径）
+
+			var texts = ''; //如果是重新编辑desc内容，用于存放 上一个页面传过来的 内容
+			var htmls = '';
+
+			var config = config();
+			var camera = new camera();
+			var base64 = new Base64();
+
+			var ws = null;
+			var wo = null;
+			var tKey = null;
+			mui.init();
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				tKey = ws.tKey;
+				texts = ws.textAreasContext;
+				htmls = ws.inputAreaImageStr;
+				if((texts && texts != '') || (htmls && htmls != '')) {
+					// TODO : _fReSizeInputArea 调用反转码方法，同时绑定显示
+					_fReSizeInputArea(texts, htmls);
+				}
+				wo = ws.opener();
+				wo.close();
+
+				fCreateInputArea();
+				fRemoveInputArea();
+				fRemoveCurrentImage();
+				fGetImage();
+				fGetVideo();
+				fFunished();
+
+				//返回按钮
+				document.getElementById("mui-action-back").addEventListener('tap', function() {
+					mui.back();
+				})
+
+			});
+
+			//新增输入区域
+			function fCreateInputArea() {
+				mui('.desc-box').on('tap', "div.add-or-remove>span.mui-icon-plusempty", function() {
+					var item = document.createElement('div');
+					item.setAttribute("class", "desc-box-item");
+
+					var html = '';
+					html += '<div class="mui-input-row" style="margin:margin: 5px 5px 0px 5px;">';
+					html += '	<textarea class="textarea" rows="3" placeholder="描述信息"></textarea>';
+					html += '	<div class="desc-box-item-imgs"></div>';
+					html += '	<div class="desc-box-item-opts">';
+					html += '		<div  class="opts">';
+					html += '			<label>插入媒体:</label>';
+					html += '			<div>';
+					html += '				<span class="mui-icon mui-icon-image"></span>';
+					html += '				<span class="mui-icon mui-icon-videocam"></span>';
+					html += '			</div>';
+					html += '		</div>';
+					html += '		<div class="add-or-remove">';
+					html += '			<span class="mui-icon mui-icon-closeempty"></span>';
+					html += '			<span class="mui-icon mui-icon-plusempty"></span>';
+					html += '		</div>';
+					html += '	</div>';
+					html += '</div>';
+					item.innerHTML = html;
+					mui('.desc-box')[0].appendChild(item);
+				});
+			}
+			//移除当前编辑区域
+			function fRemoveInputArea() {
+				mui('.desc-box').on('tap', "span.mui-icon-closeempty", function() {
+					var node = this.parentNode.parentNode.parentNode.parentNode;
+					//获取当前区域中的图片，并重数组中移除
+					var tempNode = this.parentNode.parentNode.parentNode;
+					var imageAreas = tempNode.querySelector("div.desc-box-item-imgs");
+					var images = imageAreas.querySelectorAll("img");
+					if(images.length) {
+						for(var i = 0; i < images.length; i++) {
+							var src = images[i].getAttribute("src");
+							_fRemoveFromArray(src);
+						}
+					}
+
+					mui('.desc-box')[0].removeChild(node);
+				});
+			}
+			//移除当前图片
+			function fRemoveCurrentImage() {
+				mui('.desc-box').on('tap', "i.mui-icon-closeempty", function() {
+					//获取当前图片的path
+					var imgtarget = this.previousSibling;
+					var imgParent = imgtarget.parentNode.querySelector('img');
+					var imgSrc = imgParent.getAttribute("src")
+					//  移除 对象中对应的path
+					_fRemoveFromArray(imgSrc);
+
+					//移除该节点
+					var parentNode = this.parentNode.parentNode;
+					var node = this.parentNode;
+					parentNode.removeChild(node);
+
+				});
+			}
+			//图片点击选择
+			function fGetImage() {
+				mui('.desc-box').on('tap', 'span.mui-icon-image', function() {
+					document.activeElement.blur(); //收起虚拟键盘 
+					//上级元素的上级元素的上级元素，用于绑定显示拍照的图片
+					var parentImageItemNode = this.parentNode.parentNode.parentNode.previousSibling;
+					parentImageItemNode = parentImageItemNode.parentNode.querySelector(".desc-box-item-imgs");
+					var bts = [{
+						title: "拍照"
+					}, {
+						title: "从相册选择"
+					}];
+					plus.nativeUI.actionSheet({
+							title: "选择操作",
+							cancel: "取消",
+							buttons: bts
+						},
+						function(e) {
+							switch(e.index) {
+								case 1:
+									camera.fGetImage(function(path) {
+										//1.拍照
+										_fCreateImage(parentImageItemNode, path);
+										//2. 将path装到 对象，提交时候统一上传
+										_fPushImageToArray(path);
+									});
+									break;
+								case 2:
+									camera.fGalleryImg(function(paths) {
+										if(paths && paths.length)
+											for(var i = 0; i < paths.length; i++) {
+												var path = paths[i];
+												_fCreateImage(parentImageItemNode, path);
+												// 将path装到 对象，提交时候统一上传
+												_fPushImageToArray(path);
+											}
+									});
+									break;
+							}
+						}
+					);
+				});
+			}
+
+			//视频点击（只能现场拍摄）
+			function fGetVideo() {
+				document.querySelector('.mui-icon-videocam').addEventListener('tap', function() {
+					//调用摄像头插件
+				});
+			}
+			//完成按钮点击事件
+			function fFunished() {
+
+				var textAreasContext = ''; //存放base64转码之后的 富文本框的内容，使用逗号分割
+				var inputAreaImageStr = ''; //存放base64转码之后的并且替换图片路径为上传之后的路径的 div.desc-box-item > div.mui-input-row > div.desc-box-item-imgs 节点，转换成 base64(英文逗号分隔)拼接的string
+
+				var customerInfo = config.fGetLoginUserInfo();
+
+				//获取编辑区域的html内容
+				document.querySelector("#act-pub-btn").addEventListener('tap', function() {
+					if(customerInfo) {
+						var title = document.getElementById('article-title').value;
+						if(title.length == 0) {
+							plus.nativeUI.toast('请输入文章标题');
+							return;
+						}
+
+						var local = config.fGetLocaltion();
+
+						plus.nativeUI.showWaiting("处理中，请稍后");
+						//获取所有testarea 并取值
+						textAreasContext = _fGetAllInputContext();
+						//上传图片 同时提交数据
+						_fUploadDescImage(function(serverPaths) {
+							inputAreaImageStr = _fGetImageArea(serverPaths);
+
+							config.fPost({
+								link: '/ActivityShare/Create',
+								params: {
+									PrimaryKey: '12321321',
+									ActTitle: title,
+									ShowImage: '',
+									ShowVideo: '',
+									ActDesc: textAreasContext + '|' + inputAreaImageStr,
+									CreateTime: null,
+									AdName: local ? local.address.district : '', //区
+									AdCode: '',
+									ActLocation: local ? local.addresses : '',
+									Longitude: local ? local.coords.longitude : '',
+									Latitude: local ? local.coords.latitude : '',
+
+									ActivityShareTypeKey: tKey,
+									CustomerKey: customerInfo.PrimaryKey
+									
+								},
+								callback: function(res) {
+									var data = JSON.parse(res).Data;
+									plus.nativeUI.closeWaiting();
+									if(data) {
+										plus.nativeUI.toast('发布成功！');
+										ws.close();
+									} else {
+										plus.nativeUI.toast('服务器错误，发布失败，请稍后再试！');
+									}
+								}
+							})
+						});
+					} else {
+						plus.nativeUI.toast('您尚未登录，请先登录后再试！');
+						return;
+					}
+				});
+			}
+			/*-----------------------私有方法----------------------*/
+			/**
+			 * 上传 详细内容中的图片 
+			 */
+			function _fUploadDescImage(callback) {
+				var resultStr = "";
+				//1.上传descImageArray 中的 图片
+				var task = plus.uploader.createUpload(host.api + '/Upload/ActivityShare/Image', {
+					method: 'POST',
+					headers: {
+						"Content-Type": "multipart/form-data"
+					}
+				}, function(t, status) {
+					if(status == 200) {
+						var result = JSON.parse(t.responseText);
+						var imageServerPaths = JSON.parse(result).Data;
+
+						return callback(imageServerPaths);
+					} else {
+						console.error("上传失败", t.responseText);
+					}
+				});
+				for(var i = 0; i < descImageArray.length; i++) {
+					var f = descImageArray[i];
+					if(f.path && f.name) {
+						task.addData("uid", Math.floor(Math.random() * 100000000 + 10000000).toString()) //随机数
+						task.addFile(f.path, {
+							key: f.name
+						});
+					}
+				}
+				task.addEventListener("statechanged", onStateChanged, false);
+				task.start();
+
+				return resultStr;
+			}
+			// 监听上传任务状态
+			function onStateChanged(upload, status) {
+				if(upload.state == 4 && status == 200) {
+					// 上传完成
+					console.info('上传成功');
+				}
+			}
+
+			//动态创建图片
+			function _fCreateImage(parentNode, imgePth) {
+				var isExits = false;
+				//判断当前图片是否已经选择过
+				var objName = imgePth.substring(imgePth.lastIndexOf('/') + 1);
+				if(descImageArray.length > 0) {
+					for(var i = 0; i < descImageArray.length; i++) {
+						var tempName = descImageArray[i].name;
+						if(tempName == objName) {
+							isExits = true;
+						}
+					}
+				}
+				if(!isExits) {
+					var itemImage = document.createElement('div');
+					itemImage.setAttribute("class", "item-img");
+					var html = '<img class="' + objName + '" src="' + imgePth + '"/>';
+					html += ' <i class="img-remove mui-icon mui-icon-closeempty"></i>';
+					itemImage.innerHTML = html;
+
+					parentNode.appendChild(itemImage);
+				}
+			}
+
+			//将图片放到数组中
+			function _fPushImageToArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				//push之前先执行移除操作
+				_fRemoveFromArray(imagePath);
+				descImageArray.push({
+					name: objName,
+					path: imagePath
+				});
+			}
+			//移除图片数组中，指定的图片
+			function _fRemoveFromArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				for(var i = 0; i < descImageArray.length; i++) {
+					if(descImageArray[i].name == objName) {
+						descImageArray.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+			/**
+			 *@description 获取所有 textarea的内容，并转码成base64，凭借成字符串，使用英文逗号分隔 
+			 */
+			function _fGetAllInputContext() {
+				var textAreasContext = '';
+				var textAreas = document.querySelectorAll("textarea");
+
+				for(var i = 0; i < textAreas.length; i++) {
+					var text = textAreas[i].value;
+					textAreasContext += (base64.encode64(base64.utf16to8(text)) + ',');
+				}
+				textAreasContext = textAreasContext.substr(0, textAreasContext.length - 1);
+				return textAreasContext;
+			}
+			/**
+			 *@description 获取所有 div.desc-box-item-imgs对象，并获取每个desc-box-item-imgs对象中的图片
+			 * 	1.获取desc-box-item-imgs的所有对象
+			 * 	2.取出每个对象中的 待上传图片，（其实已经存放到 descImageArray 这个对象中了）,
+			 * 	3.更换 每个对象中的img的src属性值，
+			 *  4.重新拼接生成的每个对象，拼接之前，将每个对象base64转码，然后使用英文逗号隔开，拼接成新字符串
+			 * 	5.返回操作结果
+			 */
+			function _fGetImageArea(serverImagePaths) {
+				var index = 0;
+				if(!serverImagePaths || serverImagePaths.length == 0) {
+					return base64.encode64(base64.utf16to8(''));
+				}
+				var serverImageArray = [];
+				serverImageArray = serverImagePaths.split(',');
+
+				var base64ImageContainer = '';
+				var box = document.querySelector('.desc-box');
+				var itemImageBoxs = box.querySelectorAll("div.desc-box-item-imgs");
+				if(itemImageBoxs.length > 0) {
+					mui.each(itemImageBoxs, function(i, item) {
+
+						//替换item中的图片的src属性为当前回传过来的 服务器图片路径
+						var imgs = item.querySelectorAll('img');
+						for(var j = 0; j < imgs.length; j++) {
+							index = (i != 0 || j != 0) ? (index + 1) : 0;
+							imgs[j].setAttribute("src", host.resource + '/Images/ActivityShare/' + serverImageArray[index]);
+						}
+						//当前item
+						var imageItems = item.innerHTML;
+						base64ImageContainer += (base64.encode64(base64.utf16to8(imageItems)) + ',');
+					});
+				}
+				base64ImageContainer = base64ImageContainer.substr(0, base64ImageContainer.length - 1);
+				return base64ImageContainer;
+			}
+
+			//根据前页面传递过来的参数，重新初始化编辑区域
+			function _fReSizeInputArea(texts, htmls) {
+				//清除除当前页面中的 descImageArray对象
+				descImageArray = [];
+				var textArray = texts.split(','); //多段文字
+				var htmlArray = htmls.split(','); //多个 div.item-img
+				for(var i = 0; i < textArray.length; i++) {
+					var tempText = textArray[i];
+					var tempHtml = htmlArray[i];
+					//base64转码
+					var text_base64encode = base64.utf8to16(base64.decode64(tempText));
+					var html_base64encode = base64.utf8to16(base64.decode64(tempHtml));
+					//descImageArray对象重新赋值
+					if(html_base64encode && html_base64encode != '') {
+						var temp_dom = document.createElement('div');
+						temp_dom.innerHTML = html_base64encode;
+						var html_base64encode_images = temp_dom.querySelectorAll("img");
+						if(html_base64encode_images && html_base64encode_images.length > 0) {
+							for(var j = 0; j < html_base64encode_images.length; j++) {
+								var img = html_base64encode_images[j];
+								_fPushImageToArray(img.getAttribute("src"));
+							}
+						}
+					}
+					if(i == 0) { //将第一个赋值给已有的输入区域，
+						document.querySelector("textarea").value = text_base64encode;
+						document.querySelector(".desc-box-item-imgs").innerHTML = html_base64encode;
+					} else { //其他对象，重新创建输入区域
+						var item = document.createElement('div');
+						item.setAttribute("class", "desc-box-item");
+						var html = '';
+						html += '<div class="mui-input-row" style="margin:margin: 5px 5px 0px 5px;">';
+						html += '	<textarea class="textarea" rows="3" placeholder="描述信息">' + text_base64encode + '</textarea>';
+						html += '	<div class="desc-box-item-imgs">';
+						html += html_base64encode;
+						html += '</div>';
+						html += '	<div class="desc-box-item-opts">';
+						html += '		<div  class="opts">';
+						html += '			<label>插入媒体:</label>';
+						html += '			<div>';
+						html += '				<span class="mui-icon mui-icon-image"></span>';
+						html += '				<span class="mui-icon mui-icon-videocam"></span>';
+						html += '			</div>';
+						html += '		</div>';
+						html += '		<div class="add-or-remove">';
+						html += '			<span class="mui-icon mui-icon-closeempty"></span>';
+						html += '			<span class="mui-icon mui-icon-plusempty"></span>';
+						html += '		</div>';
+						html += '	</div>';
+						html += '</div>';
+						item.innerHTML = html;
+						mui('.desc-box')[0].appendChild(item);
+					}
+
+				}
+
+			}
+
+			mui.back = function() {
+				ws = plus.webview.currentWebview();
+				ws.hide();
+				ws.close();
+			}
+		</script>
+
+	</body>
+
+</html>

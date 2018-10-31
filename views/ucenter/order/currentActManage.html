@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.cq-row {
+				background: none;
+			}
+			
+			.cq-row .mui-table-view-cell {
+				background: #FFFFFF !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a href="#" id="view-activity" class="mui-icon mui-icon-right-nav mui-pull-right" style="font-size: 15px;line-height: 28px;">查看活动</a>
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">活动管理</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li id="do-to-baoming-member" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-contact"></span>
+							<div class="mui-media-body">报名人员</div>
+						</a>
+					</li>
+					<li id="do-to-orderlist" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-list"></span>
+							<div class="mui-media-body">订单管理</div>
+						</a>
+					</li>
+					<li id="do-to-closeBaoMing" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-closeempty"></span>
+							<div class="mui-media-body">关闭报名</div>
+						</a>
+					</li>
+					<li id="do-to-share" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-redo"></span>
+							<div class="mui-media-body">分享活动</div>
+						</a>
+					</li>
+					<li id="do-to-beFavRecored" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-starhalf"></span>
+							<div class="mui-media-body">收藏记录</div>
+						</a>
+					</li>
+					<li id="do-to-reedit" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+						<a href="#">
+							<span class="mui-icon mui-icon-compose"></span>
+							<div class="mui-media-body">重新编辑</div>
+						</a>
+					</li>
+				</ul>
+
+			</div>
+
+			<div id="topublish" class="cq-row spaace-between" style="margin-top: 10px;background: #FFFFFF;">
+				<span id="">
+		    		&nbsp;&nbsp;发布新活动
+		    	</span>
+				<span class="mui-icon mui-icon-arrowright">
+		    		
+		    	</span>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var wv = null,
+				wo = null,
+				pkey = null,
+				config = config(),
+				userInfo = config.fGetLoginUserInfo();
+
+			mui.init();
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				pkey = wv.pkey;
+
+				func.fnBack();
+				func.fnToActDetail(pkey);
+				func.fnToPublishNewAct();
+				func.fnDoToBaomingUserList(pkey);
+				func.fnOrderlist(pkey);
+				//				func.fnDoToBeFavRecordList(pkey);
+
+			});
+
+			var func = {
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							if(wv == null)
+								wv = plus.webview.currentWebview();
+							wv.close();
+						}, false);
+				},
+				fnToActDetail: function(pkey) {
+					document.getElementById('view-activity')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "../../activity/detail/detail.html",
+								id: "act_detail.html",
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								},
+								extras: {
+									akey: pkey
+								}
+							});
+						}, false);
+				},
+				fnToPublishNewAct: function() {
+					document.getElementById('topublish')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "../../activity/publish/publish.html",
+								id: "publish.html",
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								}
+							});
+						}, false);
+				},
+				fnDoToBaomingUserList: function(pkey) {
+					document.getElementById('do-to-baoming-member')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "baominguserlist.html",
+								id: "baominguserlist.html",
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								},
+								extras: {
+									pkey: pkey
+								}
+							});
+						}, false);
+				},
+				fnOrderlist: function(pkey) {
+					document.getElementById('do-to-orderlist')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "ordermanage.html",
+								id: "ordermanage.html",
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								},
+								extras: {
+									pkey: pkey
+								}
+							});
+						}, false);
+				}, //跳转到收藏记录列表页面
+				fnDoToBeFavRecordList: function(pkey) {
+					document.getElementById('do-to-beFavRecored')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "beFavlist.html",
+								id: "beFavlist.html",
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								},
+								extras: {
+									pkey: pkey
+								}
+							});
+						}, false);
+				}
+			};
+		</script>
+	</body>
+
+</html>

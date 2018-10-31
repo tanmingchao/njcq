@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>选择发布类型</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<style type="text/css">
+			.pub-types {
+				background: #FFFFFF !important;
+			}
+			
+			.pub-types li img {
+				height: 40px;
+				width: 40px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+
+		</header>
+
+		<div class="mui-content">
+			<ul class="mui-table-view mui-grid-view mui-grid-9 pub-types">
+				<li id="pb-dongtai" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<img src="../../../img/pub-dongtai2.png" />
+						<div class="mui-media-body">发动态</div>
+					</a>
+				</li>
+				<li id="pb-yule" rel="轻松一刻" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<img src="../../../img/pub-kaixinyike.png" />
+						<div class="mui-media-body">娱乐/段子</div>
+					</a>
+				</li>
+				<li id="pb-zijia" rel="自驾分享" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<img src="../../../img/pub-zijiafenxiang.png" />
+						<div class="mui-media-body">自驾分享</div>
+					</a>
+				</li>
+				<li id="pb-jiakao" rel="驾/考知识" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<img src="../../../img/pub-jiakaozhishi.png" style="width: 48px;" />
+						<div class="mui-media-body">驾/考知识</div>
+					</a>
+				</li>
+				<li id="pb-qita" rel="其他" class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<img src="../../../img/pub-other.png" />
+						<div class="mui-media-body">其他分享</div>
+					</a>
+				</li>
+				<!--<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">
+					<a href="#">
+						<span class="mui-icon mui-icon-phone"></span>
+						<div class="mui-media-body">Phone</div>
+					</a>
+				</li>-->
+			</ul>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var wv = null;
+			var wo = null;
+			var config = config();
+			var types = [];
+			mui.init();
+			mui.plusReady(function() {
+				initialCircleType();
+
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				//关闭事件监听
+				document.getElementById('mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				});
+
+				//li点击事件
+				fPubDongtai();
+				fPubyule();
+				fPubzijia();
+				fPubjiakao();
+				fPubqita();
+
+			});
+
+			function initialCircleType() {
+				if(!localStorage.getItem("circleType"))
+					config.fGet({
+						link: '/ActivityShareType/Type',
+						callback: function(data) {
+							var at = JSON.parse(data).Data;
+							types = at;
+							localStorage.setItem("circleType", JSON.stringify(at));
+						}
+					});
+				else {
+					types = JSON.parse(localStorage.getItem("circleType"));
+				}
+			}
+
+			function fGetTypeKeyByName(typeName) {
+				for(var i = 0; i < types.length; i++) {
+					if(types[i].TypeName.indexOf(typeName) > -1) {
+						return types[i].PrimaryKey;
+					}
+				}
+			}
+
+			function fPubDongtai() {
+				document.getElementById('pb-dongtai').addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'publish_dongtai.html',
+						id: 'publish_dongtai.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				});
+			}
+
+			function fPubyule() {
+				document.getElementById('pb-yule').addEventListener('tap', function() {
+					var tName = this.getAttribute('rel');
+					mui.openWindow({
+						url: 'publish_yule.html',
+						id: 'publish_yule.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							tKey: fGetTypeKeyByName(tName)
+						}
+					});
+				});
+			}
+
+			function fPubzijia() {
+				document.getElementById('pb-zijia').addEventListener('tap', function() {
+					var tName = this.getAttribute('rel');
+					mui.openWindow({
+						url: 'publish_zijia.html',
+						id: 'publish_zijia.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							tKey: fGetTypeKeyByName(tName)
+						}
+					});
+				});
+			}
+
+			function fPubjiakao() {
+				document.getElementById('pb-jiakao').addEventListener('tap', function() {
+					var tName = this.getAttribute('rel');
+					mui.openWindow({
+						url: 'publish_jiakao.html',
+						id: 'publish_jiakao.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							tKey: fGetTypeKeyByName(tName)
+						}
+					});
+				});
+			}
+
+			function fPubqita() {
+				document.getElementById('pb-qita').addEventListener('tap', function() {
+					var tName = this.getAttribute('rel');
+					mui.openWindow({
+						url: 'publish_qita.html',
+						id: 'publish_qita.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							tKey: fGetTypeKeyByName(tName)
+						}
+					});
+				});
+			}
+
+			mui.back = function() {
+				wv.hide();
+				wv.close();
+			}
+		</script>
+	</body>
+
+</html>

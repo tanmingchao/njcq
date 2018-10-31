@@ -1,0 +1,348 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>下单之前，订单预览界面</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../../css/icons-extra.css" />
+		<link href="../../../../css/app.css" rel="stylesheet" />
+		<style type="text/css">
+			#payWays {
+				border: 1px solid #efeff4;
+			}
+			
+			.mui-icon-extra-alipay:before {
+				font-size: 24px;
+				color: #13A2E9;
+			}
+			
+			.mui-icon-weixin:before {
+				font-size: 24px;
+				color: #0DCD18;
+			}
+			
+			.mui-icon-extra-alipay,
+			.mui-icon-weixin {
+				display: flex;
+				display: -webkit-flex;
+				justify-content: flex-start;
+				align-items: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">订单预览</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="order-preview">
+				<div class="order-preview-row" style="display: flex;flex-direction: row;justify-content: space-between;">
+					<span>报名人信息</span>
+					<span id="userinfo"></span>
+				</div>
+				<div class="order-preview-row">
+					<!--活动信息-->
+					<div class="order-preview-act">
+						<img class="act-img" src="../../../../img/temp/02.png" />
+						<div class="order-preview-act-infos">
+							<div class="order-preview-act-infos-title"></div>
+							<div class="order-preview-act-infos-remark act-time"></div>
+							<div class="order-preview-act-infos-remark act-local"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="order-preview-row choose-size">
+					<span>购买份数</span>
+					<div class="order-preview-row-size">
+						<div class="order-preview-act-price"></div>
+						<div class="mui-numbox" data-numbox-step='1' data-numbox-min='1' data-numbox-max='100'>
+							<button id="mui-numbox-btn-minus" class="mui-btn mui-numbox-btn-minus" type="button">-</button>
+							<input id="mui-numbox-input" class="mui-numbox-input" type="number" />
+							<button id="mui-numbox-btn-plus" class="mui-btn mui-numbox-btn-plus" type="button">+</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="order-preview-row">
+					<div class="cq-row-nopadding" style="padding: 0px 0px 10px 2px;">选择支付方式</div>
+					<div id="payWays" class="cq-row-nopadding flex-direction-column spaace-between">
+						<!--<div class="mui-input-row mui-radio ">
+							<span class="mui-icon-extra mui-icon-extra-alipay" style="padding: 10px;font-size: 13px;">
+							&nbsp;&nbsp;支付宝支付
+							</span>
+							<input name="radio" type="radio" checked>
+						</div>
+						<div class="mui-input-row mui-radio ">
+							<span class="mui-icon mui-icon-weixin" style="border-top: 1px solid #EFEFF4;padding: 10px;font-size: 13px;">
+							&nbsp;&nbsp;微信支付
+							</span>
+							<input name="radio" type="radio">
+						</div>-->
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<footer>
+			<nav id="nav-bottom-menu" class="mui-bar mui-bar-tab act-desc-mui-bar-tab" style="padding: 0px 10px;">
+				<div style="flex: 3;">
+					<span>合计：</span>
+					<span id="summary" style="color:rgb(255, 153, 51);">￥12.00</span>
+				</div>
+				<a class="">
+					<button id="do-join" type="button" class="mui-btn mui-btn-blue mui-btn-block mui-icon mui-icon-personadd">提交订单</button>
+				</a>
+			</nav>
+		</footer>
+
+		<script src="../../../../js/mui.min.js"></script>
+		<script src="../../../../js/config.js"></script>
+		<script type="text/javascript">
+			var pays = {};
+			// 检测是否安装支付服务
+			function checkServices(pc) {
+				if(!pc.serviceReady) {
+					var txt = null;
+					switch(pc.id) {
+						case 'alipay':
+							txt = '检测到系统未安装“支付宝快捷支付服务”，无法完成支付操作，是否立即安装？';
+							break;
+						default:
+							txt = '系统未安装“' + pc.description + '”服务，无法完成支付，是否立即安装？';
+							break;
+					}
+					plus.nativeUI.confirm(txt, function(e) {
+						if(e.index == 0) {
+							pc.installService();
+						}
+					}, pc.description);
+				}
+			}
+
+			function plusReady() {
+				// 获取支付通道
+				plus.payment.getChannels(function(channels) {
+					var content = document.getElementById('payWays');
+
+					for(var i in channels) {
+						var channel = channels[i];
+						if(channel.id == 'qhpay' || channel.id == 'qihoo') { // 过滤掉不支持的支付通道：暂不支持360相关支付
+							continue;
+						}
+						pays[channel.id] = channel;
+
+						var de = document.createElement('div');
+						de.setAttribute('class', 'mui-input-row mui-radio');
+						//						de.setAttribute('onclick', 'pay(this.id)');
+						de.id = channel.id;
+						var text = channel.description + '支付';
+						var icon = text.indexOf('支付宝') > -1 ? 'mui-icon-extra mui-icon-extra-alipay' : 'mui-icon mui-icon-weixin';
+						var html = '';
+						var style = i > 0 ? 'border-top: 1px solid #EFEFF4;' : '';
+						html += ' <span class="' + icon + '" style="' + style + 'padding: 10px;font-size: 13px;">';
+						html += '	&nbsp;&nbsp;' + text;
+						html += '	</span>';
+						var checked = '';
+						if(i == 0) {
+							checked = "checked";
+							pay_type = channel.id;
+						}
+						console.info(pay_type);
+						html += '	<input id="' + channel.id + '" class="' + channel.id + ' radio" name="radio" type="radio" ' + checked + '>';
+						de.innerHTML = html;
+						content.appendChild(de);
+						checkServices(channel);
+					}
+				}, function(e) {
+					plus.nativeUI.toast('获取支付通道失败：' + e.message);
+					alert('获取支付通道失败：' + e.message);
+				});
+
+			}
+			document.addEventListener('plusready', plusReady, false);
+
+			var actInfo = null;
+			var pay_type = '';
+			var config = config();
+			mui.init();
+			mui.plusReady(function() {
+
+				//返回
+				document.querySelector('#mui-action-back')
+					.addEventListener('tap', function() {
+						plus.webview.currentWebview().close();
+					}, false);
+
+				//支付方式选择
+				mui('#payWays').on('tap', '.radio', function() {
+					var self = this;
+					pay_type = self.getAttribute('id');
+
+				});
+
+				var data = plus.webview.currentWebview();
+				actInfo = JSON.parse(data.actInfo);
+
+				//登录之后的用户信息
+				var userInfo = config.fGetLoginUserInfo();
+
+				//绑定页面数据信息
+				mui("#userinfo")[0].innerText = userInfo.UserNickName + "(" + userInfo.TelPhone + ")";
+				mui(".act-img")[0].setAttribute("src", actInfo.ShowImage);
+				mui(".order-preview-act-infos-title")[0].innerText = actInfo.ActTitle;
+				mui(".act-time")[0].innerText = actInfo.ActStartTime + "开始";
+				mui(".act-local")[0].innerText = actInfo.ActLocation;
+				mui(".order-preview-act-price")[0].innerText = "￥" + actInfo.ActFee + "/份  x";
+
+				//第一次加载，初始化合计金额
+				summary = document.getElementById("summary");
+				summary.innerText = "￥" + actInfo.ActFee;
+				//减小数量
+				document.getElementById("mui-numbox-btn-minus").addEventListener('tap', function(event) {
+					cacula();
+				}, false);
+				//增加数量
+				document.getElementById("mui-numbox-btn-plus").addEventListener('tap', function(event) {
+					cacula();
+				}, false);
+				//计算总价
+				var cacula = function() {
+					setTimeout(function() {
+						var cnt = parseInt(document.getElementById("mui-numbox-input").value);
+						var sPrice = parseFloat(actInfo.ActFee);
+						var total = parseFloat(cnt * sPrice).toFixed(2);
+						summary.innerText = "￥" + total;
+
+					}, 100);
+				}
+
+				//提交订单
+				document.getElementById("do-join").addEventListener('tap', function(event) {
+					event.target.disabled = true;
+					var totalPrice = summary.innerText.replace("￥", "");
+					//订单状态 ActOrderStatusEnum
+					///     -1： 待付款
+					///     0：正常
+					///     1：已取消
+					///     2：活动结束，订单完成
+					config.fPost({
+						link: '/ActivityOrder/GenerateOrder',
+						params: {
+							PrimaryKey: '12321321321321',
+							OrderTitle: userInfo.UserNickName + ' 活动报名订单',
+							OrderOnlyKey: '',
+							OrderTotalPrice: totalPrice,
+							CustomerKey: userInfo.PrimaryKey,
+							ActivityKey: actInfo.PrimaryKey,
+							ActOrderStatusEnum: -1,
+							CreateTime: '',
+							ParticipateNum: parseInt(document.getElementById("mui-numbox-input").value),
+							Remark: ''
+						},
+						callback: function(res) {
+							var data = JSON.parse(res).Data;
+							if(data) {
+
+								//TODO 调用支付接口
+								console.info(pay_type);
+								pay(pay_type, data.OrderOnlyKey);
+								// TODO 如果支付成功，调用更改订单状态方法 状态更改为：0（正常）
+
+								mui.toast('下单成功，购买完成！', {
+									duration: 'short',
+									type: 'div'
+								});
+								setTimeout(function() {
+
+									//跳转到下单结果页
+									mui.openWindow({
+										url: 'order_result.html',
+										id: 'order_result.html',
+										preload: true,
+										extras: {
+											actInfo: JSON.stringify(actInfo),
+											orderKey: data.PrimaryKey,
+											num: parseInt(document.getElementById("mui-numbox-input").value),
+											totalPrice: totalPrice
+										},
+										show: {
+											aniShow: 'pop-in'
+										},
+										styles: {
+											popGesture: 'hide'
+										},
+										waiting: {
+											autoShow: false
+										}
+									});
+
+								}, 2000);
+							} else {
+								mui.toast('服务器错误，下单失败！', {
+									duration: 'short',
+									type: 'div'
+								});
+								return;
+							}
+						}
+					});
+				}, false);
+			});
+
+			function pay(id, out_trade_no) {
+				console.log('----- 请求支付 -----');
+				var url = '';
+				if(id == 'alipay' || id == 'wxpay') {
+					if(id == 'alipay') {
+						url = '';
+					} else {
+						url = '/Common/WeChatGenerateOrder';
+					}
+					console.info(url);
+				} else {
+					plus.nativeUI.alert('当前环境不支持此支付通道！', null, '捐赠');
+					return;
+				}
+				var appid = plus.runtime.appid;
+				if(navigator.userAgent.indexOf('StreamApp') >= 0) {
+					appid = 'Stream';
+				}
+				//				url += '&appid=' + appid + '&total=';
+
+				w = plus.nativeUI.showWaiting();
+				// 请求支付订单
+				config.fPost({
+					link: url,
+					params: { //encodeURIComponent
+						out_trade_no: out_trade_no,
+						spbill_create_ip: host.ip,
+						total_fee: 1, //分
+						attach: '南京车趣',
+						body: '南京车趣-活动订单测试数据',
+						openid: '',
+						trade_type: 'APP'
+					},
+					callback: function(res) {
+						var order = JSON.parse(res).Data;
+						console.info(JSON.stringify(order));
+						plus.payment.request(pays[id], order, function(result) {
+							console.log('----- 支付成功 -----');
+							console.log(JSON.stringify(result));
+						}, function(e) {
+							console.log('----- 支付失败 -----');
+							console.log('[' + e.code + ']：' + e.message);
+						});
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

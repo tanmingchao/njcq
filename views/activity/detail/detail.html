@@ -1,0 +1,402 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../css/app.css" rel="stylesheet" />
+		<style type="text/css">
+			.act-detail-desc-desc i.mui-icon-closeempty {
+				display: none !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">活动详情</h1>
+		</header>
+		<div class="mui-content" style="margin-bottom: 60px;">
+			<div id="act-detail-info" class="act-detail-info">
+				<!--图片-->
+				<div id="act-detail-info-img" class="act-detail-info-img">
+					<img src="" id="act-detail-desc-image" alt="" />
+				</div>
+				<div id="act-detail-info-box" class="act-detail-info-box">
+					<div id="act-detail-title" class="act-detail-title"></div>
+					<div class="act-detail-time">
+						<span class="time"></span>
+						<div class="detail-more">
+							<span class="view-times"></span>
+							<span class="share-times"></span>
+						</div>
+					</div>
+					<div class="act-detail-desc">
+						<div class="act-desc-row">
+							<span style="font-size: 18px;" class="mui-icon mui-icon mui-icon-reload mui-pull-left"></span>
+							<span style="margin-left: 5px;" class="time-to-time"></span>
+						</div>
+						<div class="act-desc-row mui-ellipsis">
+							<span style="font-size: 18px;" class="mui-icon mui-icon mui-icon-location mui-pull-left "></span>
+							<span style="margin-left: 5px;" class="time-to-time start-local"></span>
+						</div>
+						<div class="act-desc-row">
+							<span style="font-size: 18px;" class="mui-icon mui-icon mui-icon-contact mui-pull-left"></span>
+							<span style="margin-left: 5px;" class="time-to-time haspart"></span>
+						</div>
+						<div class="act-desc-row">
+							<span style="font-size: 18px;" class="mui-icon mui-icon mui-icon-starhalf mui-pull-left"></span>
+							<span style="margin-left: 5px;color: #5ac130;font-size: 14px;font-weight: bold;" class="time-to-time per-fee"></span>
+						</div>
+					</div>
+					<div class="act-detail-user">
+						<div class="act-detail-user-head">
+							<img src="../../../img/temp/01.png" class="act-detail-user-head-img" />
+						</div>
+						<div class="act-detail-user-info mui-ellipsis">
+							<span id="userName">
+							</span>
+							<p id="remark" class="remark mui-ellipsis">
+							</p>
+						</div>
+						<div class="remark-user" style="align-self: center;">
+							<button style="font-size: 12px;" id="remark-user" type="button" class="mui-btn mui-btn-link">关注</button>
+						</div>
+					</div>
+					<div class="act-detail-desc-desc">
+					</div>
+				</div>
+				<!--留言列表-->
+				<div id="leave-msg" class="leave-msg">
+					<h3 class="msg-list-title">留言</h3>
+					<ul class="mui-table-view" id="leave-msg-table">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<nav id="nav-bottom-menu" class="mui-bar mui-bar-tab act-desc-mui-bar-tab">
+			<a class="do-ask">
+				<span class="mui-icon mui-icon-chat"></span>
+				<span class="mui-tab-label">咨询</span>
+			</a>
+			<a id="do-comment" class="tab-leave-msg">
+				<span class="mui-icon mui-icon-compose"></span>
+				<span class="mui-tab-label">留言</span>
+			</a>
+			<a class="">
+				<button id="do-join" type="button" class="mui-btn mui-btn-blue mui-btn-block mui-icon mui-icon-personadd">我要参加</button>
+			</a>
+		</nav>
+
+		<link href="../../../js/layer_mobile/need/layer.css" />
+		<script src="../../../js/layer_mobile/layer.js"></script>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.base64.js"></script>
+		<script src="../../../js/config.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+	
+		<script type="text/javascript">
+			var formatter = new Formatter();
+			var base64 = new Base64();
+			var config = config();
+			var actInfo = null;
+			var akey = null;
+			mui.init();
+			mui.plusReady(function() {
+				if(mui.os.android) {
+					plus.navigator.setFullscreen(false);
+				}
+				var param = plus.webview.currentWebview();
+				akey = param.akey;
+				fnUpdateViewTimes(akey);
+				//获取活动详情数据
+				fGetDetail(akey);
+
+				closeWindow();
+			});
+
+			function closeWindow() {
+				var ws = plus.webview.currentWebview();
+				document.getElementById("mui-action-back")
+					.addEventListener('tap', function() {
+						mui.back();
+					})
+				mui.back = function() {
+					ws.hide();
+					ws.close();
+				}
+			}
+
+			//更新浏览次数
+			function fnUpdateViewTimes(aKey){
+				if(aKey){
+					config.fGet({
+						link:'/Activity/'+aKey+'/ChangeViewTimes',
+						callback:function(res){
+							var obj = JSON.parse(res).Data;
+							if(obj){
+								console.info('浏览次数成功加1');
+							}
+						}
+					});
+				}
+			}
+
+			//活动详情
+			function fGetDetail(aKey) {
+				if(aKey) {
+					var uKey = config.fGetLoginUserInfo() == null ? "-1" : config.fGetLoginUserInfo().PrimaryKey;
+					config.fGet({
+						link: '/Activity/' + aKey + '/' + uKey + '/Detail',
+						callback: function(res) {
+							var data = JSON.parse(res);
+							if(data.ResultType == 3) {
+								var d = data.Data;
+								actInfo = data.Data;
+								mui("#act-detail-title")[0].innerText = d.ActTitle;
+								mui("#act-detail-desc-image")[0].setAttribute("src", d.ShowImage);
+								mui("#act-detail-desc-image")[0].setAttribute("alt", d.ActTitle);
+								mui(".time")[0].innerText = d.CreateTime
+								mui(".view-times")[0].innerText = "浏览" + (parseInt(d.ViewTimes)+1) + "次";
+								mui(".share-times")[0].innerText = "分享" + d.ShareTimes + "次";
+								mui(".time-to-time")[0].innerText = "报名：" + d.ActStartTime + " 至 " + d.ActEndTIme;
+								mui(".start-local")[0].innerText = d.ActLocationDesc;
+								mui(".haspart")[0].innerText = "已报名" + d.ActHasPartPlace + "人/共" + d.ActLimitPlace + "个名额";
+								mui(".per-fee")[0].innerText = "人均 ￥" + d.ActFee;
+								//发布人信息
+								mui(".act-detail-user-head-img")[0].setAttribute("src", d.UserHeadImage);
+								mui("#userName")[0].innerText = d.UserNickName;
+								mui("#remark")[0].innerText = d.UserRemark;
+								mui("#remark-user")[0].innerText = d.HasFollow ? '已关注' : '关注';
+
+								var div = document.createElement("div");
+								//								div.innerHTML = d.ActDesc; //base64.utf8to16(base64.decode64(de))
+								var html = '';
+								if(d.ActDesc.split('|').length > 0) {
+									var temp = d.ActDesc.split('|'); //图文混合
+									var base64_texts = temp[0];
+									var base64_imagehtml = temp[1];
+
+									var base64_text_array = base64_texts.split(',');
+									var base64_imagehtml_array = null;
+									if(base64_imagehtml)
+										base64_imagehtml_array = base64_imagehtml.split(',');
+
+									for(var i = 0; i < base64_text_array.length; i++) {
+										html += base64.utf8to16(base64.decode64(base64_text_array[i]));
+										if(base64_imagehtml_array && base64_imagehtml_array.length && base64_imagehtml_array[i])
+											html += base64.utf8to16(base64.decode64(base64_imagehtml_array[i]));
+									}
+								} else { //只有文字
+									var base64_texts = d.ActDesc.split(',');
+									for(var i = 0; i < base64_texts.length; i++) {
+										html += base64.utf8to16(base64.decode64(base64_texts[i]));
+									}
+								}
+								div.innerHTML = html;
+								mui(".act-detail-desc-desc")[0].appendChild(div);
+								
+								//我要参加按钮状态
+								var istrue = false;
+								var priceColor = 'background:#999999;border:none;';
+								
+								var actStatus = d.ActStatus.indexOf('结束');
+								if(d.ActEndTIme && d.ActEndTIme != '')
+									istrue = formatter.compareToCurrent(d.ActEndTIme);
+								if(!istrue) {
+									if(d.ActStatus && actStatus == -1)
+										priceColor = '';
+								}
+								
+								if(istrue||actStatus>-1){
+									document.querySelector('#do-join').disabled = true;
+									if(priceColor!='')
+									document.querySelector('#do-join').style.background="#999999";
+									document.querySelector('#do-join').style.border="none";
+									document.querySelector('#do-join').innerText="已结束";
+								}
+									
+								
+								//评论列表
+								fGetComments(aKey);
+							}
+						}
+					});
+				}
+			}
+
+			//获取评论列表
+			function fGetComments(aKey) {
+				if(aKey) {
+					config.fPost({
+						link: '/ActivityComment/ActComments',
+						params: {
+							ActPrimaryKey: aKey,
+							PageIndex: 0,
+							PageSize: 200
+						},
+						callback: function(res) {
+							var data = JSON.parse(res);
+							if(data.ResultType == 3) {
+								var table = document.getElementById("leave-msg-table");
+								mui.each(data.Data.data, function(i, im) {
+									var li = document.createElement("li");
+									li.setAttribute("class", "mui-table-view-cell mui-media");
+									var html = '<a href="javascript:;">';
+									html += '	<img class="mui-media-object mui-pull-left" style="border-radius: 50%;" src="' + im.CustomerHeadImage + '">';
+									html += '	<div class="mui-media-body">';
+									html += '		<div class="act-desc-row-leavemsg">';
+									html += '			<span>' + im.CustomerNickName + '</span>';
+									html += '			<span style="font-size: xx-small;color: #999999;">' + im.CreateTime + '</span>';
+									html += '		</div>';
+									html += '		<p class="msg-desc">' + im.CommentContext + '</p>';
+									html += '	</div>';
+									html += '</a>';
+									li.innerHTML = html;
+									table.appendChild(li);
+								});
+							}
+						}
+					});
+				}
+			}
+
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../../ucenter/login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+					return;
+				} else {
+					return callback();
+				}
+			}
+
+			//留言
+			document.getElementById("do-comment").addEventListener('tap', function(e) {
+				e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+				checklogin(function() {
+					layer.open({
+						type: 1,
+						skin: 'layui-layer-rim', //加上边框
+						btn: ['确定', '取消'],
+						content: '<h6 class="" style="padding:0px 10px 0px 20px">活动留言</h6><div class="msg-box"><textarea id="comment-field" type="text" class="comment-field" placeholder="点我，说点什么吧！"></textarea></div>',
+						anim: 'up',
+						style: '  padding:10px 0px 0px 0px; border:none;',
+						yes: function(index) {
+							var commenttx = document.getElementById("comment-field");
+							var text = commenttx.value;
+							config.fPost({
+								link: '/ActivityComment/Add',
+								params: {
+									ActivityKey: akey,
+									CustomerKey: config.fGetLoginUserInfo().PrimaryKey,
+									CustomerAccount: config.fGetLoginUserInfo().UserLoginAccount,
+									CustomerNickName: config.fGetLoginUserInfo().UserNickName,
+									CustomerHeadImage: config.fGetLoginUserInfo().HeadImageUrl,
+									CustomerLevel: config.fGetLoginUserInfo().UserLevelName,
+									CommentContext: text,
+									Remark: "",
+									CreateTime: ""
+								},
+								callback: function(res) {
+									var data = JSON.parse(res).Data;
+									if(data) {
+										// 更新留言列表
+										var table = document.getElementById("leave-msg-table");
+										var li = document.createElement("li");
+										li.setAttribute("class", "mui-table-view-cell mui-media");
+										var html = '<a href="javascript:;">';
+										html += '	<img class="mui-media-object mui-pull-left" style="border-radius: 50%;" src="' + data.CustomerHeadImage + '">';
+										html += '	<div class="mui-media-body">';
+										html += '		<div class="act-desc-row-leavemsg">';
+										html += '			<span>' + data.CustomerNickName + '</span>';
+										html += '			<span style="font-size: xx-small;color: #999999;">' + data.CreateTime + '</span>';
+										html += '		</div>';
+										html += '		<p class="msg-desc">' + data.CommentContext + '</p>';
+										html += '	</div>';
+										html += '</a>';
+										li.innerHTML = html;
+										table.insertBefore(li, table.childNodes[0]);
+										mui.toast('留言成功！', {
+											duration: 'short',
+											type: 'div'
+										});
+									} else {
+										//提示留言失败
+										mui.toast('留言操作失败！', {
+											duration: 'short',
+											type: 'div'
+										});
+									}
+									layer.close(0);
+								}
+							});
+						},
+						close: function(index) {
+
+						}
+					});
+				});
+
+			}, false);
+
+			//我想要
+			document.getElementById("do-join").addEventListener('tap', function(event) {
+				checklogin(function() {
+					if(actInfo) {
+						mui.openWindow({
+							url: '../order/preview/preview.html',
+							id: 'order_preview.html',
+							preload: true,
+							extras: {
+								actInfo: JSON.stringify(actInfo)
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					} else {
+						mui.toast('数据异常，获取活动信息失败！', {
+							duration: 'short',
+							type: 'div'
+						});
+					}
+				});
+			}, false);
+		</script>
+	</body>
+
+</html>

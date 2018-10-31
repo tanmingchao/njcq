@@ -1,0 +1,434 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			#mui-action-back {
+				font-size: 14px;
+			}
+			
+			.mui-icon-search {
+				font-size: 16px !important;
+			}
+			
+			#keyword {
+				height: 26px;
+				font-size: 12px;
+				margin-bottom: 0px;
+				padding: 4px;
+				border: 0px;
+				background: #EFEFF4;
+				padding: 0px;
+				margin: 0px;
+				text-align: left;
+			}
+			
+			.mui-icon-search:before {
+				padding: 5px;
+			}
+			
+			.words div,
+			.words span {
+				font-size: 12px;
+			}
+			
+			.words span {
+				color: #999999;
+				padding: 2px 6px;
+				margin: 4px 5px;
+				border: 1px solid #EFEFF4;
+				font-size: 12px;
+			}
+			
+			.recommend-keyrowds {
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			
+			.recent-keyrowds {
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			
+			form {
+				display: flex;
+				flex: 1;
+				align-items: center;
+				background: #efeff4;
+				flex: 1;
+				margin: 0px 10px;
+				height: 26px;
+			}
+			
+			.mui-bar-nav {
+				box-shadow: none;
+				border-bottom: 1px solid #EFEFF4;
+			}
+			
+			.mui-segmented-control {
+				border: 0px;
+				border-radius: 0px;
+				color: #007aff;
+				background: #FFFFFF;
+				z-index: 3;
+			}
+			
+			.mui-segmented-control .mui-control-item {
+				border: 0px;
+				border-radius: 0px;
+				color: #807d7d;
+			}
+			
+			.mui-segmented-control .mui-control-item.mui-active {
+				background: none;
+				color: #007aff;
+			}
+			
+			.mui-pull-top-pocket {
+				top: 80px !important;
+				z-index: 3;
+			}
+			
+			.mui-scroll {
+				top: 80px;
+				margin-bottom: 40px;
+			}
+			
+			.act-img {
+				width: 30%;
+				height: 100%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.title {
+				font-size: 14px;
+				color: #000000;
+				line-height: 15px;
+			}
+			
+			.pub-time {
+				font-size: 12px !important;
+				color: #999999;
+			}
+			
+			.local {
+				font-size: 12px !important;
+				color: #999999;
+			}
+			
+			h5 {
+				margin-top: 0px;
+			}
+			
+			.price {
+				color: #f7c815;
+				font-size: 14px;
+				font-weight: bold;
+			}
+			
+			.item-row {
+				margin-top: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav cq-row-nopadding" style="width: auto;align-items: center;">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left">返回</a>
+			<div class="cq-row-nopadding flex-direction-row" style="align-items: center;background: #efeff4;flex: 1;margin: 0px 10px;height: 26px;">
+				<form>
+					<span class="mui-icon mui-icon-search"></span>
+					<input type="search" name="" id="keyword" value="" placeholder="搜索您感兴趣的活动" />
+				</form>
+			</div>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-segmented-control" style="font-size: 13px;">
+				<a ref='1' rel='' data-order='' class="mui-control-item mui-active" href="#item1">全部</a>
+				<a ref='2' rel='new' data-order='CreateTime' class="mui-control-item" href="#item2">最新发布</a>
+				<a ref='3' rel='hot' data-order='ViewTimes' class="mui-control-item" href="#item3">最热活动</a>
+				<a ref='4' rel='local' data-order='Remark' class="mui-control-item" href="#item4">附近</a>
+			</div>
+			<div id="actlist" class="mui-scroll-wrapper">
+
+				<div class="mui-scroll">
+					<div id="item1" class="mui-control-content mui-active">
+
+					</div>
+					<div id="item2" class="mui-control-content ">
+
+					</div>
+					<div id="item3" class="mui-control-content ">
+
+					</div>
+					<div id="item4" class="mui-control-content ">
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				ws = null,
+				wo = null,
+				keyword = '';
+
+			var selectedItem = 1;
+			var doUrl = '';
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			var params = {};
+			params.CustomerKey = '';
+			params.Lat = '';
+			params.Long = '';
+			params.ActTypeKey = "-1";
+			params.ActTitle = "";
+			params.PageIndex = 1;
+			params.PageSize = config.fGetPageSize();
+			params.OrderInfos = []; //OrderDirection,OrderField
+
+			mui.init({
+				pullRefresh: {
+					container: "#actlist", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				try {
+					wo.close('none');
+				} catch(e) {
+					//TODO handle the exception
+				}
+				keyword = ws.word;
+				document.querySelector('#keyword').value = keyword;
+
+				func.fnBack();
+				func.fnTabTapEvent();
+				func.fnToDoDetail();
+			});
+
+			var func = {
+				//tab点击事件，重新加载列表
+				fnTabTapEvent: function() {
+					mui('.mui-segmented-control').on('tap', '.mui-control-item', function() {
+						var self = this;
+						var condition = self.getAttribute('rel');
+						var order = self.getAttribute('data-order');
+						params.PageIndex = 1;
+						if(order == '') {
+							params.OrderInfos = [{
+								'OrderDirection': 'desc',
+								'OrderField': 'CreateTime'
+							}, {
+								'OrderDirection': 'desc',
+								'OrderField': 'ViewTimes'
+							}]; //OrderDirection,OrderField
+						}
+
+						if(order === 'CreateTime') {
+							params.OrderInfos = [{
+								'OrderDirection': 'desc',
+								'OrderField': 'CreateTime'
+							}]; //OrderDirection,OrderField
+							doUrl = '/Activity/GetMyPublishPaggerAct';
+						}
+						if(order === 'ViewTimes') {
+							params.OrderInfos = [{
+								'OrderDirection': 'desc',
+								'OrderField': 'ViewTimes'
+							}]; //OrderDirection,OrderField
+							doUrl = '/Activity/GetMyPublishPaggerAct';
+						}
+						if(order === 'Remark') {
+							params.PageIndex = 0;
+							params.OrderInfos = [{
+								'OrderDirection': 'asc',
+								'OrderField': 'Remark'
+							}]; //OrderDirection,OrderField
+
+							params.Lat = config.fGetLocaltion().coords.latitude;
+							params.Long = config.fGetLocaltion().coords.longitude;
+							doUrl = '/Activity/GetPaggerActByTypeId';
+						}
+						if(selectedItem != self.getAttribute('ref')) {
+							selectedItem = self.getAttribute('ref');
+							//TODO 查询
+							clearParam();
+							fGetActivityData();
+						}
+					});
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back').addEventListener('tap', function() {
+						mui.back();
+					}, false);
+				},
+				//跳转到活动详情页面
+				fnToDoDetail: function() {
+					mui('.mui-scroll').on('tap', '.item-row', function() {
+						var self = this;
+						//跳转到详细页面
+						mui.openWindow({
+							url: "../detail/detail.html",
+							id: "act_detail.html",
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							},
+							extras: {
+								akey: self.getAttribute('rel')
+							}
+						});
+					});
+				}
+			};
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					fGetActivityData();
+					mui('#actlist').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if(!params.OrderInfos || !params.OrderInfos[0].OrderField == 'Remark') {
+						if((params.PageIndex * params.PageSize) < setting.totalRows) {
+							params.PageIndex += 1;
+							//获取下一页数据
+							fGetActivityData();
+						}
+					} else {
+						if(params.PageIndex < setting.totalRows) {
+							params.PageIndex += params.PageSize;
+							//获取下一页数据
+							fGetActivityData();
+						}
+					}
+
+					mui('#actlist').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function fGetActivityData() {
+				plus.nativeUI.showWaiting('加载中...');
+				//防止服务器已经无数据 还继续请求，造成资源浪费
+				if(!setting.firstLoad) {
+					if(params.PageIndex >= setting.totalRows) {
+						plus.nativeUI.closeWaiting();
+						return;
+					}
+				}
+				if(!params.PageSize)
+					params.PageSize = config.fGetPageSize();
+
+				params.ActTitle = keyword || document.querySelector('#keyword').value;
+				config.fPost({
+					link: doUrl || '/Activity/GetMyPublishPaggerAct',
+					params: params,
+					callback: function(res) {
+						plus.nativeUI.closeWaiting();
+						var data = JSON.parse(res).Data;
+						if(setting.firstLoad) {
+							setting.firstLoad = false;
+							setting.totalRows = data.totalRows;
+						}
+						if(data.data.length > 0)
+							sizeList(data.data);
+					}
+				});
+			}
+
+			function clearParam() {
+				params.CustomerKey = '';
+				params.PageIndex = 1;
+
+				setting.firstLoad = true;
+				setting.totalRows = 0;
+
+				var target = document.getElementById('item' + selectedItem);
+				var childs = target.querySelectorAll('.item-row');
+
+				if(childs && childs.length > 0)
+					for(var i = 0; i < childs.length; i++) {
+						target.removeChild(childs[i]);
+					}
+			}
+
+			var sizeList = function(data) {
+				var pareNode = document.getElementById('item' + selectedItem);
+				for(var i = 0; i < data.length; i++) {
+					var d = data[i];
+					var div = document.createElement('div');
+					div.setAttribute('rel', d.PrimaryKey);
+					div.setAttribute('class', 'cq-row flex-direction-row spaace-between item-row');
+					var html = '';
+					html += '		<img class="act-img" src="' + d.ShowImage.split(',')[0] + '" />';
+					html += '		<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 5px;">';
+					html += '			<h5 class="title">' + d.ActTitle + '</h5>';
+					html += '			<div class="local cq-row-nopadding flex-direction-row spaace-between">';
+					html += '				<div class="cq-row-nopadding flex-direction-column spaace-between" style="flex: 1;line-height: 15px;">';
+					html += '					<span class="pub-time">';
+					html += '					' + d.ActEndTIme + ' 结束';
+					html += '					</span>';
+					html += '					<span class="local">';
+					html += '					' + d.ActLocation;
+					html += '				</span>';
+					html += '				</div>';
+					html += '				<span class="price">';
+					html += '					￥' + d.ActFee;
+					html += '				</span>';
+					html += '			</div>';
+					html += '		</div>';
+					div.innerHTML = html;
+					pareNode.appendChild(div);
+				}
+			}
+
+			mui.back = function() {
+				plus.webview.currentWebview().close();
+			}
+		</script>
+	</body>
+
+</html>

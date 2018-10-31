@@ -1,0 +1,1055 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/icons-extra.css" />
+		<style type="text/css">
+			.mui-segmented-control {
+				border: none !important;
+				border-radius: 0px !important;
+				background: #FFFFFF;
+			}
+			
+			.mui-segmented-control .mui-control-item {
+				/*width: 33.33333%;*/
+				border-left: 0px;
+				border-bottom: 2px solid #EFEFF4;
+			}
+			
+			.mui-segmented-control .mui-control-item span {
+				color: #999999;
+				padding: 10px 0px 0px 0px;
+			}
+			
+			.mui-segmented-control .mui-control-item.mui-active {
+				background: none;
+				border-bottom: 1px solid #007aff;
+			}
+			
+			.mui-segmented-control .mui-control-item.mui-active span {
+				color: #007aff !important;
+			}
+			
+			.mui-icon {
+				font-weight: bold;
+			}
+			
+			ul {
+				list-style: none;
+				margin: 0px;
+			}
+			
+			.item-group {
+				position: relative;
+			}
+			
+			.item-group .item-group-name {
+				font-size: 14px;
+				padding: 10px 0px;
+				display: block;
+				color: #797979;
+			}
+			
+			.item-group .item-group-info {
+				background: #f6f6f9;
+				align-items: center;
+				padding-right: 10px;
+			}
+			
+			.item-group .item-group-name:before {
+				content: '\e581';
+				font-family: Muiicons;
+				font-size: inherit;
+				line-height: 0;
+				display: inline-block;
+				-webkit-transform: translateY(-50%);
+				transform: translateY(-50%);
+				text-decoration: none;
+				color: #bbb;
+				-webkit-font-smoothing: antialiased;
+				padding: 0px 5px 0px 5px;
+			}
+			
+			.item-group-unactive {
+				border-bottom: 1px solid #EFEFF4;
+			}
+			
+			.item-group-unactive .item-group-name:before {
+				content: '\e583' !important;
+			}
+			
+			.item-group-unactive .item-group-friends {
+				display: none;
+			}
+			
+			.item-group-friends {
+				padding: 0px 10px;
+			}
+			
+			.line-num {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.friend-item {
+				padding: 6px 0px 6px 0px;
+				font-size: 14px;
+				color: #797979;
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				border-bottom: 1px solid #EFEFF4;
+			}
+			
+			.item-group-friends .friend-item:last-child {
+				border: none !important;
+			}
+			
+			.userhead {
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.item-userinfo {
+				padding: 0px 0px 0px 10px;
+			}
+			
+			.username {
+				color: #000000;
+			}
+			
+			.userremark {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg-time {
+				font-size: x-small;
+				color: #999999;
+			}
+			
+			.msgCount {
+				font-size: 12px;
+				background: #fd4767;
+				color: #FFFFFF;
+			}
+			
+			.mui-bar .mui-segmented-control {
+				top: 0px;
+			}
+			
+			.mui-bar {
+				padding-left: 0px;
+				padding-right: 0px;
+			}
+			
+			.display-none {
+				display: none;
+			}
+			
+			.offline {}
+			
+			.offline .userhead {
+				-webkit-filter: grayscale(100%) !important;
+				;
+				-moz-filter: grayscale(100%) !important;
+				;
+				-ms-filter: grayscale(100%) !important;
+				;
+				-o-filter: grayscale(100%) !important;
+				;
+				filter: grayscale(100%) !important;
+				;
+				filter: gray !important;
+				;
+			}
+			
+			.offline .username {
+				color: #ABABAB !important;
+			}
+			
+			.offline .userremark {
+				color: #ABABAB !important;
+				;
+			}
+			
+			.mui-slider-handle {
+				display: flex;
+				display: -webkit-flex;
+				flex: 1;
+			}
+			
+			.mui-table-view-cell>.mui-slider-left>.mui-btn,
+			.mui-table-view-cell>.mui-slider-right>.mui-btn {
+				padding: 0px 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<div class="mui-segmented-control">
+				<a class="mui-control-item mui-active " href="#chatbubble">
+					<span class="mui-icon mui-icon-chatbubble"></span>
+				</a>
+				<a class="mui-control-item" href="#contact">
+					<span class="mui-icon mui-icon-contact"></span>
+				</a>
+				<a class="mui-control-item" href="#rooms">
+					<span class="mui-icon-extra mui-icon-extra-peoples"></span>
+				</a>
+				<a class="mui-control-item" href="#" id="to-search">
+					<span class="mui-icon mui-icon-search"></span>
+				</a>
+			</div>
+		</header>
+
+		<div class="mui-content">
+
+			<div class="">
+				<div id="chatbubble" class="mui-control-content mui-active">
+					<div class="friend-apply cq-row-nopadding mui-table-view-cell mui-ellipsis" style="margin: 8px 0px;">
+						<!--<div class="mui-slider-right mui-disabled">
+							<a class="mui-btn mui-btn-red clearMsg">清除</a>
+						</div>
+						<div class="mui-slider-handle" style="display: flex; align-items: center;">
+							<img class="userhead" src="../../img/msg-ring.png" style="border: 0px;border-radius: 0px;height: 30px;width: 30px;" />
+							<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+								<span class="username">消息-好友申请</span>
+								<span class="lastmsg mui-ellipsis">15251820632 请求添加您为好友</span>
+							</div>
+							<div class="cq-row-nopadding flex-direction-column" style="width: auto;">
+								<span class="lastmsg-time">刚刚</span>
+								<span class="msgCount mui-badge">1</span>
+							</div>
+						</div>-->
+					</div>
+
+					<div id="message-list" class="cq-row-nopadding" style="margin-top: 8px;">
+						<ul id="msg-ul" class="mui-table-view item-group-friends cq-row-nopadding flex-direction-column">
+							<!--item-->
+							<!--<li class="friend-item mui-table-view-cell mui-ellipsis">
+								<div class="mui-slider-right mui-disabled">
+									<a class="mui-btn mui-btn-red">清除</a>
+									<a class="mui-btn mui-btn-grey ">标记已读</a>
+									<a class="mui-btn mui-btn-yellow ">聊一聊</a>
+								</div>
+								<div class="mui-slider-handle">
+									<img class="userhead" src="../../img/logo.png" />
+									<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+										<span class="username">tanmingchao</span>
+										<span class="lastmsg mui-ellipsis">121321321321121321321321</span>
+									</div>
+									<div class="cq-row-nopadding flex-direction-column" style="width: auto;">
+										<span class="lastmsg-time">刚12312刚</span>
+										<span class="msgCount mui-badge" style="align-self: flex-end;">99</span>
+									</div>
+								</div>
+
+							</li>-->
+
+						</ul>
+					</div>
+				</div>
+				<div id="contact" class="mui-control-content">
+					<div id="contact-list" class="cq-row-nopadding flex-direction-column" style="margin-top: 8px;">
+						<!--item-->
+						<div class="item-group ">
+							<!--item-group-unactive-->
+							<!--<div class="cq-row-nopadding flex-direction-row spaace-between item-group-info">
+								<a class="item-group-name" href="#">我的好友</a>
+								<span class="line-num">5/10</span>
+							</div>
+							<ul class="item-group-friends">
+								<li class="friend-item mui-ellipsis">
+									<img class="userhead" src="../../img/logo.png" />
+									<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+										<span class="username">tanmingchao</span>
+										<span class="userremark mui-ellipsis">学无先后，达者为师学无先后，达者为师学无先后，达者为师</span>
+									</div>
+								</li>
+								<li class="friend-item mui-ellipsis ">
+									<img class="userhead" src="../../img/logo.png" />
+									<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+										<span class="username">tanmingchao</span>
+										<span class="userremark mui-ellipsis">学无先后，达者为师学无先后，达者为师学无先后，达者为师</span>
+									</div>
+								</li>
+							</ul>-->
+						</div>
+
+					</div>
+				</div>
+				<div id="rooms" class="mui-control-content">
+					功能完善中，敬请期待
+				</div>
+				<!--<div id="search" class="mui-control-content">
+					<div class="cq-row-nopadding">
+						<div class="mui-input-row mui-search">
+							<input type="search" class="mui-input-clear" placeholder="">
+						</div>
+					</div>
+				</div>-->
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript" src="../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript" src="index_friend_list.js"></script>
+		<script src="http://www.autojoynet.com:9999/socket.io/socket.io.js"></script>
+
+		<script type="text/javascript">
+			var socket = io('ws://www.autojoynet.com:9999');
+			var config = config();
+			var formatter = new Formatter();
+			var currentChatingUser = null //当前正在聊天的对象，点击好友列表或者未读消息列表时候，赋值
+			//最近聊天数组，从缓存中取出，操作完并重新存放到缓存 plus.storage中
+			//格式：[{fAccount:'123',message:message,unReadCnt:0},{fAccount:'1234',message:message,unReadCnt:0}]
+			//其中message指的是 最后一条聊天记录内容
+			//			var recentChatArr = [];
+
+			mui.plusReady(function() {
+
+				//				plus.storage.setItem('recentChatArr', '');
+				var userInfo = config.fGetLoginUserInfo();
+				func.fnLoginSocketServer(userInfo);
+				func.fnNewUserLoginNotice(userInfo);
+				func.fnFirstLoginUnReadMsgCount();
+				func.fnListenNewMessage(userInfo);
+				func.fnUnReadMsgRowTapEvent();
+
+				group_friends_bind();
+
+				//子页面推送的消息，从主页面进行推送
+				window.addEventListener('sendSingleMsg', function(e) {
+					var mess = e.detail.messge; //格式：是{CacheKey:'',Message:'',CurrentLoginUserAccount:''}中的Message格式
+					//推送到服务端，由服务端中转到指定客户端
+					socket.emit('push message to server', mess);
+
+				});
+
+				//接收到子页面 更新对应好友未读消息状态为已读的 事件
+				window.addEventListener('changeUnReadMsgToRead', function(e) {
+					var fAccount = e.detail.fAccount;
+					//同时更改未读消息列表中的数量为0，同时去掉 红色的样式
+					_changeUnReadNumAndRemoveMsgCountStyle(fAccount);
+				});
+
+				_fnMsgSlideOptions();
+				//跳转到好友索索页面
+				document.querySelector('#to-search')
+					.addEventListener('tap', function() {
+						mui.openWindow({
+							url: "search_friend.html",
+							id: 'search_friend.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							}
+						});
+					}, false);
+
+				//好友申请
+				socket.on('apply friend', function(res) {
+					var fUserInfo = res.userInfo;
+					var msg = res.msg;
+					//判断申请消息列表页面是否打开了，如果打开了，还需要更新数量为0
+					var chatWs = plus.webview.getWebviewById('apply_friend_list.html'); //chat_single.html，点返回按钮时候一定要重写back方法，close chat_single.html这个页面
+					friendApply_add(msg);
+					if(chatWs && chatWs != null) { //打开
+						//推送到  申请列表页面
+						pushApplyToApplyList(chatWs, fUserInfo, msg);
+						friendApply_update(msg);
+					} else { //未打开
+						//更新页面Html内容
+						fnUpdateFriendApplyBox(msg);
+					}
+				});
+
+				//清除好友申请
+				fnClearFriendApply();
+				//跳转到好友申请列表页面
+				fnToFriendApplyListPage();
+				fnIntitFriendApplyFromCache();
+			});
+
+			//更新页面上好友申请的 div信息
+			function fnUpdateFriendApplyBox(msg) {
+				var applyBox = document.querySelector('.friend-apply');
+				if(applyBox.classList.contains('display-none')) {
+					applyBox.classList.remove('display-none');
+				}
+				var parentNode = document.querySelector('.friend-apply');
+				var cacheTime = formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(formatter.fnGetNow()));
+				if(applyBox.childNodes.length > 0) {
+					parentNode.querySelector('.lastmsg').innerText = msg;
+					parentNode.querySelector('.lastmsg-time').innerText = cacheTime;
+					var msgCount = parentNode.querySelector('.msgCount');
+					if(!msgCount.classList.contains('mui-badge')) {
+						msgCount.classList.add('mui-badge');
+					}
+					msgCount.innerText = msgCount;
+
+				} else {
+					_fnInitFriendApplyMsgBox(msg, cacheTime, 1, parentNode);
+				}
+
+			}
+
+			//跳转到好友申请列表页面
+			function fnToFriendApplyListPage() {
+				mui('.friend-apply').on('tap', '.item-userinfo', function() {
+					mui.openWindow({
+						url: "apply_friend_list.html",
+						id: 'apply_friend_list.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						}
+					});
+				});
+			}
+
+			//清除好友申请
+			function fnClearFriendApply() {
+				mui('.friend-apply').on('tap', '.clearMsg', function() {
+					friendApply_clear();
+					//					var box = this.parentNode.parentNode;
+					//					box.remove();
+					var applyBox = document.querySelector('.friend-apply');
+					if(!applyBox.classList.contains('display-none')) {
+						applyBox.classList.add('display-none');
+					}
+				});
+			}
+
+			//从缓存中获取好友申请，并初始化绑定到页面
+			function fnIntitFriendApplyFromCache() {
+				config.fGet({
+					link: '/Logger/apply_' + config.fGetLoginUserInfo().UserLoginAccount + '/FriendApplyAll',
+					callback: function(res) {
+						var json = JSON.parse(res);
+						if(json && json.Data && json.Data.length > 0) {
+							var length = json.Data.length;
+							var lastMsg = json.Data[length - 1].Msg;
+							var cacheTime = json.Data[length - 1].CacheTime;
+							var parentNode = document.querySelector('.friend-apply');
+							cacheTime = formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(cacheTime));
+							if(lastMsg) {
+								_fnInitFriendApplyMsgBox(lastMsg, cacheTime, length, parentNode);
+							} else {
+								if(friendApplyLastMsg() != null) {
+									var mg = friendApplyLastMsg();
+									_fnInitFriendApplyMsgBox(mg.Msg, mg.CacheTime, mg.MsgCnt, parentNode);
+								} else {
+									var applyBox = document.querySelector('.friend-apply');
+									if(!applyBox.classList.contains('display-none')) {
+										applyBox.classList.add('display-none');
+									}
+								}
+							}
+						} else {
+							var applyBox = document.querySelector('.friend-apply');
+							if(!applyBox.classList.contains('display-none')) {
+								applyBox.classList.add('display-none');
+							}
+						}
+					}
+				});
+			}
+
+			function _fnInitFriendApplyMsgBox(msg, cacheTime, length, parentNode) {
+				var html = '';
+				html += '		<div class="mui-slider-right mui-disabled">';
+				html += '			<a class="mui-btn mui-btn-red clearMsg">清除</a>';
+				html += '		</div>';
+				html += '		<div class="mui-slider-handle" style="display: flex; align-items: center;">';
+				html += '			<img class="userhead" src="../../img/msg-ring.png" style="border: 0px;border-radius: 0px;height: 30px;width: 30px;" />';
+				html += '			<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">';
+				html += '				<span class="username">消息-好友申请</span>';
+				html += '				<span class="lastmsg mui-ellipsis">' + msg + '</span>';
+				html += '			</div>';
+				html += '			<div class="cq-row-nopadding flex-direction-column" style="width: auto;">';
+				html += '				<span class="lastmsg-time">' + cacheTime + '</span>';
+				if(length > 0)
+					html += '				<span class="msgCount mui-badge" style="align-self: flex-end;">' + length + '</span>';
+				else
+					html += '				<span class="msgCount " style="align-self: flex-end;"></span>';
+				html += '			</div>';
+				html += '		</div>';
+				parentNode.innerHTML = html;
+			}
+
+			//好友申请 - 装到缓存
+			function friendApply_add(msg) {
+				var applyFriendList = plus.storage.getItem('applyFriend');
+				if(applyFriendList && applyFriendList != '' && applyFriendList != '[]') {
+					var applys = JSON.parse(applyFriendList);
+					//更新缓存内容
+					applys.MsgCnt = parseInt(applys.MsgCnt) + 1;
+					applys.Msg = msg;
+					applys.CacheTime = formatter.fnGetNow();
+					plus.storage.setItem('applyFriend', JSON.stringify(applys));
+				}
+			}
+
+			//好友申请 - 读过之后，更新缓存数量为0
+			function friendApply_update(msg) {
+				var applyFriendList = plus.storage.getItem('applyFriend');
+				if(applyFriendList && applyFriendList != '' && applyFriendList != '[]') {
+					var applys = JSON.parse(applyFriendList);
+					if(applys && applys.length > 0) {
+						applys.MsgCnt = 0;
+						applys.Msg = msg;
+						applys.CacheTime = formatter.fnGetNow();
+						plus.storage.setItem('applyFriend', JSON.stringify(applys));
+					}
+				}
+			}
+			//好友申请 - 清除动作
+			function friendApply_clear() {
+				var applyFriendList = plus.storage.getItem('applyFriend');
+				if(applyFriendList && applyFriendList != '' && applyFriendList != '[]') {
+					var applys = JSON.parse(applyFriendList);
+					if(applys && applys.length > 0) {
+						plus.storage.setItem('applyFriend', '');
+					}
+				}
+			}
+
+			function friendApplyLastMsg() {
+				var applyFriendList = plus.storage.getItem('applyFriend');
+				if(applyFriendList && applyFriendList != '' && applyFriendList != '[]') {
+					var applys = JSON.parse(applyFriendList);
+					return applys;
+				}
+				return null;
+			}
+
+			var func = {
+				/**
+				 * 未读消息 行点击事件 ,跳转到聊天界面
+				 * 携带参数：好友id,类型(fromMsg)
+				 */
+				fnUnReadMsgRowTapEvent: function() {
+					mui('#msg-ul').on('tap', 'li', function() {
+						var self = this;
+						var fAccount = self.getAttribute('data-account');
+						var fName = self.querySelector('.username').innerText;
+						currentChatingUser = fAccount;
+						mui.openWindow({
+							url: "chat_single.html",
+							id: 'chat_single.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							},
+							extras: {
+								toAccount: fAccount,
+								toName: fName,
+								fromType: 'msg'
+							}
+						});
+					});
+				},
+				/**
+				 * 登录聊天服务器 
+				 * @param {Object} userInfo，登录之后的用户数据
+				 */
+				fnLoginSocketServer: function(userInfo) {
+					socket.emit('userLogin', userInfo);
+				},
+				/**
+				 *新(好友)用户登录 通知接口 
+				 */
+				fnNewUserLoginNotice: function(userInfo) {
+					socket.on('newUserLoginNotice', function(res) {
+						//获取到新登录的账号，以此去更新好友列表中，好友的状态（style）
+						var newLoginAccount = res.newLoginAccount;
+						//  遍历好友列表，更新列表好友在线状态
+						if(userInfo.UserLoginAccount != newLoginAccount) {
+							_fnFriendOnline(newLoginAccount, true);
+						}
+					});
+				},
+				/**
+				 * 初次登录时候获取未读信息数量，以及每个用户的最后一条信息
+				 */
+				fnFirstLoginUnReadMsgCount: function() {
+					//  从缓存中获取最近聊天的用户列表以及缓存的信息数量和最后一条信息
+					var recentChatArrStr = plus.storage.getItem('recentChatArr');
+					var json = [];
+					if(recentChatArrStr && recentChatArrStr != '') {
+						json = JSON.parse(recentChatArrStr);
+						if(json && json.length > 0) {
+							var msgListRoot = document.querySelector('#msg-ul');
+							for(var i = 0; i < json.length; i++) {
+
+								var msg = json[i];
+								var message = msg.message;
+								var unReadCnt = msg.unReadCnt;
+								if(message) {
+									_fnInitNewMsgRow(message, msgListRoot, parseInt(unReadCnt));
+								}
+							}
+						}
+					}
+				},
+				/**
+				 * 监听新消息 
+				 * @param {Object} userInfo
+				 */
+				fnListenNewMessage: function(userInfo) {
+					socket.on('publish message to client', function(message) {
+						var message = message.message;
+						if(message.to == userInfo.UserLoginAccount) { //判断是否是发给我的
+							//1.判断聊天页面是否打开
+							var chatWs = plus.webview.getWebviewById('chat_single.html'); //chat_single.html，点返回按钮时候一定要重写back方法，close chat_single.html这个页面
+							if(chatWs && chatWs != null) {
+								if(currentChatingUser && currentChatingUser != null && currentChatingUser == message.from) {
+									//  通过自定义事件，将消息推送到聊天界面，并绑定显示
+									updataRecentChatArr(message, true);
+									_fnPushMsgToChatWs(chatWs, message);
+								} else {
+									//  更新 消息列表中对应好友发来的未读消息数量（+1）,同时绑定该消息
+									_fnInitMsgUnReadCountAndLastMsg(message);
+									updataRecentChatArr(message, false);
+								}
+							} else {
+								//  更新 消息列表中对应好友发来的未读消息数量（+1）,同时绑定该消息
+								_fnInitMsgUnReadCountAndLastMsg(message);
+								updataRecentChatArr(message, false);
+							}
+						}
+					});
+				}
+
+			}
+			//分组好友列表绑定
+			var group_friends_bind = function() {
+				var friendList = document.getElementById('contact');
+				var userInfo = config.fGetLoginUserInfo();
+				socket.on('myGroupFriends', function(groupFriends) {
+					var gfs = groupFriends.fgs;
+					if(gfs && gfs.length > 0) {
+						_fnInitFriendsList(gfs);
+						plus.storage.setItem('friendGroups', JSON.stringify(gfs));
+					}
+				});
+			}
+			//分组好友列表绑定 - 初始化html
+			var _fnInitFriendsList = function(data) {
+				var parentNode = document.getElementById('contact-list');
+				for(var i = 0; i < data.length; i++) {
+					var html = '';
+					var div = document.createElement('div');
+					div.setAttribute('class', 'item-group item-group-unactive');
+					html += '<div class="cq-row-nopadding flex-direction-row spaace-between item-group-info">';
+					html += '	<a class="item-group-name" href="#">' + data[i].GroupName + '</a>';
+					html += '	<span class="line-num">' + _fnOnlineCount(data[i].CustomerFriendCollection) + '/' + data[i].CustomerFriendCollection.length + '</span>';
+					html += '</div>';
+
+					if(data[i].CustomerFriendCollection && data[i].CustomerFriendCollection.length > 0) {
+						html += '<ul class="item-group-friends">';
+						for(var j = 0; j < data[i].CustomerFriendCollection.length; j++) {
+							var child = data[i].CustomerFriendCollection[j];
+							var remark = (child.Friend.Remark == null || child.Friend.Remark == '') ? '他(她)很神秘,没有给自己个性签名。' : child.Friend.Remark;
+							var offline = (!child.Friend.online) ? 'offline' : '';
+							html += '<li data-ukey="' + child.Friend.PrimaryKey + '" data-uaccount="' + child.Friend.UserLoginAccount + '" class="friend-item mui-ellipsis ' + offline + '">';
+							html += '	<img class="userhead" src="' + child.Friend.HeadImageUrl + '" />';
+							html += '	<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">';
+							html += '		<span class="username">' + child.Friend.UserNickName + '</span>';
+							html += '		<span class="userremark mui-ellipsis">' + remark + '</span>';
+							html += '	</div>';
+							html += '</li>';
+						}
+					}
+					div.innerHTML = html;
+					parentNode.appendChild(div);
+				}
+			}
+			/**
+			 *在线数量同级 
+			 * @param {Object} data
+			 */
+			var _fnOnlineCount = function(data) {
+				var cnt = 0;
+				data.forEach(function(item, index, input) {
+					if(item.Friend.online) {
+						cnt++;
+					}
+				});
+				return cnt;
+			}
+			/**
+			 * 接收到新消息，将消息推送到聊天界面
+			 * @param {Object} chatWs 聊天界面的 窗口句柄
+			 * @param {Object} message 消息内容
+			 */
+			var _fnPushMsgToChatWs = function(chatWs, message) {
+				mui.fire(chatWs, 'message', {
+					message: message
+				});
+			}
+
+			//移除未读的信息的数量，
+			var _changeUnReadNumAndRemoveMsgCountStyle = function(fAccount) {
+				var msgListRoot = document.querySelector('#msg-ul');
+				var childLi = msgListRoot.querySelector('li[data-account="' + fAccount + '"]');
+				if(childLi) {
+					var msgCount = childLi.querySelector('.msgCount');
+					msgCount.innerText = 0;
+					msgCount.classList.add('display-none');
+					_fnChangeUnReadNumToZero(fAccount);
+				}
+			}
+
+			/**
+			 * 接收到新消息，更新 消息列表
+			 * 	如果该好友有未读的信息 ，那么 对应好友发来的未读消息数量（+1）,同时绑定该消息
+			 * 	否则新建未读好友信息 记录
+			 */
+			var _fnInitMsgUnReadCountAndLastMsg = function(message, unReadCnt) {
+				var msgListRoot = document.querySelector('#msg-ul');
+				var childLi = msgListRoot.querySelector('li[data-account="' + message.from + '"]');
+				if(childLi) {
+					//更新数量
+					var msgCount = childLi.querySelector('.msgCount');
+					if(msgCount.innerText && msgCount.innerText != '') {
+						if(msgCount.classList.contains('display-none')) {
+							msgCount.classList.remove('display-none');
+						}
+						msgCount.innerText = parseInt(msgCount.innerText) + 1;
+					} else {
+						msgCount.innerText = 1;
+						msgCount.classList.add('mui-badge');
+					}
+					//更新最后一条聊天内容
+					var lastmsg = childLi.querySelector('.lastmsg');
+					lastmsg.innerText = message.data;
+				} else { //消息列表中无该记录，则新建一条记录
+					_fnInitNewMsgRow(message, msgListRoot, unReadCnt || 1);
+				}
+			}
+
+			/**
+			 *滑动按钮点击事件 
+			 */
+			var _fnMsgSlideOptions = function() {
+				//移除点击事件
+				mui('#msg-ul').on('tap', 'a.msg-remove', function() {
+					var self = this;
+					var fAccount = self.getAttribute('data-rel');
+					//从临时缓存中移除，
+					var recentChatArrTemp = plus.storage.getItem('recentChatArr');
+					var recentArr = [];
+					if(recentChatArrTemp && recentChatArrTemp != '') {
+						recentArr = JSON.parse(recentChatArrTemp);
+						recentArr.forEach(function(item, index, input) {
+							if(item.fAccount == fAccount) {
+								recentArr.splice(index, 1);
+								return;
+							}
+						});
+						plus.storage.setItem('recentChatArr', JSON.stringify(recentArr));
+					}
+					//移除html
+					var msgListRoot = document.querySelector('#msg-ul');
+					var childLi = msgListRoot.querySelector('li[data-account="' + fAccount + '"]');
+					if(childLi) {
+						childLi.remove();
+					}
+				});
+				//标记已读点击事件
+				mui('#msg-ul').on('tap', 'a.msg-tip', function() {
+
+					var self = this;
+					var fAccount = self.getAttribute('data-rel');
+					//更新未读数量为0
+					_fnChangeUnReadNumToZero(fAccount);
+				});
+
+			}
+
+			/**
+			 * 创建新消息行 
+			 */
+			var _fnInitNewMsgRow = function(message, parentNode, unreadCnt) {
+				var html = '';
+				var li = document.createElement('li');
+				li.setAttribute('data-account', message.from);
+				li.setAttribute('class', "friend-item mui-table-view-cell mui-ellipsis");
+				//  从缓存好友列表取出头像，plus.storage.setItem('friendGroups', data);，如果没有该好友，则直接去服务器取出该用户信息
+				_fnGetFriendInfoByAccount(message.from, function(res) {
+					var isFriend = res.isFriend;
+					var user = res.friend;
+					var t = formatter.fGetFromatterChatTime(message.sendTime);
+					html += '<div class="mui-slider-right mui-disabled">';
+					html += '		<a data-rel="' + user.UserLoginAccount + '" class="mui-btn mui-btn-red msg-remove">清除</a>';
+					html += '		<a data-rel="' + user.UserLoginAccount + '"  class="mui-btn mui-btn-grey msg-tip">标记已读</a>';
+					//					html += '		<a data-rel="' + user.UserLoginAccount + '"  class="mui-btn mui-btn-yellow msg-chat">聊一聊</a>';
+					html += '</div>';
+
+					html += '<div class="mui-slider-handle">';
+					html += '		<img class="userhead" src="' + user.HeadImageUrl + '" />';
+					html += '		<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">';
+					html += '			<span class="username">' + user.UserNickName + '</span>';
+					html += '			<span class="lastmsg mui-ellipsis">' + message.data + '</span>';
+					html += '		</div>';
+					html += '		<div class="cq-row-nopadding flex-direction-column" style="width: auto;align-items: flex-end;">';
+					if(t)
+						html += '			<span class="lastmsg-time">' + t + '</span>';
+					else
+						html += '			<span class="lastmsg-time"></span>';
+					if(unreadCnt != 0) {
+						html += '			<span class="msgCount mui-badge">' + unreadCnt + '</span>';
+					} else { // unreadCnt=0;
+						html += '			<span class="msgCount mui-badge display-none">0</span>';
+					}
+					html += '		</div>';
+					html += '</div>';
+					li.innerHTML = html;
+					parentNode.appendChild(li);
+				});
+			}
+
+			/**
+			 * 获取指定账号的好友信息
+			 * 	如果好友列表的缓存中，存在该用户，便从缓存中取出，否则从服务器重新获取
+			 * @param {Object} fAccount
+			 */
+			var _fnGetFriendInfoByAccount = function(fAccount, callback) {
+				var cacheFriendGroups = plus.storage.getItem('friendGroups');
+				if(cacheFriendGroups && cacheFriendGroups != '') {
+					var friendGroups = JSON.parse(cacheFriendGroups);
+					if(friendGroups && friendGroups.length > 0) {
+						var canOut = false;
+						friendGroups.forEach(function(item, index, input) {
+							var friends = item.CustomerFriendCollection;
+							if(friends && friends.length > 0 && !canOut) {
+								friends.forEach(function(citem, cindex, cinput) {
+									var friend = citem.Friend; //好友信息
+									if(friend) {
+										if(friend.UserLoginAccount == fAccount) {
+											canOut = true;
+											return callback({
+												isFriend: true,
+												friend: friend
+											});
+
+										}
+									}
+								});
+							}
+						});
+					}
+				} else { //从服务器获取
+					config.fGet({
+						link: '/Customer/' + fAccount + '/GetUserInfoByAccount',
+						callback: function(res) {
+							var user = JSON.parse(res);
+							if(user && user.ResultType == 3) {
+								return callback({
+									isFriend: false,
+									friend: user.Data
+								});
+							}
+						}
+					});
+				}
+			}
+
+			/**
+			 * 更新最近聊天缓存 
+			 * @param {Object} message
+			 * @param {Object} chatSingleIsOpen 聊天界面是否打开
+			 */
+			var updataRecentChatArr = function(message, chatSingleIsOpen) {
+				var recentChatArrTemp = plus.storage.getItem('recentChatArr');
+				var recentArr = [];
+				if(recentChatArrTemp && recentChatArrTemp != '' && recentChatArrTemp != '[]') {
+					recentArr = JSON.parse(recentChatArrTemp);
+					var isInArray = _fnMessageIsInStorageArr(message);
+					if(isInArray) {
+						recentArr.forEach(function(item, index, input) {
+							if(item.fAccount == message.from) {
+								item.message = message;
+								item.unReadCnt = chatSingleIsOpen ? 0 : parseInt(item.unReadCnt || 0) + 1;
+							}
+						});
+					}
+				} else {
+					recentArr.push({
+						fAccount: message.from,
+						message: message,
+						unReadCnt: 1
+					});
+				}
+				if(recentArr && recentArr.length > 0) {
+					//限定只能存储 30条数据
+					if(recentArr.length >= 30) {
+						recentArr.splice(0, 1);
+					}
+					plus.storage.setItem('recentChatArr', JSON.stringify(recentArr));
+				}
+			}
+
+			var _fnMessageIsInStorageArr = function(message) {
+				var isInArr = false;
+				var recentChatArrTemp = plus.storage.getItem('recentChatArr');
+				if(recentChatArrTemp && recentChatArrTemp != '') {
+					var json = JSON.parse(recentChatArrTemp);
+					if(json && json.length > 0) {
+						json.forEach(function(item, index, input) {
+							if(item.fAccount.toString() == message.from.toString()) {
+								isInArr = true;
+								return;
+							}
+						});
+					}
+				}
+				return isInArr;
+			}
+			/**
+			 * 将未读数量更改为 0 
+			 * @param {Object} fAccount
+			 */
+			var _fnChangeUnReadNumToZero = function(fAccount) {
+				var recentChatArrTemp = plus.storage.getItem('recentChatArr');
+				if(recentChatArrTemp && recentChatArrTemp != '') {
+					var json = JSON.parse(recentChatArrTemp);
+					if(json && json.length > 0) {
+						json.forEach(function(item, index, input) {
+							if(item.fAccount.toString() == item.message.from.toString()) {
+								item.unReadCnt = 0;
+								input[index] = item;
+							}
+						});
+						plus.storage.setItem('recentChatArr', JSON.stringify(json));
+					}
+				}
+			}
+
+			/**
+			 * 好友上线，更改列表中好友上线状态或者下线状态
+			 * @param {Object} fAccount
+			 * @param {online} online 上线或者下线  true or false
+			 */
+			var _fnFriendOnline = function(fAccount, online) {
+				var parentNode = document.getElementById('contact-list');
+				var li = parentNode.querySelector('li[data-uaccount="' + fAccount + '"]');
+				if(li) {
+					var clazz = li.classList;
+					if(online) { //上线
+						if(clazz.contains('offline')) {
+							clazz.remove('offline');
+						}
+					} else { //下线
+						if(!clazz.contains('offline')) {
+							clazz.add('offline');
+						}
+					}
+				}
+				_fnOnlineMove(fAccount, online);
+			}
+
+			/**
+			 * 在线的好友，向上移动，下线的向下移动 
+			 * @param {Object} fAccount 好友账号，通告该账号获取好友li节点
+			 * @param {online} online 上线或者下线  true or false
+			 */
+			var _fnOnlineMove = function(fAccount, online) {
+				//取出当前结点的父类节点，然后通过父节点拿出所有的lis子节点
+				var currentNode = document.getElementById('contact-list').querySelector('li[data-uaccount="' + fAccount + '"]');
+				var parentNode = currentNode.parentNode; //ul.item-group-friends
+				var lis = parentNode.querySelectorAll('li');
+				if(online) { //上线
+					//在线数量更新
+					var parentPrevNode = parentNode.previousSibling;
+					var num = parentPrevNode.querySelector('.line-num');
+					var numArr = num.innerText.split('/');
+					num.innerText = parseInt((numArr[0]) + 1) + '/' + numArr[1];
+
+					if(lis && lis.length > 1) {
+						var isStop = false;
+						while(!isStop) {
+							var tempCurNode = document.getElementById('contact-list').querySelector('li[data-uaccount="' + fAccount + '"]');
+							var prevNode = tempCurNode.previousSibling;
+							if(prevNode.classList.contains('offline')) {
+								tempCurNode.remove();
+								parentNode.insertBefore(prevNode, tempCurNode);
+							} else {
+								isStop = true;
+							}
+						}
+					}
+				} else { //下线
+
+					//在线数量更新
+					var parentPrevNode = parentNode.previousSibling();
+					var num = parentPrevNode.querySelector('.line-num');
+					var numArr = num.innerText.split('/');
+					num.innerText = parseInt(numArr[0]) == 0 ? 0 + '/' + numArr[1] : parseInt(numArr[0]) - 1 + '/' + numArr[1];
+
+					if(lis && lis.length > 1) {
+						var isStop = false;
+						while(!isStop) {
+							var tempCurNode = document.getElementById('contact-list').querySelector('li[data-uaccount="' + fAccount + '"]');
+							var nextNode = tempCurNode.nextSibling();
+							if(!nextNode.classList.contains('offline')) {
+								tempCurNode.remove();
+								tempCurNode.insertAfter(nextNode);
+							} else {
+								isStop = true;
+							}
+						}
+					}
+				}
+			}
+
+			var pushApplyToApplyList = function(firendListWs, fUserInfo, msg) {
+				mui.fire(firendListWs, {
+					userInfo: fUserInfo,
+					msg: msg
+				});
+			}
+		</script>
+
+	</body>
+
+</html>

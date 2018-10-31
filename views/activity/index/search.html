@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			#mui-action-back {
+				font-size: 14px;
+			}
+			
+			.mui-icon-search {
+				font-size: 16px !important;
+			}
+			
+			#keyword {
+				height: 26px;
+				font-size: 12px;
+				margin-bottom: 0px;
+				padding: 4px;
+				border: 0px;
+				background: #EFEFF4;
+				padding: 0px;
+				margin: 0px;
+			}
+			
+			.mui-icon-search:before {
+				padding: 5px;
+			}
+			
+			.words div,
+			.words span {
+				font-size: 12px;
+			}
+			
+			.words span {
+				color: #999999;
+				padding: 2px 6px;
+				margin: 4px 5px;
+				border: 1px solid #EFEFF4;
+				font-size: 12px;
+			}
+			
+			.recommend-keyrowds {
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			
+			.recent-keyrowds {
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			
+			form {
+				display: flex;
+				flex: 1;
+				align-items: center;
+				background: #efeff4;
+				flex: 1;
+				margin: 0px 10px;
+				height: 26px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav cq-row-nopadding" style="width: auto;align-items: center;">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left">返回</a>
+			<div class="cq-row-nopadding flex-direction-row" style="align-items: center;background: #efeff4;flex: 1;margin: 0px 10px;height: 26px;">
+				<form>
+					<span class="mui-icon mui-icon-search"></span>
+					<input type="search" name="" id="keyword" value="" placeholder="搜索您感兴趣的活动" />
+				</form>
+			</div>
+		</header>
+		<div class="mui-content">
+			<div class="cq-row flex-direction-column words">
+				<div class="recommend">
+					<div class="cq-row-nopadding" style="border-bottom: 1px solid #EFEFF4;">
+						推荐关键词
+					</div>
+					<div class="cq-row-nopadding recommend-keyrowds">
+
+					</div>
+				</div>
+
+				<div class="recent" style="margin-top: 10px;">
+					<div class="cq-row-nopadding" style="border-bottom: 1px solid #EFEFF4;padding-top:10px ;">
+						最近搜索
+					</div>
+					<div class="cq-row-nopadding recent-keyrowds">
+
+					</div>
+				</div>
+				<div class="cq-row" style="align-items: center;justify-content: center;">
+					<a id="clear-search-record" href="#" style="font-size: 12px;">清除搜索记录</a>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				keywords = ["亲子", "假日", "免费", "农场", "说走就走", "游玩", "钓鱼", "卡丁车", "射箭", "农家乐", "原始生活", "爬山"];
+
+			mui.init();
+			mui.plusReady(function() {
+
+				func.fnBack();
+				//默认关键词
+				func.fnDefaultKeyWords();
+				//最近搜索
+				func.fnRecentKeyWords();
+				//软键盘的完成事件
+				func.fnSubmitSearch();
+				//清除最近搜索
+				func.fnClearRecentWords();
+				func.fnSpanTapEvent();
+
+			});
+
+			var func = {
+				//列表中的span点击事件
+				fnSpanTapEvent: function() {
+					mui('.words').on('tap', 'span', function() {
+						var self = this;
+						document.querySelector('#keyword').value = self.innerText;
+						//将关键词加入 localstorage的数组对象
+						isInArray(self.innerText);
+
+						func.fnToSearchResultList(self.innerText);
+
+					});
+				},
+				fnClearRecentWords: function() {
+					document.querySelector('#clear-search-record')
+						.addEventListener('tap', function() {
+							localStorage.setItem('recentWords', '[]');
+							var recentWordsNode = document.querySelector('.recent-keyrowds');
+							var childNodes = recentWordsNode.childNodes;
+							if(childNodes && childNodes.length > 0) {
+								for(var i = 0; i < childNodes.length; i++) {
+									recentWordsNode.removeChild(childNodes[i]);
+								}
+							}
+						}, false);
+				},
+				fnSubmitSearch: function() {
+					document.getElementById('keyword').addEventListener('keyup', function(event) {
+						var self = this;
+						var e = event || window.event || arguments.callee.caller.arguments[0];
+						if(e && e.keyCode == 13) {
+							//将关键词加入 localstorage的数组对象
+							isInArray(self.value);
+						}
+
+						func.fnToSearchResultList(self.value);
+
+					}, false);
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back').addEventListener('tap', function() {
+						mui.back();
+					}, false);
+				},
+				fnDefaultKeyWords: function() {
+					var defaultWordsNode = document.querySelector('.recommend-keyrowds');
+					mui.each(keywords, function(i, item) {
+						var span = document.createElement('span');
+						span.innerText = item;
+						defaultWordsNode.appendChild(span);
+					});
+				},
+				fnRecentKeyWords: function() {
+					var recentwords = JSON.parse(localStorage.getItem('recentWords') || '[]');
+					var recentWordsNode = document.querySelector('.recent-keyrowds');
+					mui.each(recentwords, function(i, item) {
+						var span = document.createElement('span');
+						span.innerText = item;
+						recentWordsNode.appendChild(span);
+					});
+				},
+				//跳转到搜索结果页面
+				fnToSearchResultList: function(str) {
+					mui.openWindow({
+						url: 'search_activity.html',
+						id: 'search_activity.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							word: str
+						}
+					});
+				}
+			}
+			mui.back = function() {
+				plus.webview.currentWebview().close();
+			}
+
+			//跑判断输入的关键词是否在localstorage的array中，在则不加入，不在 加入
+			function isInArray(str) {
+				var isIn = false;
+				var arr = JSON.parse(localStorage.getItem('recentWords') || '[]');
+				if(arr && arr.length > 0) {
+					for(var i = 0; i < arr.length; i++) {
+						if(arr[i] === str)
+							isIn = true;
+						break;
+					}
+				}
+				if(!isIn) {
+					arr.push(str);
+					localStorage.setItem('recentWords', JSON.stringify(arr));
+				}
+			}
+		</script>
+	</body>
+
+</html>

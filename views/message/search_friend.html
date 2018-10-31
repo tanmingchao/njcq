@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<style type="text/css">
+			input.mui-input-clear {
+				margin-bottom: 0px;
+			}
+			
+			.mui-search {
+				width: 100%;
+			}
+			
+			.mui-search .mui-placeholder {
+				font-size: 14px;
+			}
+			
+			.mui-search.mui-active:before {
+				left: 10px;
+				font-size: 14px;
+			}
+			
+			input[type=search] {
+				font-size: 14px;
+			}
+			
+			.mui-search input[type=search] {
+				padding-left: 30px;
+			}
+			
+			.mui-icon .mui-icon-clear {
+				align-self: center;
+				text-align: center;
+				align-items: center;
+			}
+			
+			.userhead {
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.item-userinfo {
+				padding: 0px 0px 0px 10px;
+			}
+			
+			.username {
+				color: #000000;
+			}
+			
+			.userremark {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg-time {
+				font-size: x-small;
+				color: #999999;
+			}
+			
+			.fitem {
+				border-top: 1px solid #EFEFF4;
+			}
+			
+			.mui-bar-nav {
+				background: #FFFFFF;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<form class="mui-input-row">
+				<div class="cq-row-nopadding" style="top: 0px;z-index: 3;">
+					<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+					<div class="mui-input-row mui-search">
+						<input id="search-area" type="search" class="mui-input-clear" placeholder="好友昵称/手机号码">
+					</div>
+				</div>
+			</form>
+		</header>
+		<div class="mui-content">
+
+			<!--
+            	作者：1365101128@qq.com
+            	时间：2017-07-30
+            	描述：索索到的好友列表
+            -->
+
+			<div class="cq-row flex-direction-column users" style="background: transparent;">
+				<!--item-->
+				<!--<div class="cq-row flex-direction-row fitem">
+					<img class="userhead" src="../../img/logo.png" />
+					<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+						<span class="username">tanmingchao</span>
+						<span class="userremark mui-ellipsis">江苏省连云港市</span>
+					</div>
+				</div>-->
+
+			</div>
+
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var ws = null,
+				wo = null;
+
+			mui.init()
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+
+				document.querySelector('#mui-action-back')
+					.addEventListener('tap', function() {
+						mui.back();
+					}, false);
+
+				//搜索
+				document.getElementById("search-area").addEventListener("keydown", function(e) {
+					if(13 == e.keyCode) { //点击了“搜索”   
+						document.activeElement.blur(); //隐藏软键盘  
+						config.fGet({
+							link: '/Customer/' + e.target.value + '/Search',
+							callback: function(res) {
+								var obj = JSON.parse(res);
+								if(obj.ResultType == 3 && obj.Data.length > 0) {
+									var parentNode = document.querySelector('.users');
+									//如果有子元素，先清除
+									var childNodes = parentNode.querySelectorAll('div.fitem');
+									if(childNodes && childNodes.length > 0) {
+										for(var k = 0; k < childNodes.length; k++) {
+											childNodes[k].remove();
+										}
+									}
+
+									for(var i = 0; i < obj.Data.length; i++) {
+										var row = obj.Data[i];
+										var div = document.createElement('div');
+										div.setAttribute('class', 'cq-row flex-direction-row fitem');
+										div.setAttribute('data-ukey', row.PrimaryKey);
+
+										var html = '';
+										html += '<img class="userhead" src="' + row.HeadImageUrl + '" />';
+										html += '	<div class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">';
+										html += '	<span class="username">' + row.UserNickName + '</span>';
+										html += '	<span class="userremark mui-ellipsis">' + row.UserLocation + '</span>';
+										html += '</div>';
+										div.innerHTML = html;
+										parentNode.appendChild(div);
+									}
+								}
+							}
+						});
+					}
+				}, false);
+
+				//行点击事件
+				mui('.users').on('tap', '.fitem', function() {
+					var self = this;
+					var ukey = self.getAttribute('data-ukey');
+					mui.openWindow({
+						url: "../ucenter/uinfo/udetail.html",
+						id: 'udetail.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						},
+						extras: {
+							ukey: ukey
+						}
+					});
+				});
+
+			});
+
+			//返回
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview();
+				ws.close();
+			}
+		</script>
+	</body>
+
+</html>

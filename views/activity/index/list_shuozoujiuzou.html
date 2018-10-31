@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../css/app.css" rel="stylesheet" />
+		<style type="text/css">
+			.desc {
+				position: fixed;
+				width: 100%;
+				/* top: 110px; */
+				bottom: 0px;
+				/* height: 11px; */
+				margin-bottom: 0px;
+				background: lightpink;
+				padding: 10px 10px;
+				display: inline-block;
+			}
+			
+			div.act-list {
+				width: 100%;
+				margin-top: 6px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="mui-content">
+			<div id="actShuoZoujiuZoulist" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--
+                    	作者：1365101128@qq.com
+                    	时间：2017-05-26
+                    	描述：活动列表
+                    -->
+					<div id="act-list" class="act-list">
+						<!--<div class="list-item">
+							<div class="item-user">
+								<img src="../../../img/temp/02.png" class="user-head" />
+								<span class="user-name">thomas123</span>
+							</div>
+							<div class="item-act">
+								<img class="item-act-img" src="../../../img/temp/02.png" />
+								<div class="item-act-info">
+									<div class="info-title">这是活动标题内容这是活动标题内容这是活动标题内容</div>
+									<div class="info-box">
+										<div class="info">
+											<div class="info-time info-remark">2017-12-18 开始</div>
+											<div class="info-local info-remark">
+												江苏省南京市浦口区
+												<span class="info-local-reg"> 距离:<10km</span>
+											</div>
+										</div>
+										<div class="info-fee">
+											<div class="fee">￥12.00</div>
+											<button class="mui-btn mui-btn-mini mui-btn-success">报名</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>-->
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var formatter = new Formatter();
+			var local = null;
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			var params = {};
+			params.CustomerKey = '';
+			params.Lat = '';
+			params.Long = '';
+			params.ActTypeKey = "";
+			params.ActTitle = "";
+			params.PageIndex = 0;
+			params.PageSize = config.fGetPageSize();
+			params.OrderInfos = [];
+
+			var pkey = null; //传递过来的分类key
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				pkey = self.pkey;
+				params.ActTypeKey = self.pkey;
+				
+				mui("#act-list").on('tap', '.item-act-info', function() {
+					var akey = this.getAttribute('aKey');
+					//跳转到详细页面
+					mui.openWindow({
+						url: "../detail/detail.html",
+						id: "act_detail.html",
+						extras: {
+							akey: akey
+						}
+					});
+				});
+
+			});
+
+			mui.init({
+				pullRefresh: {
+					container: "#actShuoZoujiuZoulist", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+
+					fGetActivityData();
+					mui('#actShuoZoujiuZoulist').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if(params.PageIndex < setting.totalRows) {
+						params.PageIndex += config.fGetPageSize();
+					}
+					//获取下一页数据
+					fGetActivityData();
+					mui('#actShuoZoujiuZoulist').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+			//刷新数据
+			function fGetActivityData() {
+
+				//防止服务器已经无数据 还继续请求，造成资源浪费
+				if(!setting.firstLoad) {
+					if(params.PageIndex >= setting.totalRows) {
+						return;
+					}
+				}
+				params.PageSize = config.fGetPageSize();
+				params.Lat = config.fGetLocaltion().coords.latitude;
+				params.Long = config.fGetLocaltion().coords.longitude;
+
+				config.fPost({
+					link: '/Activity/GetPaggerActByTypeId',
+					params: params,
+					callback: function(res) {
+						var data = JSON.parse(res).Data;
+
+						if(setting.firstLoad) {
+							setting.firstLoad = false;
+							setting.totalRows = data.totalRows;
+						}
+						if(data.data.length > 0)
+							sizeList(data.data);
+					}
+				});
+			}
+
+			function clearParam() {
+				params.CustomerKey = '';
+				//				params.Lat = '';
+				//				params.Long = '';
+				//				params.ActTypeKey = "";
+				params.ActTitle = "";
+				params.PageIndex = 0;
+				params.PageSize = config.fGetPageSize();
+				params.OrderInfos = [];
+
+				setting.firstLoad = true;
+				setting.totalRows = 0;
+
+				var target = document.getElementById("act-list");
+				var childs = document.querySelectorAll(".list-item");
+
+				for(var i = 0; i < childs.length; i++) {
+					target.removeChild(childs[i]);
+				}
+			}
+
+			function sizeList(data) {
+				var list = document.getElementById("act-list");
+				mui.each(data, function(index, item) {
+					var html = '';
+					html += '	<div class="item-user">';
+					html += '			<img src="' + item.UserHeadImage + '" class="user-head" />';
+					html += '			<span class="user-name">' + item.UserNickName + '</span>';
+					html += '		</div>';
+					html += '		<div class="item-act">';
+					html += '			<img class="item-act-img" src="' + item.ShowImage + '" />';
+					html += '			<div class="item-act-info" aKey="' + item.PrimaryKey + '">';
+					html += '				<div class="info-title">' + item.ActTitle + '</div>';
+					html += '				<div class="info-box">';
+					html += '					<div class="info">';
+					html += '						<div class="info-time info-remark">' + item.ActStartTime + ' 开始</div>';
+					html += '						<div class="info-local info-remark">' + item.ActLocation + '<span class="info-local-reg"> 距离:<' + item.Remark + 'km</span></div>';
+					html += '					</div>';
+					html += '					<div class="info-fee">';
+					var istrue = false;
+					var priceColor = 'style="color:#999999"';
+					var actStatus = item.ActStatus.indexOf('结束');
+					if(item.ActEndTIme && item.ActEndTIme != '')
+						istrue = formatter.compareToCurrent(item.ActEndTIme);
+					if(!istrue) {
+						if(item.ActStatus && actStatus == -1)
+							priceColor = '';
+					}
+					html += '						<div class="fee" ' + priceColor + '>￥' + item.ActFee + '</div>';
+
+					if(item.ActEndTIme && item.ActEndTIme != '') {
+						var text = (istrue || actStatus > -1) ? '已结束' : '报名';
+						var style = (istrue || actStatus > -1) ? 'mui-btn-outlined' : 'mui-btn-success';
+						html += '						<button class="mui-btn mui-btn-mini ' + style + '">' + text + '</button>';
+					} else {
+						html += '						<button class="mui-btn mui-btn-mini mui-btn-success">报名</button>';
+					}
+
+					html += '					</div>';
+					html += '				</div>';
+					html += '			</div>';
+					html += '		</div>';
+					var listItem = document.createElement("div");
+					listItem.setAttribute("class", "list-item");
+					listItem.innerHTML = html;
+					list.appendChild(listItem);
+				});
+			}
+		</script>
+	</body>
+
+</html>

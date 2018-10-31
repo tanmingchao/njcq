@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.mui-bar-nav {
+				box-shadow: none;
+				-webkit-box-shadow: none;
+			}
+			
+			.mui-bar {
+				background: transparent;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				padding-top: 0px;
+			}
+			
+			.userhead {
+				height: 80px;
+				width: 80px;
+				border-radius: 50%;
+			}
+			
+			footer {
+				position: fixed;
+				bottom: 0px;
+				width: 100%;
+				height: 44px;
+				background: #FFFFFF;
+				font-size: 14px;
+				padding: 2px 10px;
+			}
+			
+			footer button.mui-btn {
+				font-size: 15px;
+			}
+			
+			footer button.mui-btn:last-child {
+				margin-left: 5px;
+			}
+			
+			.mui-btn-block {
+				padding: 8px 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row flex-direction-column">
+				<div class="cq-row" style="justify-content: center;align-items: center;margin-top: 40px;">
+					<img src="" class="userhead" />
+				</div>
+				<div class="cq-row-nopadding username" style="justify-content: center;align-items: center;font-size: 16px;">
+
+				</div>
+				<div class="cq-row-nopadding userremark" style="justify-content: center;align-items: center;font-size: x-small;color: #999999;">
+
+				</div>
+			</div>
+
+			<div class="cq-row flex-direction-column" style="border-top: 1px solid #EFEFF4;">
+
+				<div class="cq-row spaace-between">
+					<div class="cq-row-nopadding flex-direction-row" style="align-items: center;">
+						<span class="account-icon mui-icon mui-icon-star"></span>
+						<span class="user-account-nickName" style="padding-left: 10px;">
+							
+						</span>
+					</div>
+				</div>
+				<div class="cq-row spaace-between" style="border-top: 1px solid #EFEFF4;">
+					<div class="cq-row-nopadding flex-direction-row" style="align-items: center;">
+						<span class="account-icon mui-icon mui-icon-person"></span>
+						<span class="user-account gender" style="padding-left: 10px;">
+							
+						</span>
+					</div>
+
+				</div>
+				<div class="cq-row spaace-between" style="border-top: 1px solid #EFEFF4;">
+					<div class="cq-row-nopadding flex-direction-row" style="align-items: center;">
+						<span class="account-icon mui-icon mui-icon-flag"></span>
+						<span class="user-account regtime" style="padding-left: 10px;">
+							
+						</span>
+					</div>
+
+				</div>
+				<div class="cq-row spaace-between" style="border-top: 1px solid #EFEFF4;">
+					<div class="cq-row-nopadding flex-direction-row" style="align-items: center;">
+						<span class="account-icon mui-icon mui-icon-locked"></span>
+						<span class="user-account score" style="padding-left: 10px;">
+							
+						</span>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<footer>
+			<div class="cq-row-nopadding" style="align-items: center;justify-content: center;">
+				<button type="button" class="mui-btn mui-btn-grey mui-btn-block">举报</button>
+				<button type="button" class="mui-btn mui-btn-yellow mui-btn-block add-to-fri">加为好友</button>
+			</div>
+		</footer>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="http://www.autojoynet.com:9999/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var socket = io('ws://www.autojoynet.com:9999');
+			var config = config();
+			var ws = null,
+				wo = null,
+				ukey = null,
+				fuserInfo = null,
+				isBeApplyed = false;
+			mui.init()
+			mui.plusReady(function() {
+				var userInfo = config.fGetLoginUserInfo();
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				ukey = ws.ukey;
+				isBeApplyed = ws.isBeApplyed || false;
+
+				//返回按钮
+				document.querySelector('#mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				}, false);
+				plus.nativeUI.showWaiting('加载中..')
+				//获取用户详情，并绑定到页面显示
+				config.fGet({
+					link: '/Customer/' + ukey + '/GetById',
+					callback: function(res) {
+						var obj = JSON.parse(res);
+						if(obj.ResultType == 3 && obj.Data) {
+							var user = obj.Data;
+							fuserInfo = user;
+							mui('.userhead')[0].setAttribute('src', user.HeadImageUrl);
+							mui('.username')[0].innerText = user.UserNickName;
+							mui('.userremark')[0].innerText = user.Remark;
+							mui('.user-account-nickName')[0].innerText = user.UserNickName;
+							mui('.gender')[0].innerText = user.UserGender == 'M' ? '男' : '女';
+							if(!user.CreateTime || user.CreateTime == null) {
+								document.querySelector('.regtime').parentNode.parentNode.style.display = "none";
+							} else
+								mui('.regtime')[0].innerText = user.CreateTime + '（注册）';
+							mui('.score')[0].innerText = user.UserScore + '（积分）';
+							document.querySelector('.add-to-fri').setAttribute('data-ukey', user.PrimaryKey);
+							document.querySelector('.add-to-fri').setAttribute('data-uAccount', user.UserLoginAccount);
+						}
+						plus.nativeUI.closeWaiting();
+					}
+				});
+
+				//加为好友
+				document.querySelector('.add-to-fri')
+					.addEventListener('tap', function() {
+						var ukey = this.getAttribute('data-ukey');
+						var uAccount = this.getAttribute('data-uAccount');
+						socket.emit('apply add new friend', {
+							fkey: ukey,
+							fAccount: uAccount,
+							userInfo: userInfo
+						});
+						plus.nativeUI.toast('好友申请已发送，请等待对方同意');
+					}, false);
+
+			});
+
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview();
+				ws.close();
+			}
+		</script>
+	</body>
+
+</html>

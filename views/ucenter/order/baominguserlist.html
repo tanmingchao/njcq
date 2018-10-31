@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.userhead {
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.createtime,
+			.scan-status,
+			.ticketnum {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.scan-status {
+				color: limegreen;
+			}
+			
+			.orderprice {
+				color: #EB9316;
+			}
+			
+			.user-row {
+				margin-top: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">报名人员列表</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="userlist" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div id="tap-msg" class="cq-row flex-direction-column" style="height: 200px; align-items: center;justify-content: center;margin-top: 44px;">
+						<span>
+							尚未有人报名您的活动！
+						</span>
+						<button style="margin: 10px;height: 32px;line-height: 0px;font-size: 14px;" type="button" class="mui-btn mui-btn-green mui-btn-block">分享活动</button>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var wv = null,
+				wo = null,
+				pkey = null,
+				config = config(),
+				formatter = new Formatter(),
+				userInfo = config.fGetLoginUserInfo();
+
+			mui.init({
+				pullRefresh: {
+					container: "#userlist", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				pkey = wv.pkey;
+
+				func.fnBack();
+
+			});
+
+			var func = {
+				fnGetUserList: function(pkey) {
+
+					config.fGet({
+						link: '/ActivityOrder/' + pkey + '/GetJoinUserListByActivityKey',
+						callback: function(res) {
+							var data = JSON.parse(res).Data;
+							if(data != null && data.length != 0) {
+								document.getElementById('tap-msg').style.display = "none";
+							}
+							//TODO 初始化html
+							initUserListHtml(data);
+						}
+					});
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							wv = wv || plus.webview.currentWebview();
+							wv.close();
+						}, false);
+				}
+			}
+
+			function initUserListHtml(data) {
+				var parentNode = document.querySelector('.mui-scroll');
+				if(data && data.length > 0) {
+					for(var i = 0; i < data.length; i++) {
+						var div = document.createElement('div');
+						div.setAttribute('class', 'cq-row-nopadding flex-direction-column user-row');
+						var html = '';
+						html += '<div class="cq-row flex-direction-row spaace-between">';
+						html += '	<span class="createtime">';
+						html += formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(data[i].CreateTime));
+						html += '	</span>';
+						html += '<div>'
+						html += '	<span style="color:#999999;font-size:12px;">已作废' + data[i].ZuoFeiPingNum + '张</span>';
+						html += '	<span class="scan-status">';
+						html += '		未验票x' + data[i].WaitScanPingZhengNum;
+						html += '	</span>';
+						html += '</div>';
+						html += '</div>';
+						html += '<div class="cq-row flex-direction-row" style="border-top: 1px solid #EFEFF4;">';
+						html += '	<img class="userhead" src="' + data[i].CustomerHeadImage + '">';
+						html += '	<div style="padding: 0px 10px;flex: 1;" class="cq-row flex-direction-column">';
+						html += '		<span class="userName">';
+						html += data[i].CustomerNickName;
+						html += '		</span>';
+						html += '		<span class="ticketnum">';
+						html += '			购票张数x' + data[i].ParticipateNum;
+						html += '		</span>';
+						html += '	</div>';
+						html += '	<span class="orderprice">';
+						html += '		总金额￥' + data[i].OrderTotalPrice;
+						html += '	</span>';
+						html += '</div>';
+						div.innerHTML = html;
+						parentNode.appendChild(div);
+					}
+				}
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					func.fnGetUserList(pkey);
+					mui('#userlist').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					clearParam();
+					func.fnGetUserList(pkey);
+
+					mui('#userlist').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function clearParam() {
+
+				var parentNode = document.querySelector('.mui-scroll');
+				var childNodes = parentNode.querySelectorAll('.user-row');
+				if(childNodes && childNodes.length > 0) {
+					for(var i = 0; i < childNodes.length; i++) {
+						parentNode.removeChild(childNodes[i]);
+					}
+				}
+
+			}
+		</script>
+	</body>
+
+</html>

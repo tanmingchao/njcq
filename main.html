@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+
+	</head>
+
+	<body>
+		<!--<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">南京车趣</h1>
+		</header>-->
+		<nav class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item mui-active" data-index="0">
+				<span class="mui-icon mui-icon mui-icon-chat"></span>
+				<span class="mui-tab-label">消息吧</span>
+			</a>
+			<a class="mui-tab-item" data-index="1">
+				<span class="mui-icon mui-icon mui-icon-paperplane"></span>
+				<span class="mui-tab-label">活动吧</span>
+			</a>
+			<a class="mui-tab-item" data-index="2">
+				<span class="mui-icon mui-icon mui-icon-spinner mui-spin"><span class="mui-badge">9</span></span>
+				<span class="mui-tab-label">车友圈</span>
+			</a>
+			<a class="mui-tab-item" data-index="3">
+				<span class="mui-icon mui-icon-contact"></span>
+				<span class="mui-tab-label">我的</span>
+			</a>
+		</nav>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script src="js/njcq.plugin.geomap.js"></script>
+	<script src="js/config.js"></script>
+
+	<script type="text/javascript">
+		var config = config();
+		mui.init()
+		mui.plusReady(function() {
+			//当前窗口对象（父窗口）
+			var self = plus.webview.currentWebview();
+			// 子窗口地址数组
+			var subpages = [
+				"views/message/index.html",
+				"views/activity/index/index.html",
+				"views/circle/index/index.html",
+				"views/ucenter/index/index.html"
+			];
+			// 子窗口样式
+			var subStyles = {
+				top: "0",
+				bottom: "50px"
+			};
+			// 子窗口数量
+			var subLen = subpages.length;
+			// 子窗口对象数组
+			var subWvs = [];
+			// 标题栏
+			var title = document.querySelector(".mui-title");
+			// 底部选项
+			var tabs = document.querySelectorAll(".mui-tab-item");
+			// 底部文字
+			var labels = document.querySelectorAll(".mui-tab-label");
+			// 当前页面索引，初始化为0；
+			var activeIndex = 0;
+			// 目标页面索引，初始化为当前页面索引；
+			var targetIndex = activeIndex;
+			// 创建子页面
+			for(var i = 0; i < subLen; i++) {
+				var subWv = plus.webview.create(subpages[i], cutWebviewId(subpages[i]), subStyles, {
+					index: i
+				});
+				// 窗口对象添加至数组
+				subWvs.push(subWv);
+				if(i > 0) {
+					subWv.hide("none");
+				}
+				self.append(subWv);
+			}
+			// 底部选项卡点击切换事件
+			for(var j = 0, jlen = tabs.length; j < jlen; j++) {
+				tabs[j].addEventListener("tap", function() {
+					// 获取当前结点的索引
+					targetIndex = this.getAttribute("data-index");
+					// 转换为number类型
+					targetIndex = parseInt(targetIndex);
+					if(targetIndex == activeIndex) {
+						return;
+					}
+					// 切换页面
+					switchPage("tap", activeIndex, targetIndex);
+				});
+			}
+			/**
+			 * 切换页面
+			 * @param {String} _event 事件类型
+			 * @param {Number} _active 当前页面索引
+			 * @param {Number} _target 目标页面索引
+			 */
+			function switchPage(_event, _active, _target) {
+				/**
+				 * 目标页面展示
+				 */
+				subWvs[_target].show("fade-in");
+				// 顶部文字替换
+				//				title.innerText = labels[_target].innerText;
+				// 如果是滑动事件，则手动切换高亮选项；
+				if(_event == "switch") {
+					tabs[_active].classList.remove("mui-active");
+					tabs[_target].classList.add("mui-active");
+				}
+
+				// 之前展示的页面隐藏
+				subWvs[_active].hide("none");
+				// 更新当前页索引
+				activeIndex = _target;
+			}
+			/* TODO 如果用户关闭app或者推出，需要将这些信息清除*/
+			//初始化地图信息
+			initialLocation();
+			//初始化活动分类
+			initialActType();
+			//初始化车友圈分类
+			initialCircleType();
+			//初始化商品分类
+			//			initialTransType();
+
+//			plus.webview.currentWebview().addEventListener('close', function() {
+//					console.info('app退出了'); 
+//			});
+
+		});
+
+		function initialLocation() {
+			var watchId;
+			var options = {
+				watchId: watchId,
+				callback: function(res) {
+					//res数据内容
+					// {"coordsType":"gcj02","address":{"street":"百润路","cityCode":"025","province":"江苏省","district":"浦口区","poiName":"汇川教育","streetNum":"8号23","city":"南京市","country":"中国"},"addresses":"江苏省南京市浦口区百润路靠近汇川教育","coords":{"latitude":32.156395,"longitude":118.736393,"accuracy":29,"altitude":0,"heading":null,"speed":0,"altitudeAccuracy":0},"timestamp":1497000421649}
+//					console.info(JSON.stringify(res));
+					localStorage.setItem("location", JSON.stringify(res));
+				}
+			};
+			var map = new geomap(options);
+			map.getPos();
+		}
+
+		function initialActType() {
+			if(!localStorage.getItem("actType"))
+				config.fGet({
+					link: '/ActivityType/GetAllType',
+					callback: function(data) {
+						var at = JSON.parse(data).Data;
+						localStorage.setItem("actType", JSON.stringify(at));
+					}
+				})
+		}
+
+		function initialCircleType() {
+			if(!localStorage.getItem("circleType"))
+				config.fGet({
+					link: '/ActivityShareType/Type',
+					callback: function(data) {
+						var at = JSON.parse(data).Data;
+						localStorage.setItem("circleType", JSON.stringify(at));
+					}
+				});
+		}
+
+		function initialTransType() {
+			if(!localStorage.getItem("transType"))
+				config.fGet({
+					link: '/CommodityType/CommodityTypes',
+					callback: function(data) {
+						var at = JSON.parse(data).Data;
+						localStorage.setItem("transType", JSON.stringify(at));
+					}
+				});
+		}
+
+		/**
+		 * 截取url地址，获取窗口的id；
+		 * @param {String} url html文件的路径
+		 * @param {String} wvId webviewObject的id
+		 */
+		function cutWebviewId(url) {
+			var startIndex = url.lastIndexOf("/");
+			var endIndex = url.lastIndexOf(".html");
+			var wvId = url.substring(startIndex + 1, endIndex);
+			return wvId;
+		}
+	</script>
+
+</html>

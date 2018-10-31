@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.pub-content-box textarea {
+				border: 0px;
+				font-size: 14px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-closeempty mui-pull-right"></a>
+			<h1 class="mui-title">发表动态</h1>
+		</header>
+
+		<div class="mui-content circle-mui-content">
+			<div class="pub-content-box">
+				<textarea id="input-text" rows="3" placeholder="说说此时此刻的心情？动态？"></textarea>
+			</div>
+
+			<div class="circle-images">
+				<!--<div class="image-box">
+					<img src="../../../img/temp/02.png" />
+					<i class="mui-icon mui-icon-minus"></i>
+				</div>
+				<div class="image-box">
+					<img src="../../../img/temp/02.png" />
+					<i class="mui-icon mui-icon-minus"></i>
+				</div>
+				<div class="image-box">
+					<img src="../../../img/temp/02.png" />
+					<i class="mui-icon mui-icon-minus"></i>
+				</div>
+				<div class="image-box">
+					<img src="../../../img/temp/02.png" />
+					<i class="mui-icon mui-icon-minus"></i>
+				</div>-->
+				
+			</div>
+			<div class="circle-video">
+				<!--<video  height="" preload="auto">
+					<source src="http://www.autojoynet.com/Resources/Video/ActivityShare/20170604/20170604160609552.mov" type="video/mp4"></source>
+					<source src="http://www.autojoynet.com/Resources/Video/ActivityShare/20170604/20170604160609552.mov" type="video/ogg"></source>
+					<source src="http://www.autojoynet.com/Resources/Video/ActivityShare/20170604/20170604160609552.mov" type="video/webm"></source>
+				</video>
+				<i class="mui-icon mui-icon-minus"></i>-->
+			</div>
+
+		</div>
+		<footer class="circle-footer">
+			<div class="footer-options">
+				<span id="getimg" class="mui-icon mui-icon-image"></span>
+				<span id="getvideo" class="mui-icon "></span>
+				<!--<span id="getvideo" class="mui-icon mui-icon-videocam"></span>-->
+				<span class="mui-icon "></span>
+				<span>
+					<button id="circle-publish-btn" type="button" class="mui-btn mui-btn-blue circle-publish-btn">发布</button>
+				</span>
+			</div>
+		</footer>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.camera.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var wv = null;
+			var wo = null;
+
+			var config = config();
+			var descImageArray = [];
+			var tKey =null;
+
+			var camera = new camera();
+			mui.init()
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				tKey = wv.tKey;
+				wo.close();
+				fCloseView();
+				fGetImage();
+				//				fGetVideo();
+				_fRemoveImage();
+				FPublish();
+
+			});
+
+			/*------子方法-----------*/
+			function FPublish() {
+				document.querySelector('#circle-publish-btn')
+					.addEventListener('tap', function() {
+						var inputText = document.getElementById('input-text').value;
+						if(inputText.length == 0 && descImageArray.length == 0) {
+							plus.nativeUI.toast('说点什么吧？');
+							return;
+						}
+
+						plus.nativeUI.showWaiting('动态发布中，请稍后...');
+						//上传图片
+						if(descImageArray && descImageArray.length > 0)
+							fUploadImages(function(serverPaths) {
+								_fSubmit(serverPaths, inputText);
+							});
+						else {
+							_fSubmit('', inputText);
+						}
+					});
+			}
+
+			function _fSubmit(serverPaths, inputText) {
+
+				var showImages = '';
+				
+				var local = config.fGetLocaltion();
+				
+
+				if(serverPaths && serverPaths != '') {
+					var tempArray = serverPaths.split(',');
+					for(var i = 0; i < tempArray.length; i++) {
+						showImages += ('/ActivityShare/' + tempArray[i] + ',');
+					}
+				}
+				showImages = showImages.substring(0, showImages.length - 1);
+				config.fPost({
+					link: '/ActivityShare/Create',
+					params: {
+						PrimaryKey: '12321321',
+						ActTitle: '',
+						ShowImage: showImages,
+						ShowVideo: '',
+						ActDesc: inputText,
+						CreateTime: null,
+						AdName: local ? local.address.district : '', //区
+						AdCode: '',
+						ActLocation: local ? local.addresses : '',
+						Longitude: local ? local.coords.longitude : '',
+						Latitude: local ? local.coords.latitude : '',
+
+						ActivityShareTypeKey: tKey,
+						CustomerKey: config.fGetLoginUserInfo().PrimaryKey
+					},
+					callback: function(res) {
+						plus.nativeUI.closeWaiting();
+						var data = JSON.parse(res).Data;
+						if(data) {
+							plus.nativeUI.toast('发布成功！');
+							wv.close();
+						} else {
+							plus.nativeUI.toast('发布失败！');
+							return;
+						}
+					}
+				});
+			}
+
+			function fUploadImages(callback) {
+				var resultStr = "";
+				//1.上传descImageArray 中的 图片
+				var task = plus.uploader.createUpload(host.api + '/Upload/ActivityShare/Image', {
+					method: 'POST',
+					headers: {
+						"Content-Type": "multipart/form-data"
+					}
+				}, function(t, status) {
+					if(status == 200) {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+							plus.nativeUI.toast('图片上传成功！');
+						}, 1500);
+						var result = JSON.parse(t.responseText);
+						var imageServerPaths = JSON.parse(result).Data;
+						return callback(imageServerPaths);
+					} else {
+						setTimeout(function() {
+							plus.nativeUI.closeWaiting();
+							plus.nativeUI.toast('图片上传失败！发布失败！');
+							return;
+						}, 1500);
+
+						console.error("上传失败", t.responseText);
+					}
+				});
+				for(var i = 0; i < descImageArray.length; i++) {
+					var f = descImageArray[i];
+					if(f.path && f.name) {
+						task.addData("uid", Math.floor(Math.random() * 100000000 + 10000000).toString()) //随机数
+						task.addFile(f.path, {
+							key: f.name
+						});
+					}
+				}
+				task.addEventListener("statechanged", onStateChanged, false);
+				task.start();
+
+				return resultStr;
+			}
+			// 监听上传任务状态
+			function onStateChanged(upload, status) {
+				if(upload.state == 4 && status == 200) {
+					// 上传完成
+					console.info('上传成功');
+				}
+			}
+			/**
+			 * 移除图片 
+			 */
+			function _fRemoveImage() {
+				mui('.circle-images').on('tap', 'i.mui-icon-minus', function() {
+					var parentNode = this.parentNode;
+					mui.confirm('确认移除该张图片？', '操作提示', ['否', '是'], function(e) {
+						if(e.index == 1) {
+							var imageBoxContainer = document.querySelector('.circle-images');
+
+							var image_tar = parentNode.querySelector('img');
+							var image_src = image_tar.getAttribute('src');
+
+							imageBoxContainer.removeChild(parentNode);
+							_fRemoveFromArray(image_src);
+						}
+					})
+				});
+			}
+
+			function fGetVideo() {
+				document.getElementById('getvideo').addEventListener('tap', function() {
+					var parentNode = document.querySelector('.circle-video');
+					camera.fGetVideo(function(res) {
+						var videBox = document.createElement('div');
+
+						var html = '<video height="" preload="auto">';
+						html += '		<source src="' + res + '" type="video/mp4"></source>';
+						html += ' 		<source src = "' + res + '" type = "video/ogg"></source>';
+						html += '		<source src = "' + res + '" type = "video/webm"></source> ';
+						html += '	</video>';
+						html += '	<i class="mui-icon mui-icon-minus"></i>';
+						videBox.innerHTML = html;
+						parentNode.appendChild(videBox);
+					});
+				});
+			}
+
+			function fGetImage() {
+				document.getElementById('getimg').addEventListener('tap', function() {
+
+					if(!descImageArray && descImageArray.length >= 9) {
+						plus.nativeUI.toast('只可选择小于等于9张图片');
+						return;
+					}
+					var parentImageItemNode = document.querySelector('.circle-images');
+
+					var bts = [{
+						title: "拍照"
+					}, {
+						title: "从相册选择"
+					}];
+					plus.nativeUI.actionSheet({
+							title: "选择操作",
+							cancel: "取消",
+							buttons: bts
+						},
+						function(e) {
+							switch(e.index) {
+								case 1:
+									camera.fGetImage(function(path) {
+										if(descImageArray.length <= 9) {
+											//1.拍照
+											_fCreateImage(parentImageItemNode, path);
+											//2. 将path装到 对象，提交时候统一上传
+											_fPushImageToArray(path);
+										}
+									});
+									break;
+								case 2:
+									camera.fGalleryImg(function(paths) {
+										if(paths && paths.length)
+											for(var i = 0; i < paths.length; i++) {
+												if(descImageArray.length <= 9) {
+													var path = paths[i];
+													_fCreateImage(parentImageItemNode, path);
+													// 将path装到 对象，提交时候统一上传
+													_fPushImageToArray(path);
+												} else {
+													plus.nativeUI.toast('只可选择小于等于9张图片,多余张数将抛弃不显示不上传');
+													return;
+												}
+											}
+									});
+									break;
+							}
+						}
+					);
+				});
+			}
+
+			//拼接image html
+			function _fCreateImage(parentNode, imagePath) {
+				var imageBox = document.createElement('div');
+				imageBox.setAttribute('class', 'image-box');
+				var html = '';
+				html += '<img src="' + imagePath + '">';
+				html += '<i class="mui-icon mui-icon-minus"></i>';
+				imageBox.innerHTML = html;
+				parentNode.appendChild(imageBox);
+			}
+
+			//将图片放到数组中
+			function _fPushImageToArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				//push之前先执行移除操作
+				_fRemoveFromArray(imagePath);
+				descImageArray.push({
+					name: objName,
+					path: imagePath
+				});
+			}
+			//移除图片数组中，指定的图片
+			function _fRemoveFromArray(imagePath) {
+				var objName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+				for(var i = 0; i < descImageArray.length; i++) {
+					if(descImageArray[i].name == objName) {
+						descImageArray.splice(i, 1);
+						break;
+					}
+				}
+			}
+
+			function fCloseView() {
+				//关闭事件监听
+				document.getElementById('mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				});
+			}
+
+			mui.back = function() {
+				wv.hide('fade-out');
+				wv.close();
+			}
+		</script>
+	</body>
+
+</html>

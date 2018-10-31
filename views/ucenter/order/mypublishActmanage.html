@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			div.act-row {
+				margin-top: 10px;
+			}
+			
+			.mui-btn-red {
+				font-size: 14px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我发布的活动</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<div id="act-list" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--<div rel="12321" class="cq-row-nopadding flex-direction-column act-row mui-table-view-cell">
+						<div rel="12321" class="mui-slider-right mui-disabled do-to-delete">
+							<a class="mui-btn mui-btn-red">删除</a>
+						</div>
+						<div class="mui-slider-handle">
+							<div class="cq-row-nopadding flex-direction-column" style="padding-bottom: 0px;">
+								<h5 class="acttitle" style="font-size: 14px;color: #000000;">
+								这是活动标题
+							</h5>
+								<span class="createtime" style="color: #999999;font-size: 12px;">
+								2017-12-12 12:12:12
+							</span>
+							</div>
+							<div class="cq-row-nopadding flex-direction-row spaace-between" style="padding: 2px 0px;font-size: 12px;border-top: 1px solid #EFEFF4;">
+								<div class="">
+									<span class="limitnum">
+									20人 *￥12.00/人
+								</span>
+									<span>
+									&nbsp;浏览<span id="viewtimes">10</span>
+									</span>
+									<span>
+									&nbsp;已报名<span id="haspartnum" style="color:#0062CC;">10</span>人
+									</span>
+
+								</div>
+								<span id="act-status">
+								已结束
+							</span>
+							</div>
+						</div>
+					</div>-->
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var wv = null,
+				wo = null,
+				formatter = new Formatter(),
+				config = config(),
+				userInfo = config.fGetLoginUserInfo(),
+				local = config.fGetLocaltion();
+
+			var params = {};
+			params.ActTypeKey = null;
+			params.ActTitle = "";
+			params.Lat = null;
+			params.Long = null;
+			params.CustomerKey = null;
+			params.OrderInfos = []; //[{OrderDirection:'desc',OrderField:'CreateTime'},{OrderDirection:'desc',OrderField:'CreateTime'}]
+			params.PageIndex = 0;
+			params.PageSize = config.fGetPageSize();
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			mui.init({
+				pullRefresh: {
+					container: "#act-list", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				func.fnDoToDelete();
+				func.fnDoToManagePage();
+
+			});
+
+			var func = {
+				fnGetOrder: function() {
+					plus.nativeUI.showWaiting('加载中...');
+					if(params.CustomerKey == null)
+						params.CustomerKey = userInfo.PrimaryKey;
+					config.fPost({
+						link: '/Activity/GetMyPublishPaggerAct',
+						params: params,
+						callback: function(res) {
+							var data = JSON.parse(res).Data;
+							if(setting.firstLoad) {
+								setting.totalRows = data.totalRows;
+								setting.firstLoad = false;
+							}
+							_fnInitHtml(data.data);
+							plus.nativeUI.closeWaiting();
+						}
+					})
+				},
+				//删除该活动
+				fnDoToDelete: function() {
+					mui('.mui-scroll').on('tap', '.do-to-delete', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+						//TODO 判断是否已经有报名，如果有，不允许删除
+
+					});
+				},
+				//跳转到该活动的管理页面
+				fnDoToManagePage: function() {
+					mui('.mui-scroll').on('tap', '.mui-table-view-cell', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+						//TODO 跳转页面到管理页面
+						mui.openWindow({
+							url: "currentActManage.html",
+							id: 'currentActManage.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							},
+							extras: {
+								pkey: pkey
+							}
+						});
+
+					});
+				}
+
+			};
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					func.fnGetOrder();
+					mui('#act-list').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if((params.PageIndex * params.PageSize) < setting.totalRows) {
+						params.PageIndex += params.PageSize;
+						//获取下一页数据
+						func.fnGetOrder();
+					}
+					mui('#act-list').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function _fnInitHtml(data) {
+				if(data && data.length > 0) {
+					var parentNode = document.querySelector('.mui-scroll');
+					for(var i = 0; i < data.length; i++) {
+						var html = '';
+						var div = document.createElement('div');
+						div.setAttribute('class', 'cq-row-nopadding flex-direction-column act-row mui-table-view-cell');
+						div.setAttribute('rel', data[i].PrimaryKey);
+						html += '<div rel="' + data[i].PrimaryKey + '" class="mui-slider-right mui-disabled do-to-delete">';
+						html += '	<a class="mui-btn mui-btn-red">删除</a>';
+						html += '</div>';
+						html += '<div class="mui-slider-handle">';
+						html += '	<div class="cq-row-nopadding flex-direction-column" style="padding-bottom: 0px;">';
+						html += '		<h5 class="acttitle" style="font-size: 14px;color: #000000;">';
+						html += '		' + data[i].ActTitle;
+						html += '	</h5>';
+						html += '		<span class="createtime" style="color: #999999;font-size: 12px;">';
+						html += '		' + data[i].CreateTime + '发布';
+						html += '	</span>';
+						html += '	</div>';
+						html += '	<div class="cq-row-nopadding flex-direction-row spaace-between" style="font-size: 12px;border-top: 1px solid #EFEFF4;">';
+						html += '		<div class="">';
+						html += '			<span class="limitnum">';
+						html += '			' + data[i].ActLimitPlace + '人 *￥' + data[i].ActFee + '/人';
+						html += '		</span>';
+						html += '			<span>';
+						html += '			&nbsp;浏览<span class="viewtimes">' + data[i].ViewTimes + '</span>';
+						html += '			</span>';
+						html += '			<span>';
+						html += '			&nbsp;已报名<span class="haspartnum" style="color:#0062CC;">' + data[i].ActHasPartPlace + '</span>人';
+						html += '			</span>';
+						html += '		</div>';
+						html += '		<span id="act-status">';
+						html += '		' + data[i].ActStatus;
+						html += '	</span>';
+						html += '	</div>';
+						html += '</div>';
+						div.innerHTML = html;
+						parentNode.appendChild(div);
+					}
+				}
+			}
+
+			function clearParam() {
+				params.ActTypeKey = null;
+				params.ActTitle = "";
+				params.Lat = null;
+				params.Long = null;
+				params.OrderInfos = [];
+				params.PageIndex = 0;
+
+				var parentNode = document.querySelector('.mui-scroll');
+				var childNodes = parentNode.querySelectorAll('.act-row');
+				if(childNodes && childNodes.length > 0) {
+					for(var i = 0; i < childNodes.length; i++) {
+						parentNode.removeChild(childNodes[i]);
+					}
+				}
+
+			}
+		</script>
+	</body>
+
+</html>

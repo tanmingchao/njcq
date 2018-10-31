@@ -1,0 +1,514 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>个人中心</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/icons-extra.css" />
+		<style type="text/css">
+			#uinfo-username {
+				font-size: 14px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav ucenter-header">
+			<span id="do-to-setting" class="mui-icon mui-icon-gear mui-pull-left"></span>
+			<h1 class="mui-title"></h1>
+			<div class="mui-pull-right">
+				<span class="mui-icon-extra mui-icon-extra-sweep " style="margin-top: 8px;"></span>
+			</div>
+		</header>
+		<div class="mui-content ucenter">
+
+			<div class="uinfo">
+				<div class="uinfo-item">
+				</div>
+				<div class="uinfo-item">
+					<img class="uinfo-head" src="" alt="" />
+					<span id="uinfo-username">
+		    			
+		    		</span>
+				</div>
+				<div class="uinfo-item">
+				</div>
+			</div>
+
+			<div class="cq-row flex-direction-row favbox">
+				<div class="cq-row-nopadding flex-direction-column" id="do-to-fav-act">
+					<span id="fav-act">
+						0
+					</span>
+					<span>
+						活动收藏
+					</span>
+				</div>
+				<div class="cq-row-nopadding flex-direction-column" style="display: none;">
+					<span id="fav-commodity">
+						0
+					</span>
+					<span>
+						商品收藏
+					</span>
+				</div>
+				<div class="cq-row-nopadding flex-direction-column" id="do-to-fav-circle">
+					<span id="fav-share">
+						0
+					</span>
+					<span>
+						动态收藏
+					</span>
+				</div>
+				<div class="cq-row-nopadding flex-direction-column" id="do-to-follow">
+					<span id="fav-user">
+						0
+					</span>
+					<span>
+						我的关注
+					</span>
+				</div>
+			</div>
+
+			<div class="cq-row ucenter-options" style="margin-top: 10px;background: #FFFFFF;">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li id="do-to-scan" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-sweep "></span>
+							<div class="mui-media-body">扫码验票</div>
+						</a>
+					</li>
+
+					<li id="do-to-myorder" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-order">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">我参与的活动</div>
+							<!--指的是我参与的别人的活动的订单-->
+						</a>
+					</li>
+					<li id="do-to-waiting-deliver-order" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-notice">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">我发布的活动</div>
+							<!--指的是别人参与我的活动的订单-->
+						</a>
+					</li>
+					<li id="do-to-tuikuan" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-class">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">退款/售后</div>
+						</a>
+					</li>
+					<!--<li id="do-to-address-manage" class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-express"></span>
+							<div class="mui-media-body">收货地址管理</div>
+						</a>
+					</li>-->
+				</ul>
+
+			</div>
+
+			<div class="cq-row" style="margin-top: 10px;">
+				<span>
+					必备工具
+				</span>
+			</div>
+			<div class="cq-row ucenter-options">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-gold"></span>
+							<div class="mui-media-body">我的资产</div>
+						</a>
+					</li>
+
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-find">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">我的足迹</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-people">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">会员名片</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-peoples">
+								<!--<span class="mui-badge mui-badge-red">5</span>-->
+							</span>
+							<div class="mui-media-body">我的粉丝</div>
+						</a>
+					</li>
+					<!--<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
+						<a href="#">
+							<span class="mui-icon-extra mui-icon-extra-express"></span>
+							<div class="mui-media-body">扫一扫</div>
+						</a>
+					</li>-->
+				</ul>
+
+			</div>
+
+			<div class="cq-row flex-direction-column" style="border-top: 10px solid #EFEFF4;">
+				<div class="cq-row" style="justify-content: center;align-items: center;padding-bottom: 0px;padding-top: 0px;">
+					<img style="height: 40px;width: 40px;border-radius: 50%;border: 1px solid #EFEFF4;" src="../../../img/logo.png" />
+				</div>
+				<div class="cq-row" style="color: #999999;align-items: center;justify-content: center;font-size: 12px;padding-bottom: 0px;padding-top: 4px;">
+					版权所有 南京车趣网路科技有限公司
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				userInfo = null,
+				userKey = null;
+
+			mui.init();
+			mui.plusReady(function() {
+				userInfo = config.fGetLoginUserInfo();
+				userKey = userInfo == null ? '00000000-0000-0000-0000-A5DDEC62D543' : userInfo.PrimaryKey;
+
+				//相关方法
+				func.fnToLogin();
+				func.fnInitFavData(userKey);
+				func.fnDoToMyOrder();
+				func.fnDoToWaitingDeliveOrder();
+				func.fnDoToTuikuan();
+				//				func.fnDoToAddressManage();
+				func.fnInitUserInfo(userInfo);
+				func.fnDoToSetting();
+				func.fnDoToFavAct(); //跳转到我收藏的活动页面
+				func.fnDoToFavCircle();
+				func.fnDoToFollow();
+				func.fnDoToScan(); //扫码验票
+
+			});
+
+			var func = {
+				fnDoToScan: function() {
+					document.querySelector('#do-to-scan')
+						.addEventListener('tap', function() {
+							checklogin(function() {
+								mui.openWindow({
+									url: "../scan/scan_ticket.html",
+									id: 'scan_ticket.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: true, //自动显示等待框，默认为true
+									}
+								});
+							});
+						}, false);
+				},
+				fnDoToFollow: function() {
+					document.querySelector('#do-to-follow')
+						.addEventListener('tap', function() {
+							checklogin(function() {
+								mui.openWindow({
+									url: "../myfav/myfav_customer.html",
+									id: 'myfav_customer.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+							});
+						}, false);
+				},
+				fnDoToFavCircle: function() {
+					document.querySelector('#do-to-fav-circle')
+						.addEventListener('tap', function() {
+							checklogin(function() {
+								mui.openWindow({
+									url: "../myfav/myfav_circle.html",
+									id: 'myfav_circle.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+							});
+						}, false);
+				},
+				fnDoToFavAct: function() {
+					document.querySelector('#do-to-fav-act')
+						.addEventListener('tap', function() {
+							checklogin(function() {
+								mui.openWindow({
+									url: "../myfav/myfav_activity.html",
+									id: 'myfav_activity.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+							});
+						}, false);
+				},
+				fnDoToSetting: function() {
+					document.querySelector('#do-to-setting')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: "../setting/setting.html",
+								id: 'setting.html',
+								preload: true,
+								createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false, //自动显示等待框，默认为true
+								}
+							});
+						}, false);
+				},
+				fnInitUserInfo: function(userInfo) {
+					if(userInfo) {
+						document.querySelector('#uinfo-username').innerText = userInfo.UserNickName;
+						document.querySelector('.uinfo-head').setAttribute('src', userInfo.HeadImageUrl || '../../../img/logo.png');
+					} else {
+						document.querySelector('#uinfo-username').innerText = '登录';
+						document.querySelector('.uinfo-head').setAttribute('src', '../../../img/logo.png');
+					}
+				},
+				/**
+				 * 跳转到登录页面
+				 */
+				fnToLogin: function() {
+					document.querySelector('#uinfo-username')
+						.addEventListener('tap', function() {
+							var self = this;
+							if(self.innerText === '登录' || userInfo == null) {
+								_fnToLogin();
+							}
+						}, false);
+				},
+				/**
+				 * 	初始化 收藏相关内容
+				 */
+				fnInitFavData: function(ukey) {
+					config.fGet({
+						link: '/UserCenter/' + ukey + '/GetShouCangCount',
+						callback: function(res) {
+							var data = res == 'error' ? {} : JSON.parse(res); //Id,ActFavCount,CommodityFavCount,ShareFavCount,MyFollowCount
+							document.querySelector('#fav-act').innerText = data.ActFavCount || 0;
+							document.querySelector('#fav-share').innerText = data.ShareFavCount || 0;
+							document.querySelector('#fav-user').innerText = data.MyFollowCount || 0;
+						}
+					});
+				},
+				/**
+				 * 调转到我参与的活动的订单列表页面
+				 */
+				fnDoToMyOrder: function() {
+					document.querySelector('#do-to-myorder')
+						.addEventListener('tap', function() {
+							checklogin(_fnToMyJoinOrder);
+						}, false);
+				},
+				/**
+				 * 跳转到别人参与到我发布的活动的订单列表页面（待处理 订单页面）
+				 */
+				fnDoToWaitingDeliveOrder: function() {
+					document.querySelector('#do-to-waiting-deliver-order')
+						.addEventListener('tap', function() {
+							checklogin(_fnToWaitingDeliveOrder);
+						}, false);
+				},
+				/**
+				 * 跳转到退款售后页面
+				 */
+				fnDoToTuikuan: function() {
+					document.querySelector('#do-to-tuikuan')
+						.addEventListener('tap', function() {
+							checklogin(_fnToTuikuan);
+						}, false);
+				} /*,*/
+				/**
+				 * 跳转到地址管理页面
+				 */
+				//				fnDoToAddressManage: function() {
+				//					document.querySelector('#do-to-address-manage')
+				//						.addEventListener('tap', function() {
+				//							checklogin(_fnToAddressManage);
+				//						}, false);
+				//				}
+
+			};
+
+			var _fnToLogin = function() {
+				mui.openWindow({
+					url: "../login/login.html",
+					id: 'ucenter_login.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					}
+				});
+			}
+			var _fnToMyJoinOrder = function() {
+				mui.openWindow({
+					url: "../order/myJoinOrder.html",
+					id: 'myJoinOrder.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					}
+				});
+			}
+			var _fnToWaitingDeliveOrder = function() {
+				mui.openWindow({
+					url: "../order/mypublishActmanage.html",
+					id: 'mypublishActmanage.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					}
+				});
+			}
+
+			var _fnToTuikuan = function() {
+				mui.openWindow({
+					url: "../order/tuikuan.html",
+					id: 'tuikuan.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					}
+				});
+			}
+
+			var _fnToAddressManage = function() {
+				mui.openWindow({
+					url: "../address/addres_manage_list.html",
+					id: 'addres_manage_list.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					}
+				});
+			}
+
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+					return;
+				} else {
+					return callback();
+				}
+			}
+		</script>
+	</body>
+
+</html>

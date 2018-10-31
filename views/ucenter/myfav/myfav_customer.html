@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.item-row {
+				margin-top: 8px !important;
+			}
+			
+			.cq-row,
+			.cq-row-nopadding span {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			#head-img {
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			#user-name {
+				color: #000000;
+			}
+			
+			#user-remark {
+				font-size: xx-small;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我关注的用户</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="follow-customer" class="mui-scroll-wrapper">
+				<div id="follow-customer-scroll" class="mui-scroll">
+
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				ws = null,
+				wo = null,
+				formatter = new Formatter();
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			var params = {};
+			params.LoginCustomerKey = '';
+			params.PageIndex = 0;
+			params.PageSize = 0;
+
+			mui.init({
+				pullRefresh: {
+					container: "#follow-customer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					func.fnClearParams();
+					func.fnGetFollowCustomer();
+					mui('#follow-customer').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if((params.PageIndex * params.PageSize) < setting.totalRows) {
+						params.PageIndex += 1; //config.fGetPageSize();
+						//获取下一页数据
+						console.info('up')
+						func.fnGetFollowCustomer();
+					}
+
+					mui('#follow-customer').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				func.fnBack();
+				func.fnDoToRemove();
+			});
+
+			mui.back = function() {
+				wo.reload(true);
+				ws.close();
+			}
+			var func = {
+				fnBack: function() {
+					document.getElementById('mui-action-back').addEventListener('tap', function() {
+						mui.back();
+					}, false);
+				},
+				fnDoToRemove: function() {
+					mui('#follow-customer-scroll').on('tap', '.remove', function() {
+						var self = this;
+						var key = self.parentNode.getAttribute('rel-customer');
+						var bkey = self.parentNode.getAttribute('rel-bcustomer');
+						var topParentNode = document.querySelector('#follow-customer-scroll');
+						var parentNode = self.parentNode.parentNode;
+
+						config.fPost({
+							link: '/FollowCustomer/CancelFollow',
+							params: {
+								CustomerKey: key,
+								BFollowCustomerKey: bkey
+							},
+							callback: function(res) {
+								var obj = JSON.parse(res).Data;
+								if(obj) {
+									wo.reload(true);
+									topParentNode.removeChild(parentNode);
+								}
+							}
+						});
+					});
+				},
+				fnGetFollowCustomer: function() {
+					try {
+						var userInfo = config.fGetLoginUserInfo();
+						if(userInfo && userInfo.PrimaryKey) {
+							plus.nativeUI.showWaiting('加载中...');
+							//防止服务器已经无数据 还继续请求，造成资源浪费
+							if(!setting.firstLoad) {
+								if(params.PageIndex >= setting.totalRows) {
+									plus.nativeUI.closeWaiting();
+									return;
+								}
+							}
+							if(!params.PageSize || params.PageSize == 0)
+								params.PageSize = config.fGetPageSize();
+
+							if(!params.CustomerKey) {
+								params.CustomerKey = userInfo.PrimaryKey;
+							}
+							console.info(JSON.stringify(params));
+							config.fPost({
+								link: '/FollowCustomer/GetFollowCustomers',
+								params: params,
+								callback: function(res) {
+									var obj = JSON.parse(res).Data;
+									if(setting.firstLoad) {
+										setting.firstLoad = false;
+										setting.totalRows = obj.totalRows;
+									}
+									if(obj.data.length > 0) {
+										_fnInitialList(obj.data);
+									}
+									plus.nativeUI.closeWaiting();
+								}
+							});
+						} else {
+							plus.nativeUI.toast('无法获取用户信息，请先登录后再试！');
+							return;
+						}
+					} catch(e) {
+						console.error(e.message);
+					}
+				},
+				fnClearParams: function() {
+					params.PageIndex = 0;
+
+					setting.firstLoad = true;
+					setting.totalRows = 0;
+
+					//清除html内容
+					var parentNode = document.querySelector('#follow-customer-scroll');
+					var childNodes = parentNode.querySelectorAll('.item-row');
+
+					if(childNodes && childNodes.length > 0) {
+						for(var i = 0; i < childNodes.length; i++) {
+							parentNode.removeChild(childNodes[i]);
+						}
+					}
+				}
+			}
+
+			function _fnInitialList(data) {
+				var parentNode = document.querySelector('#follow-customer-scroll');
+
+				for(var i = 0; i < data.length; i++) {
+					var da = data[i];
+					var div = document.createElement('div');
+					div.setAttribute('class', 'cq-row flex-direction-column item-row mui-table-view-cell');
+					var html = '';
+					html += '	<div rel-bcustomer="' + da.BFollowCustomerKey + '" rel-customer="' + da.CustomerKey + '" class="mui-slider-right mui-disabled ">';
+					html += '		<a class="mui-btn mui-btn-red remove">删除</a>';
+					html += '	</div>';
+					html += '	<div class="mui-slider-handle">';
+					html += '		<div class="cq-row-nopadding spaace-between flex-direction-row">';
+					html += '			<span id="comcreatetime">' + formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(da.CreateTime)) + '关注</span>';
+					html += '			<div><span>左滑动删除</span></div>';
+					html += '		</div>';
+					html += '		<div class="cq-row-nopadding flex-direction-row" style="border-top: 1px solid #EFEFF4;padding: 6px 0px 0px 0px;">';
+					html += '			<img id="head-img" src="' + da.BFollowCustomerHeadImage + '"/>';
+					html += '			<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">';
+					html += '				<span id="user-name">';
+					html += '					' + da.BFollowCustomerNickName;
+					html += '				</span>';
+					html += '				<span id="user-remark">';
+					html += '					' + da.BFollowCustomerRemark || '我比较神秘，不给自己描述。';
+					html += '				</span>';
+					html += '			</div>';
+					html += '		</div>';
+					html += '	</div>';
+					div.innerHTML = html;
+					parentNode.appendChild(div);
+				}
+			}
+		</script>
+	</body>
+
+</html>

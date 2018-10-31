@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<style type="text/css">
+			#msg-list {
+				border: 0px !important;
+				background: #ffffff;
+				box-shadow: none;
+				-webkit-box-shadow: none;
+			}
+			
+			.friend-item {
+				padding: 6px 10px 6px 10px;
+				font-size: 14px;
+				color: #797979;
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				border-bottom: 1px solid #EFEFF4;
+			}
+			
+			.item-group-friends .friend-item:first-child {
+				border: none !important;
+			}
+			
+			.item-group-friends .friend-item:last-child {
+				border: none !important;
+			}
+			
+			.userhead {
+				height: 45px;
+				width: 45px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.item-userinfo {
+				padding: 0px 0px 0px 10px;
+			}
+			
+			.username {
+				color: #000000;
+			}
+			
+			.userremark {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg {
+				color: #797979;
+				font-size: 12px;
+			}
+			
+			.lastmsg-time {
+				font-size: x-small;
+				color: #999999;
+			}
+			
+			.mui-slider-handle {
+				display: flex;
+				display: -webkit-flex;
+				flex: 1;
+				justify-content: center;
+				align-items: center;
+			}
+			
+			.agree-btn {
+				padding: 2px 12px;
+				font-size: 14px;
+			}
+			
+			.btn-style {
+				color: #999999 !important;
+				border: #999999 !important;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新朋友</h1>
+		</header>
+
+		<div class="mui-content">
+			<ul id="msg-ul" class="mui-table-view item-group-friends">
+				<!--item-->
+				<!--<li class="friend-item mui-table-view-cell mui-ellipsis">
+					<div class="mui-slider-right mui-disabled">
+						<a class="mui-btn mui-btn-grey">拒绝</a>
+						<a class="mui-btn mui-btn-red">删除</a>
+					</div>
+					<div class="mui-slider-handle">
+						<img class="userhead" src="../../img/logo.png" />
+						<div data-ukey="123" class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">
+							<span class="username">tanmingchao</span>
+							<span class="lastmsg mui-ellipsis">121321321321121321321321</span>
+						</div>
+						<div class="cq-row-nopadding flex-direction-column" style="width: auto;">
+							<button type="button" data-ukey="123" class="mui-btn mui-btn-blue mui-btn-outlined agree-btn">同意</button>
+						</div>
+					</div>
+
+				</li>-->
+
+			</ul>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var ws = null,
+				wo = null;
+			mui.init();
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				fnBack();
+				fnToUDetail();
+				fnAgree(); //同意好友申请
+				fnChangeAgreeStatus();
+				fnGetFriendApplyListFromCache();
+			});
+
+			//获取所有好友申请记录
+			function fnGetFriendApplyListFromCache() {
+				config.fGet({
+					link: '/Logger/apply_' + config.fGetLoginUserInfo().UserLoginAccount + '/FriendApplyAll',
+					callback: function(res) {
+						var obj = JSON.parse(res);
+						if(obj.Data && obj.Data.length > 0) {
+							var parentNode = document.querySelector('#msg-ul');
+							console.info(JSON.stringify(obj.Data));
+							for(var i = 0; i < obj.Data.length; i++) {
+								var item = obj.Data[i];
+								_fnInitFriendApplyRow(item, parentNode);
+							}
+						}
+					}
+				});
+			}
+
+			//初始化每一行内容
+			function _fnInitFriendApplyRow(applyInfo, parentNode) {
+				var li = document.createElement('li');
+				li.setAttribute('class', 'friend-item mui-table-view-cell mui-ellipsis');
+				var html = '';
+				html += '<div class="mui-slider-right mui-disabled">';
+				html += '		<a class="mui-btn mui-btn-grey">拒绝</a>';
+				html += '		<a class="mui-btn mui-btn-red">删除</a>';
+				html += '	</div>';
+				html += '	<div class="mui-slider-handle">';
+				html += '		<img class="userhead" src="' + applyInfo.Customer.HeadImageUrl + '" />';
+				html += '		<div data-pkey="'+applyInfo.Customer.PrimaryKey+'" data-ukey="' + applyInfo.Customer.UserLoginAccount + '" class="cq-row-nopadding flex-direction-column item-userinfo mui-ellipsis" style="width: auto;flex: 1;">';
+				html += '			<span class="username">' + applyInfo.Customer.UserNickName + '</span>';
+				html += '			<span class="lastmsg mui-ellipsis">' + applyInfo.CacheTime + '</span>';
+				html += '		</div>';
+				html += '		<div class="cq-row-nopadding flex-direction-column" style="width: auto;">';
+				
+				if(applyInfo.Status==1){
+					html += '			<button type="button" data-ukey="' + applyInfo.Customer.UserLoginAccount + '" class="mui-btn mui-btn-blue mui-btn-outlined agree-btn btn-style">已同意</button>';					
+				}
+				if(applyInfo.Status==0){
+					html += '			<button type="button" data-ukey="' + applyInfo.Customer.UserLoginAccount + '" class="mui-btn mui-btn-blue mui-btn-outlined agree-btn">同意</button>';
+				}
+				if(applyInfo.Status==2){
+					html += '			<button type="button" data-ukey="' + applyInfo.Customer.UserLoginAccount + '" class="mui-btn mui-btn-blue mui-btn-outlined agree-btn">已拒绝</button>';
+				}
+				html += '		</div>';
+				html += '	</div>';
+				li.innerHTML = html;
+				parentNode.appendChild(li);
+			}
+
+			//更改同意状态
+			function fnChangeAgreeStatus() {
+				window.addEventListener('changeAgreeStatus', function(e) {
+					var fAccount = e.detail.ukey;
+					var btn = document.querySelector('button[data-ukey="' + fAccount + '"]');
+					btn.innerText = "已同意";
+					if(!btn.classList.contains('btn-style')) {
+						btn.classList.add('btn-style');
+					}
+				});
+			}
+
+			//同意好友申请
+			function fnAgree() {
+				mui('#msg-ul').on('tap', '.agree-btn', function() {
+					//跳转到好友设置页面，设置：选择所属分组或新建分组 添加到分组
+					var self = this;
+					var text = self.innerText;
+					if(text != '已同意') {
+						var ukey = self.getAttribute('data-ukey');
+						mui.openWindow({
+							url: "apply_friend_setting.html",
+							id: 'apply_friend_setting.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							},
+							extras: {
+								ukey: ukey
+							}
+						});
+					}
+				});
+			}
+
+			//跳转到用户详情页
+			function fnToUDetail() {
+				mui('#msg-ul').on('tap', '.item-userinfo', function() {
+					var ukey = this.getAttribute('data-pkey');
+					mui.openWindow({
+						url: "../ucenter/uinfo/udetail.html",
+						id: 'udetail.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						},
+						extras: {
+							ukey: ukey,
+							isBeApplyed: true //被别人申请添加为好友
+						}
+					});
+				});
+			}
+
+			function fnBack() {
+				//返回按钮
+				document.querySelector('#mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				}, false);
+			}
+
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview();
+				ws.close();
+			}
+		</script>
+	</body>
+
+</html>

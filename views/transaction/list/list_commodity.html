@@ -1,0 +1,450 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../css/app.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-bar-nav {
+				-webkit-box-shadow: none;
+				box-shadow: none;
+			}
+			
+			.mui-content,
+			{
+				margin-top: 44px;
+			}
+			
+			.mui-scroll {
+				margin-top: 77px;
+			}
+			
+			.nav-menu {
+				height: 36px;
+				border-radius: 0px;
+				border: 0px;
+				background: #FFFFFF;
+				position: fixed;
+				top: 44px;
+				z-index: 3;
+			}
+			
+			.nav-menu a {
+				line-height: 36px !important;
+				font-size: 13px;
+				border: 0px;
+				color: #999999 !important;
+			}
+			
+			.nav-menu a.mui-active {
+				background: none !important;
+			}
+			
+			.nav-menu a.mui-control-item {
+				border: 0px !important;
+				/*border-bottom: 1px solid #007AFF !important;*/
+			}
+			
+			.mui-bar-nav~.mui-content .mui-pull-top-pocket {
+				top: 77px;
+			}
+			
+			.q-box {
+				z-index: 3;
+				top: 36px;
+				background: #ffffff;
+				padding: 10px 25px;
+				font-size: 12px;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.display-none {
+				display: none !important;
+			}
+			
+			#item1-type {
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				justify-content: flex-start;
+				flex-wrap: wrap;
+			}
+			
+			#item1-type a {
+				padding: 2px 10px;
+				border: 1px solid #EFEFF4;
+				margin: 5px 5px;
+				color: #999999;
+			}
+			
+			.checked {
+				color: #0275D8 !important;
+			}
+			
+			.price-order a {
+				border: 1px solid #EFEFF4;
+				padding: 2px 10px;
+				margin: 0px 5px;
+				color: #999999;
+			}
+			
+			.price-range {
+				margin: 0px !important;
+				flex: 1;
+				padding: 2px;
+				height: 24px !important;
+				font-size: 12px;
+			}
+			
+			.price-btn {
+				height: 30px;
+				font-size: 13px;
+				line-height: 16px;
+				flex: 1;
+				margin: 0px 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">商品列表</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-segmented-control nav-menu">
+				<a class="q-box-tab-type mui-control-item mui-active" href="#item1-type">分类-全部</a>
+				<a class="q-box-tab-time mui-control-item" href="#">发布时间</a>
+				<a class="q-box-tab-distance mui-control-item" href="#">距离</a>
+				<a class="q-box-tab-price mui-control-item" href="#item2-price">价格</a>
+			</div>
+
+			<div class="conditions">
+				<!--display-none-->
+				<div id="item1-type" class="q-box mui-control-content mui-active display-none">
+					<a rel='-1' href="#" class="">全部</a>
+
+				</div>
+				<div id="item2-price" class="q-box mui-control-content ">
+					<div class="cq-row-nopadding flex-direction-row price-order">
+						<span>
+							价格排序：
+						</span>
+						<a id="hightolow" rel="desc" class="mui-control-item" href="#">从高到低</a>
+						<a id="lowtohigh" rel="asc" class="mui-control-item" href="#">从低到高</a>
+					</div>
+					<div class="cq-row-nopadding flex-direction-row price-order" style="margin: 4px 0px;padding: 5px 0px;">
+						<span>
+							价格区间：
+						</span>
+						<input class="price-range" type="number" id='start-range' value="0" style="flex: 1;"> &nbsp;-&nbsp;
+						<input class="price-range" type="number" id='end-range' value="0" style="flex: 1;">
+						<span id="price-range" style="padding: 0px 5px;">
+								(0-20)
+							</span>
+					</div> 
+					<div class="cq-row-nopadding flex-direction-row" style="margin: 4px 0px;padding: 5px 0px;border-top: 1px solid #EFEFF4;">
+						<button class="price-btn" type="button" class="mui-btn">重置</button>
+						<button class="price-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">查询</button>
+					</div>
+				</div>
+
+			</div>
+
+			<div id="commoditylist" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<div id="list" class="commodity-box">
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+						<a href="#" class="commodity-item">
+							<img src="../../../img/temp/01.png" class="show-image">
+							<p class="commodity-title">zheshibiaotineirong</p>
+							<p class="commodity-price">￥12.00</p>
+							<div class="options">
+								<span class="zan">0赞</span>
+								<span class="zan">4评论</span>
+							</div>
+						</a>
+
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var local = null;
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			var wv = null,
+				wo = null,
+				tkey = null,
+				config = config();
+
+			var params = {};
+			params.Lat = null;
+			params.Long = null;
+			params.CommodityName = "";
+			params.CityName = "";
+			params.StartPrice = minPrice;
+			params.EndPrice = maxPrice;
+			params.PageIndex = 0;
+			params.PageSize = 0;
+			params.OrderInfos = orderCondition; //[{"OrderDirection":"asc","OrderField":"CreateTime"},{"OrderDirection":"asc","OrderField":"CommodityPrice"}]
+
+			var priceOrder = {
+				order: ''
+			}; //价格排序方式
+			var distanceOrder = {
+				order: ''
+			} //距离排序方式
+
+			mui.plusReady(function() {
+
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				tkey = wv.tkey;
+
+				console.info('tkey:' + tkey);
+
+				func.fnBack(wv);
+				func.fnInitType(tkey);
+				func.fnQBoxTypeTabClickEvent();
+				func.fnQBoxPriceTabClickEvent();
+				func.fnTypeTapEvent();
+				func.fnPublishTimeClickEvent();
+				func.fnPublishDistanceClickEvent();
+				func.fnPriceOrderClickEvent();
+			});
+
+			mui.init({
+				pullRefresh: {
+					container: "#commoditylist", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			var func = {
+				fnBack: function(wv) {
+					document.querySelector('#mui-action-back').addEventListener('tap', function() {
+						wv.close();
+					}, false);
+				},
+				//价格 从高到低 或者 从低到高
+				fnPriceOrderClickEvent: function() {
+					mui('.price-order').on('tap', 'a', function() {
+						var self = this;
+						var orderDirection = self.getAttribute('rel');
+						priceOrder.order = orderDirection;
+						console.info(priceOrder.order);
+
+						//选中之后的active样式
+						if(!self.classList.contains('checked'))
+							self.classList.add('checked');
+						if(self.getAttribute('id') == 'hightolow') {
+							var lowtohigh = self.parentNode.querySelector('#lowtohigh');
+							if(lowtohigh.classList.contains('checked'))
+								lowtohigh.classList.remove('checked');
+						} else {
+							var hightolow = self.parentNode.querySelector('#hightolow');
+							if(hightolow.classList.contains('checked'))
+								hightolow.classList.remove('checked');
+						}
+
+					});
+				},
+				//分类tab点击事件，选择分类
+				fnQBoxTypeTabClickEvent: function() {
+					document.querySelector('.q-box-tab-type').addEventListener('tap', function() {
+						var price = document.querySelector('#item2-price');
+						var priceClazz = price.classList;
+						if(!priceClazz.contains('display-none')) {
+							priceClazz.add('display-none');
+						}
+						document.querySelector('#item1-type').classList.toggle('display-none');
+					}, false);
+				},
+				//价格点击事件
+				fnQBoxPriceTabClickEvent: function() {
+					document.querySelector('.q-box-tab-price').addEventListener('tap', function() {
+						var price = document.querySelector('#item1-type');
+						var priceClazz = price.classList;
+						if(!priceClazz.contains('display-none')) {
+							priceClazz.add('display-none');
+						}
+						document.querySelector('#item2-price').classList.toggle('display-none');
+					}, false);
+				},
+				//分类下拉 中的选项点击事件
+				fnTypeTapEvent: function() {
+					mui('#item1-type').on('tap', 'a', function() {
+						var self = this;
+						//移除其他a的checked样式，同时为当前 a添加checked样式
+						mui('#item1-type>a').each(function(index, item) {
+							var clazz = item.classList;
+							if(clazz.contains('checked'))
+								clazz.remove('checked');
+						});
+						if(!self.classList.contains('checked')) {
+							self.classList.add('checked');
+						}
+
+						var tkey = self.getAttribute('rel');
+						document.querySelector('.q-box-tab-type').innerText = '分类-' + self.innerText;
+					});
+				},
+				//初始化 分类
+				fnInitType: function(tkey) {
+					var type = localStorage.getItem('transType');
+					var typejson = JSON.parse(type);
+					_initTypeHtml(typejson, tkey);
+				},
+				//发布时间点击事件
+				fnPublishTimeClickEvent: function() {
+					document.querySelector('.q-box-tab-time').addEventListener('tap', function() {
+						var type = document.querySelector('#item1-type');
+						var price = document.querySelector('#item2-price');
+						if(!type.classList.contains('display-none'))
+							type.classList.add('display-none');
+
+						if(!price.classList.contains('display-none'))
+							price.classList.add('display-none');
+
+						//TODO 重新加载列表，按照发布时间顺序重新获取排序后的数据
+
+					}, false);
+				},
+				//距离点击事件
+				fnPublishDistanceClickEvent: function() {
+					document.querySelector('.q-box-tab-distance').addEventListener('tap', function() {
+						var type = document.querySelector('#item1-type');
+						var price = document.querySelector('#item2-price');
+						if(!type.classList.contains('display-none'))
+							type.classList.add('display-none');
+
+						if(!price.classList.contains('display-none'))
+							price.classList.add('display-none');
+
+						//TODO 重新加载列表，按照距离顺序顺序重新获取排序后的数据
+
+					}, false);
+				}
+
+			}
+
+			function _initTypeHtml(data, tkey) {
+				if(data && data.length > 0) {
+					var ischecked = false;
+					var typeBox = document.getElementById('item1-type');
+					for(var i = 0; i < data.length; i++) {
+						if(data[i].PrimaryKey == tkey)
+							ischecked = true;
+						var a = document.createElement('a');
+						a.setAttribute('class', tkey == data[i].PrimaryKey ? 'checked' : '');
+						a.setAttribute('rel', data[i].PrimaryKey);
+						a.innerText = data[i].TypeName;
+						typeBox.appendChild(a);
+					}
+					if(!ischecked) {
+						document.getElementById('item1-type')
+							.querySelectorAll('a')[0].setAttribute('class', 'checked');
+					}
+				}
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+
+					mui('#commoditylist').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if(params.PageIndex < setting.totalRows) {
+						params.PageIndex += config.fGetPageSize();
+					}
+					//获取下一页数据
+
+					mui('#commoditylist').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function clearParam() {
+
+			}
+		</script>
+	</body>
+
+</html>

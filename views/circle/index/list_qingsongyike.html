@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>轻松一刻</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/icons-extra.css" />
+		<style type="text/css">
+			i.mui-icon-closeempty {
+				display: none !important;
+			}
+			
+			.item-img img {
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="mui-content">
+			<div id='list-circle' class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--这里放置真实显示的DOM内容-->
+					<ul id="list-circle-yule-ul" class="mui-table-view">
+
+					</ul>
+				</div>
+
+			</div>
+
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.util.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.location.distance.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.base64.js"></script>
+		<script type="text/javascript" src="../../../js/lib/circle.list.js"></script>
+		<script type="text/javascript">
+			var base64 = new Base64();
+			var formatter = new Formatter();
+			var config = config();
+			var userInfo = config.fGetLoginUserInfo();
+			var util = njcqUtil();
+			var distance = new Distance();
+			var actShare = new ActShare();
+			//存放总行数，判断是否是初次加载
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+			//请求所需参数
+			var params = {};
+			params.TypeKey = "";
+			params.ActShareKey = "";
+			params.ActShareTitle = "";
+			params.CurrentLoginUserKey = "";
+			params.PageIndex = 0;
+			params.PageSize = config.fGetPageSize();
+
+			mui.init({
+				pullRefresh: {
+					container: "#list-circle", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				params.TypeKey = self.pkey;
+				//播放视频
+				playVideo();
+				fPlayVideoFullScreen();
+				fnDianZan();
+				fnDtoDetail();
+				fnDtoDetail2();
+			});
+
+			/*----------事件|数据绑定----------------*/
+			function fnDtoDetail() {
+				mui('#list-circle').on('tap', '.item-row-context', function() {
+					self = this;
+					var pkey = self.getAttribute('rel');
+					mui.openWindow({
+						url: "../detail/detail.html",
+						id: 'detail.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						},
+						extras: {
+							pkey: pkey
+						}
+					});
+				});
+			}
+
+			function fnDtoDetail2() {
+				mui('#list-circle').on('tap', 'span.mui-icon-extra-comment', function() {
+					self = this;
+					var pkey = self.getAttribute('rel');
+					mui.openWindow({
+						url: "../detail/detail.html",
+						id: 'detail.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						},
+						extras: {
+							pkey: pkey
+						}
+					});
+				});
+			}
+
+			function fnDianZan() {
+				mui('#list-circle').on('tap', 'span.mui-icon-extra-like', function() {
+					var self = this;
+					plus.nativeUI.showWaiting('请求处理中，请稍后..');
+					checklogin(function() {
+						var pkey = self.getAttribute('rel');
+						var ukey = userInfo.PrimaryKey;
+
+						var url = '';
+						var active = self.className.indexOf('dianzan-active') > -1;
+						if(active) {
+							//							self.classList.remove('dianzan-active');
+							url = '/ActivityShare/' + pkey + '/' + ukey + '/CancelClickGood'
+						} else {
+							url = '/ActivityShare/' + pkey + '/' + ukey + '/ClickGood'
+						}
+						config.fGet({
+							link: url,
+							callback: function(res) {
+								var data = JSON.parse(res).Data;
+								if(data) {
+									if(active) {
+										self.classList.remove('dianzan-active');
+									} else {
+										self.classList.add('dianzan-active');
+									}
+									plus.nativeUI.toast(active ? '已取消点赞' : '点在操作成功！');
+								}
+								plus.nativeUI.closeWaiting();
+							}
+						})
+
+					});
+				});
+
+			}
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					plus.nativeUI.closeWaiting();
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../../ucenter/login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+					return;
+				} else {
+					return callback();
+				}
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					//					console.info(JSON.stringify(params));
+					fBindData();
+					mui('#list-circle').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if(params.PageIndex < setting.totalRows) {
+						params.PageIndex += params.PageSize;
+						//获取下一页数据
+						fBindData();
+					}
+					//					console.info(JSON.stringify(params));
+
+					mui('#list-circle').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			//初始化数据方法
+			function fBindData() {
+				var local = config.fGetLocaltion();
+
+				if(userInfo) {
+					params.CurrentLoginUserKey = userInfo.PrimaryKey;
+				}
+
+				if(params.TypeKey.length != 0) {
+					actShare.fGetList({
+						link: null,
+						setting: setting,
+						params: params
+					}, function(res) {
+						if(res && res.length > 0) {
+							var container = document.getElementById('list-circle-yule-ul');
+							for(var i = 0; i < res.length; i++) {
+								//先取出数据中 的Type，根据typa判断初始化什么样的ht
+								var data = res[i];
+								var html = actShare.fInitHtml(data, local.coords.latitude, local.coords.longitude);
+
+								var li = document.createElement('li');
+								li.setAttribute("class", "mui-row circle-item");
+								li.innerHTML = html;
+								container.appendChild(li);
+							}
+						}
+					});
+				}
+			}
+
+			//清除参数
+			function clearParam() {
+				//				params.TypeKey = "";
+				params.ActShareKey = "";
+				params.ActShareTitle = "";
+				params.CurrentLoginUserKey = "";
+				params.PageIndex = 0;
+				//				params.PageSize = config.fGetPageSize();
+
+				setting.firstLoad = true;
+				setting.totalRows = 0;
+
+				var target = document.getElementById("list-circle-yule-ul");
+				var childs = document.querySelectorAll('.circle-item');
+
+				for(var i = 0; i < childs.length; i++) {
+					target.removeChild(childs[i]);
+				}
+
+			}
+
+			//计算视频中的长度
+			var initTimeLength = function(timeLength) { //根据秒数格式化时间
+				timeLength = parseInt(timeLength);
+				var second = timeLength % 60;
+				var minute = (timeLength - second) / 60;
+				return(minute < 10 ? "0" + minute : minute) + ":" + (second < 10 ? "0" + second : second);
+			}
+			/**
+			 * 点击事件，播放视频 
+			 */
+			function playVideo() {
+				//图标点击
+				mui('#list-circle').on('tap', '.play-icon', function() {
+					var self = this;
+					var video = self.parentNode.querySelector('video');
+					var progress = self.parentNode.querySelector('.progressTime');
+
+					//获取当前对象父对象下面的video，并开始播放
+					if(video.paused) {
+						self.classList.remove('play-icon');
+						progress.classList.remove('hide-progress');
+						video.play();
+					} else {
+						self.classList.add('play-icon');
+						progress.classList.add('hide-progress');
+						video.pause();
+					};
+
+					var duration = video.duration; //时长
+					self.parentNode.querySelector('.all-progress').innerText = initTimeLength(duration);
+					var current = self.parentNode.querySelector('.current');
+
+					//播放进度
+					var current_tar = self.parentNode.querySelector('.timeBar');
+					video.addEventListener('timeupdate', function() {
+						current.innerText = initTimeLength(video.currentTime);
+						current_tar.style.width = (video.currentTime / duration) * 100 + '%';
+					});
+
+					//播放完成
+					video.addEventListener('ended', function() {
+						self.classList.add('play-icon');
+						progress.classList.add('hide-progress');
+					});
+
+					video.addEventListener('tap', function() {
+						if(video.paused) {
+							//							self.classList.remove('play-icon');
+							//							video.play();
+						} else {
+							self.classList.add('play-icon');
+							progress.classList.remove('hide-progress');
+							video.pause();
+						}
+					});
+
+				});
+
+			}
+			/**
+			 * 全屏播放 
+			 */
+			function fPlayVideoFullScreen() {
+				mui('#list-circle').on('tap', '.video-all-screen', function() {
+					var self = this;
+					var video = self.parentNode.parentNode.parentNode.querySelector('video');
+					video.webkitEnterFullscreen();
+					//For Firefox
+					//					video.mozRequestFullScreen();
+					video.controls = false;
+					return false;
+				});
+			}
+		</script>
+	</body>
+
+</html>

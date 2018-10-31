@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../../css/app.css" />
+		<style type="text/css">
+			.userhead {
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">用户设置</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 10px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<img class="userhead" src="../../../img/temp/01.png" />
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						<span id="username">
+		    				thomas
+		    			</span>
+						<span id="remark" style="color: #999999;font-size: 12px;">
+		    				这是个人简介
+		    			</span>
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 10px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						账号与安全
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 1px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						消息通知设置
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 1px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-row" style="padding: 0px 10px;">
+						<span>
+							清理缓存空间
+						</span>
+						<span id="cache-size" style="text-align: center;flex: 1;color: #999999;">
+							12.0k
+						</span>
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 1px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						意见与反馈
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 10px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						关于我们
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 1px">
+				<div class="cq-row-nopadding" style="flex: 1;;">
+					<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;">
+						给我们评分支持一下
+					</div>
+				</div>
+				<span class="mui-icon mui-icon-arrowright" style="align-self: center;color: #999999;font-size: 16px;"></span>
+			</div>
+
+			<div class="cq-row flex-direction-row spaace-between" style="margin-top: 10px">
+				<button id="do-to-logout" type="button" class="mui-btn mui-btn-yellow mui-btn-block" style="height: 30px;line-height: 0px;font-size: 14px;">退出登录</button>
+			</div>
+
+		</div>
+
+		<script type="text/javascript" src="../../../plugins/web-im/demo/javascript/dist/WebIM.config.js"></script>
+		<script type="text/javascript" src="../../../plugins/web-im/sdk/dist/strophe-1.2.8.min.js"></script>
+		<script type="text/javascript" src="../../../plugins/web-im/sdk/dist/websdk-1.4.11.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.hx.js"></script>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+
+			var wv = null,
+				wo = null,
+				config = config(),
+				userInfo = config.fGetLoginUserInfo();
+
+			mui.init();
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				func.fnBack();
+				func.fnDoToLogOut();
+			});
+
+			var func = {
+				fnBack: function() {
+					document.querySelector('#mui-action-back')
+						.addEventListener('tap', function() {
+							wv = wv || plus.webview.currentWebview();
+							wv.close();
+						}, false);
+				},
+				fnDoToLogOut: function() {
+					document.querySelector('#do-to-logout')
+						.addEventListener('tap', function() {
+							if(!hxConfig.conn && hxConfig.conn != null) {
+								hxConfig.conn.close();
+								hxConfig.conn = null;
+							}
+							localStorage.setItem('$users', '');
+							wo.reload();
+							wv.close();
+						}, false);
+				}
+			}
+		</script>
+	</body>
+
+</html>

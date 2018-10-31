@@ -1,0 +1,316 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.mui-segmented-control {
+				border-radius: 0px;
+				border: 0px;
+				background: #FFFFFF;
+				margin-top: 2px;
+			}
+			
+			.mui-segmented-control .mui-control-item {
+				border-left: 0px !important;
+				border-right: 0px !important;
+				color: #000000;
+				border-bottom: 1px;
+			}
+			
+			.mui-segmented-control .mui-control-item.mui-active {
+				background: none;
+				color: #007aff;
+				border-bottom: 2px solid #007aff;
+			}
+			
+			.userhead {
+				height: 35px;
+				width: 35px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			/*.mui-scroll-wrapper {
+				position: initial;
+			}*/
+			
+			.mui-bar-nav~.mui-content .mui-pull-top-pocket {
+				top: 0px;
+			}
+			
+			.cq-row,
+			.cq-row-nopadding {
+				font-size: 13px;
+			}
+			
+			.order-row {
+				margin-top: 8px;
+			}
+			
+			.display-none {
+				display: none;
+			}
+			
+			#scroll1 {
+				top: 84px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">订单管理</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-segmented-control tabs" style="position: fixed;top: 42px;z-index: 3;">
+				<a class="mui-control-item mui-active" href="#item1" rel="" data-index="0">全部</a>
+				<a class="mui-control-item" href="#item2" rel="-1" data-index="1">待支付</a>
+				<!--正常支付-->
+				<a class="mui-control-item" href="#item3" rel="0" data-index="2">待验票</a>
+				<!--已取消-->
+				<a class="mui-control-item" href="#item4" rel="1" data-index="3">退款订单</a>
+				<!--活动结束，订单完成-->
+				<a class="mui-control-item" href="#item5" rel="2" data-index="4">已完成</a>
+			</div>
+
+			<div class="">
+				<div id="scroll1" class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div id="item1" class="mui-control-content mui-active">
+						</div>
+
+						<div id="item2" class="mui-control-content">
+
+						</div>
+
+						<div id="item3" class="mui-control-content">
+
+						</div>
+						<div id="item4" class="mui-control-content">
+
+						</div>
+						<div id="item5" class="mui-control-content">
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				formatter = new Formatter(),
+				userInfo = config.fGetLoginUserInfo(),
+				activeId = 0, //当前激活的tab
+				wv = null,
+				wo = null;
+
+			var params = {};
+			params.ActKey = null;
+			params.OrderStatus = null;
+			params.PageIndex = 0;
+			params.PageSize = null;
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			mui.init({
+				swipeBack: false, //启用右滑关闭功能
+				pullRefresh: {
+					container: "#scroll1", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				params.ActKey = wv.pkey;
+
+				func.fnBack();
+				func.fnTabsClickEvent();
+
+			});
+
+			var func = {
+				fnGetOrderList: function() {
+					params.PageSize = config.fGetPageSize();
+					config.fPost({
+						link: '/ActivityOrder/ActBmCustomerList',
+						params: params,
+						callback: function(res) {
+							var obj = JSON.parse(res).Data;
+
+							if(setting.firstLoad) {
+								setting.firstLoad = false;
+								setting.totalRows = obj.totalRows;
+							}
+							//初始化html
+							_fnInitHtml(obj.data);
+
+						}
+					})
+				},
+				fnBack: function() {
+					document.querySelector('#mui-action-back')
+						.addEventListener('tap', function() {
+							wv = wv || plus.webview.currentWebview();
+							wv.close();
+						}, false);
+				},
+				fnTabsClickEvent: function() {
+					mui('.tabs').on('tap', 'a', function() {
+						var self = this;
+						var rel = self.getAttribute('rel');
+						var data_index = self.getAttribute('data-index');
+
+						if(activeId != data_index) {
+
+							//隐藏 之前的  context item
+							document.getElementById('item' + (parseInt(activeId) + 1))
+								.classList.add('display-none');
+							document.getElementById('item' + (parseInt(activeId) + 1))
+								.classList.remove('mui-active');
+							//显示当前 item
+							document.getElementById('item' + (parseInt(data_index) + 1))
+								.classList.add('mui-active');
+							document.getElementById('item' + (parseInt(data_index) + 1))
+								.classList.remove('display-none');
+						}
+						activeId = data_index;
+						params.OrderStatus = rel;
+
+						var id = '#item' + (parseInt(activeId) + 1);
+						var parentNode = document.querySelector(id);
+						var childNodes = parentNode.querySelectorAll('.order-row');
+						if(childNodes && childNodes.length > 0) {
+							for(var i = 0; i < childNodes.length; i++) {
+								parentNode.removeChild(childNodes[i]);
+							}
+						}
+
+						func.fnGetOrderList();
+					});
+
+				}
+			};
+
+			function _fnInitHtml(data) {
+				if(data && data.length > 0) {
+					var parentNode = document.getElementById('item' + (parseInt(activeId) + 1));
+					for(var i = 0; i < data.length; i++) {
+						var div = document.createElement('div');
+						div.setAttribute('class', 'cq-row-nopadding flex-direction-column order-row');
+						var html = '';
+						html += '<div class="cq-row flex-direction-row" style="border-bottom: 1px solid #EFEFF4;">';
+						html += '		<div class="cq-row-nopadding flex-direction-row" style="flex: 1;">';
+						html += '			<img class="userhead" src="' + data[i].CustomerHeadImage + '">';
+						html += '			<div class="cq-row-nopadding flex-direction-column" style="padding: 0px 10px;line-height: 16px;">';
+						html += '				<span id="username">';
+						html += '					' + data[i].CustomerNickName;
+						html += '				</span>';
+						html += '				<span id="crreatetime" style="color: #999999;">';
+						html += '				' + formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(data[i].CreateTime));
+						html += '				</span>';
+						html += '			</div>';
+						html += '		</div>';
+						html += '		<span id="orderstatus" style="color: #0275D8;">';
+						html += '			' + data[i].ActOrderStatus;
+						html += '		</span>';
+						html += '	</div>';
+						html += '	<div class="cq-row flex-direction-row" style="padding-bottom: 2px;">';
+						html += '		<div class="cq-row-nopadding flex-direction-row" style="flex: 1;">';
+						html += '			<span>';
+						html += '				订单号：';
+						html += '			</span>';
+						html += '			<span id="orderNo">';
+						html += '				' + data[i].OrderOnlyKey;
+						html += '			</span>';
+						html += '		</div>';
+						html += '		<span id="num-and-price">';
+						html += '			购票张数 x' + data[i].ParticipateNum;
+						html += '		</span>';
+						html += '	</div>';
+						html += '	<div class="cq-row flex-direction-row" style="padding-top: 2px;">';
+						html += '		<div class="cq-row-nopadding flex-direction-row" style="flex: 1;">';
+						html += '			<span id="waiting-scan-num">';
+						html += '				待验证凭证 x' + data[i].WaitScanPingZhengNum;
+						html += '			</span>';
+						html += '		</div>';
+						html += '		<span id="zuofei-num">';
+						html += '			作废凭证 x' + data[i].ZuoFeiPingNum;
+						html += '		</span>';
+						html += '	</div>';
+						html += '	<div class="cq-row flex-direction-row spaace-between" style="border-top: 1px solid #efeff4;">';
+						html += '		<span></span>';
+						html += '		<span id="total-price" style="color: orangered;">';
+						html += '			合计：￥' + data[i].OrderTotalPrice + '元';
+						html += '		</span>';
+						html += '	</div>';
+						div.innerHTML = html;
+						parentNode.appendChild(div);
+					}
+				}
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					func.fnGetOrderList();
+					mui('#scroll1').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					//					clearParam();
+					func.fnGetOrderList();
+
+					mui('#scroll1').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function clearParam() {
+
+				setting.firstLoad = true;
+				setting.totalRows = 0;
+
+				var id = '#item' + (parseInt(activeId) + 1);
+				var parentNode = document.querySelector(id);
+				var childNodes = parentNode.querySelectorAll('.order-row');
+				if(childNodes && childNodes.length > 0) {
+					for(var i = 0; i < childNodes.length; i++) {
+						parentNode.removeChild(childNodes[i]);
+					}
+				}
+
+			}
+		</script>
+	</body>
+
+</html>

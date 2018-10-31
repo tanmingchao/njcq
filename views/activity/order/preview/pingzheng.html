@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../../css/app.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">订单凭证</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="order-preview">
+				<div class="order-preview-row">
+					<span id="">
+						订单号
+					</span>
+					<span id="orderNo"></span>
+				</div>
+				<!--活动信息-->
+				<div class="order-preview-row">
+					<!--活动信息-->
+					<div class="order-preview-act">
+						<img id="showImage" class="act-img" src="../../../../img/temp/02.png" />
+						<div class="order-preview-act-infos">
+							<div class="order-preview-act-infos-title"></div>
+							<div class="order-preview-act-infos-remark act-time"></div>
+							<div class="order-preview-act-infos-remark act-local"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="order-preview-row" style="margin-top: 1px;">
+					<div class="order-preview-act" style="justify-content: space-between;">
+						<span id="atc-price">￥120.00/人</span>
+						<div class="">
+							<span id="hasbeBuyed">已购份数 1</span>
+							<span id="waitingScan">/ 待扫描凭证(2)</span>
+						</div>
+					</div>
+				</div>
+
+				<!--
+                	作者：1365101128@qq.com
+                	时间：2017-05-28
+                	描述：凭证列表
+                -->
+				<div class="order-preview-row">
+					<!--活动信息-->
+					<div class="order-preview-act">
+						订单凭证<span id="pz-size"></span>张
+					</div>
+				</div>
+				<div id="pz-list" class="order-preview-row pz-list" style="margin-top: 1px;">
+					<!--活动信息-->
+					<!--<div class="pz-row">
+						<div class="pz-row-scan-status">
+							<span>操作</span>
+							<span>
+								<button type="button" class="mui-btn mui-btn-blue">作废凭证</button>
+								<button type="button" class="mui-btn mui-btn-success">分享凭证</button>
+							</span>
+						</div>
+						<div class="pz-row-scan-status">
+							<span>凭证状态</span>
+							<span>待扫描</span>
+						</div>
+						<div class="pz-row-scan-status">
+							<span>数字校验码</span>
+							<span>PZ0856576636315</span>
+						</div>
+						<div class="pz-row-scan-status">
+							<span>图片校验码</span>
+							<span><img src="http://www.autojoynet.com/Resources/QRCode/20170528/20170528100856584.png" /></span>
+						</div>
+					</div>-->
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<script src="../../../../js/mui.min.js"></script>
+		<script src="../../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			mui.init();
+			mui.plusReady(function() {
+				var data = plus.webview.currentWebview();
+				//传递过来的订单key
+				var okey = data.okey;
+				var userinfo = config.fGetLoginUserInfo();
+
+				fGetOrderInfo(okey);
+				fGetPingZhengList(userinfo, okey);
+				
+				document.querySelector('#mui-action-back')
+				.addEventListener('tap',function(){
+					var wv = plus.webview.currentWebview();
+					wv.close();
+				},false);
+
+				//3.作废凭证
+				mui('#pz-list').on('click', '.zuofei', function(e) {
+					var tar = e.target;
+					var pzKey = tar.getAttribute("ref");
+					var btnArray = ['否', '是'];
+					mui.confirm('确定作废该张凭证？', '作废凭证', btnArray, function(e) {
+						if(e.index == 1) {
+							//作废动作
+							config.fGet({
+								link: '/ActivityOrderPingZheng/' + pzKey + '/CheckHasScaned',
+								callback: function(res) {
+									var status = JSON.parse(res).Data;
+									if(status.toString() == '-1') {
+										mui.toast('此凭证已经作废,无法再次作废！', {
+											duration: 'short',
+											type: 'div'
+										});
+										return;
+									}
+									if(status.toString() == '1') {
+										mui.toast('此凭证已经被验票，作废操作失败！', {
+											duration: 'short',
+											type: 'div'
+										});
+										return;
+									}
+									//执行作废方法
+									if(status.toString() == '0') {
+										config.fGet({
+											link: '/ActivityOrderPingZheng/' + pzKey + '/-1/UpdatePingZhengStatus',
+											callback: function(res) {
+												var data = JSON.parse(res).Data;
+												if(data) {
+													// 动态更新扫描状态字段值
+													mui.toast('此凭证已作废！', {
+														duration: 'short',
+														type: 'div'
+													});
+													//重新获取凭证列表，刷新状态（这地方存在性能问题，但是目前没有更好的处理方式）
+													tar.setAttribute("disabled", "disabled");
+													tar.style.background = "#efeff4";
+
+													var next = tar.nextElementSibling || tar.nextSibling;
+													next.setAttribute("disabled", "disabled");
+													next.style.background = "#efeff4";
+
+													var text = tar.parentNode.parentNode.nextElementSibling || tar.parentNode.parentNode.nextSibling;
+													text.lastChild.innerText = "已作废";
+													text.lastChild.style.color = "#efeff4";
+
+													return;
+												} else {
+													mui.toast('凭证作废操作失败！', {
+														duration: 'short',
+														type: 'div'
+													});
+													return;
+												}
+											}
+										});
+									}
+								}
+							});
+						} else {
+							//取消作废操作
+
+						}
+					});
+
+				});
+
+				//4.凭证分享，分享给指定的QQ好友或者微信好友或者新浪朋友圈好友 等等
+
+			});
+
+			//1.获取订单详情
+			function fGetOrderInfo(okey) {
+				config.fGet({
+					link: '/ActivityOrder/' + okey + '/Detail',
+					callback: function(res) {
+						var data = JSON.parse(res).Data;
+						//绑定到页面显示
+						mui('#orderNo')[0].innerText = data.OrderOnlyKey;
+						mui('#showImage')[0].setAttribute("src", data.ActivityShowImage);
+						mui('.order-preview-act-infos-title')[0].innerText = data.ActivityTitle;
+						mui('.act-time')[0].innerText = '报名截至：' + data.ActEndSignTime;
+						mui('.act-local')[0].innerText = data.ActivityLocation;
+						mui('#atc-price')[0].innerText = '￥' + data.ActivityFee + '/人';
+						mui('#hasbeBuyed')[0].innerText = '已购份数 ' + data.ParticipateNum;
+						mui('#waitingScan')[0].innerText = '/ 待扫描凭证(' + data.WaitScanPingZhengNum + ')';
+						mui("#pz-size")[0].innerText = "(" + data.ParticipateNum + ")";
+					}
+				})
+			}
+
+			//2.根据订单号okey获取 凭证列表（多个）
+			function fGetPingZhengList(userinfo, okey) {
+				var list = document.getElementById("pz-list");
+				//先清除下面的所有子对象
+				var childs = list.childNodes;
+				if(childs.length > 0) {
+					for(var i = 0; i < childs.length; i++) {
+						list.removeChild(childs[i]);
+					}
+				}
+
+				config.fGet({
+					link: '/ActivityOrderPingZheng/' + userinfo.PrimaryKey + '/' + okey + '/GetPingZhengByCustomerKeyAndOrderKey',
+					callback: function(res) {
+						var data = JSON.parse(res).Data;
+						mui.each(data, function(i, item) {
+
+							var html = '';
+
+							var disabled = item.ScanStatus == -1 ? ' disabled=disabled ' : '';
+							var disabled_btn = item.ScanStatus == -1 ? ' style="background:#efeff4;"' : '';
+
+							var canShare = item.ScanStatus == 0 ? '' : ' disabled=disabled ';
+							var canShare_btn = item.ScanStatus == 0 ? '' : ' style="background:#efeff4;" ';
+
+							html += '<div class="pz-row-scan-status">';
+							html += '	<span>第' + (i + 1) + '张</span>';
+							html += '	<span>';
+							html += '		<button type="button" ' + disabled + '  ' + disabled_btn + ' class="mui-btn mui-btn-blue zuofei" ref="' + item.PrimaryKey + '">作废凭证</button>';
+							html += '		<button type="button" ' + canShare + '  ' + canShare_btn + ' class="mui-btn mui-btn-success fenxiang" ref="' + item.PrimaryKey + '">分享凭证</button>';
+							html += '	</span>';
+							html += '</div>';
+							html += '<div class="pz-row-scan-status">';
+							html += '	<span>凭证状态</span>';
+
+							var color = item.ScanStatus == 0 ? 'color:green' : '';
+
+							html += '	<span style=' + color + '>' + (item.ScanStatus == 0 ? '待扫描' : (item.ScanStatus == 1 ? '已扫描' : '已作废')) + '</span>';
+							html += '</div>';
+							html += '<div class="pz-row-scan-status">';
+							html += '	<span>数字校验码</span>';
+							html += '	<span>' + item.PingZhengCode + '</span>';
+							html += '</div>';
+							html += '<div class="pz-row-scan-status">';
+							html += '	<span>图片校验码</span>';
+							html += '	<span><img src="' + item.PingZhengQRCode + '" /></span>';
+							html += '</div>';
+							html += '';
+
+							var pzRowDiv = document.createElement("div");
+							pzRowDiv.setAttribute("class", "pz-row");
+							pzRowDiv.innerHTML = html;
+
+							list.appendChild(pzRowDiv);
+
+						});
+
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

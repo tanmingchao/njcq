@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			input[type="text"] {
+				margin: 0px;
+				border: 0px;
+				font-size: 14px;
+				border-bottom: 1px solid #EFEFF4;
+				padding: 2px 10px;
+			}
+			
+			.cq-row {
+				padding: 2px 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新增收货地址</h1>
+			<button type="button" style="color: #999999;background: none;border: 0px;" class="mui-btn mui-btn-blue mui-pull-right">新增</button>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row-nopadding" style="margin-top: 10px;">
+				<input type="text" name="" id="" value="" placeholder="收件人姓名" />
+			</div>
+			<div class="cq-row-nopadding">
+				<input type="text" name="" id="" value="" placeholder="收件人联系方式" />
+			</div>
+			<div class="cq-row-nopadding">
+				<input type="text" name="" id="" value="" placeholder="收货地址" />
+			</div>
+			<div class="cq-row-nopadding flex-direction-row spaace-between" style="padding: 10px;">
+				<div class="">
+					设置为默认地址
+				</div>
+				<div class="mui-switch mui-active">
+					<div class="mui-switch-handle"></div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = null,
+				userInfo = null,
+				isdefault = false;
+
+			mui.init();
+			mui.plusReady(function() {
+				func.fnInitData();
+				func.fnSettingDefaut();
+
+			});
+
+			var func = {
+				fnInitData: function() {
+					config = config();
+					userInfo = config.fGetLoginUserInfo();
+					isdefault = document.querySelector('.mui-switch').classList.contains('mui-active');
+					console.info(isdefault);
+				},
+				fnSettingDefaut: function() {
+					mui('.mui-content .mui-switch').addEventListener('toggle', function(event) {
+						//event.detail.isActive 可直接获取当前状态this.classList.contains('mui-active')
+						//						this.parentNode.querySelector('span').innerText = '状态：' + (event.detail.isActive ? 'true' : 'false');
+						isdefault = event.detail.isActive;
+					});
+				}
+			}
+		</script>
+	</body>
+
+</html>

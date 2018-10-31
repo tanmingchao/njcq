@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">标题</h1>
+		</header> 
+		<div class="mui-content">
+			<div id="msg-record2" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="mui-table-view">
+					    <li class="mui-table-view-cell mui-media">
+					        <a href="javascript:;">
+					            <img class="mui-media-object mui-pull-right" src="../../img/add-img.png">
+					            <div class="mui-media-body">
+					                幸福
+					                <p class="mui-ellipsis">能和心爱的人一起睡觉，是件幸福的事情；可是，打呼噜怎么办？</p>
+					            </div>
+					        </a>
+					    </li>
+					    <li class="mui-table-view-cell mui-media">
+					        <a href="javascript:;">
+					            <img class="mui-media-object mui-pull-right" src="http://placehold.it/40x30">
+					            <div class="mui-media-body">
+					                木屋
+					                <p class="mui-ellipsis">想要这样一间小木屋，夏天挫冰吃瓜，冬天围炉取暖.</p>
+					            </div>
+					        </a>
+					    </li>
+					    <li class="mui-table-view-cell mui-media">
+					        <a href="javascript:;">
+					            <img class="mui-media-object mui-pull-right" src="http://placehold.it/40x30">
+					            <div class="mui-media-body">
+					                CBD
+					                <p class="mui-ellipsis">烤炉模式的城，到黄昏，如同打翻的调色盘一般.</p>
+					            </div>
+					        </a>
+					    </li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				pullRefresh: {
+					container: "#msg-record2", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: true, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在加载上页聊天记录...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					//			clearParam();
+					//			fGetActivityData();
+					console.info('执行了 down');
+					//加载下一页 聊天记录
+					mui('#msg-record2').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					console.info('执行了 up');
+					mui('#msg-record2').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+			mui.plusReady(function() {
+
+			});
+		</script>
+	</body>
+
+</html>

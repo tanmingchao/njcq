@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			#com-img {
+				width: 25%;
+			}
+			
+			.com-status,
+			.com-price,
+			.com-local {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.com-price {
+				color: red;
+			}
+			
+			.mui-icon-arrowright {
+				font-size: 14px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">订单预览</h1>
+		</header>
+
+		<div class="mui-content">
+
+			<div class="cq-row spaace-between align-item">
+				<span>
+					购买人信息
+				</span>
+				<span class="buyer-info">
+					thomas(15251820632)
+				</span>
+			</div>
+			<div class="cq-row align-item flex-direction-row border-top">
+				<img id="com-img" src="../../../img/temp/01.png" />
+				<div class="com-info cq-row flex-direction-column" style="    align-self: flex-start;    padding: 0px 10px;">
+					<span id="com-title">
+						2017新款女士连体丝袜-超薄黑丝，性感诱惑装，买三送五
+					</span>
+					<div class="cq-row-nopadding flex-direction-row spaace-between">
+						<span class="com-status">出售中</span>
+						<span class="com-price">￥12.00元</span>
+					</div>
+					<span class="com-local">
+						江苏省南京市浦口区天润城
+					</span>
+				</div>
+			</div>
+
+			<div class="cq-row flex-direction-column">
+				<span>
+					收货地址
+				</span>
+				<div id="com-local" class="cq-row flex-direction-row">
+					<span class="com-local-desc" style="flex: 1;color: #999999;">
+						选择收货地址
+					</span>
+					<span class="mui-icon mui-icon-arrowright">
+						
+					</span>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="cq-row align-item spaace-between" style="padding: 0px 10px;position: fixed;bottom: 0px;height: 44px;">
+			<div>
+				合计：<span class="total-price" style="color: red;">￥12.00</span>
+			</div>
+			<button id="submitOrderBtn" class="mui-btn mui-btn-blue" style="height:100%;border-radius: 0px;">提交订单</button>
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var wv = null,
+				wo = null,
+				ckey = null,
+				info = null,
+				config = config(),
+				userInfo = null,
+				address = null,
+				local = null;
+
+			mui.init();
+			mui.plusReady(function() {
+
+				wv = plus.webview.currentWebview();
+				wo = wv.opener();
+				ckey = wv.key;
+				info = wv.info;
+				userInfo = config.fGetLoginUserInfo();
+				local = config.fGetLocaltion();
+
+				func.fnToChooseLocaltion();
+				func.fnCustomerAddressEventLister(); //获取选择的地点
+				if(userInfo && info) {
+					fnBindData(userInfo, info);
+				} else {
+					plus.nativeUI.toast('您尚未登录，请先登录后再试！');
+					setTimeout(function() {
+						mui.back();
+					}, 1000);
+
+				}
+				func.fnBack();
+				//提交订单
+				func.fnSubmitOrder();
+
+			});
+
+			var func = {
+				fnToChooseLocaltion: function() {
+					document.getElementById('com-local')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: '../../ucenter/address/address.html',
+								id: 'address.html',
+								preload: true,
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false
+								},
+								extras: {
+									key: ckey
+								}
+							});
+						}, false);
+				},
+				fnCustomerAddressEventLister: function() {
+					window.addEventListener('address', function(e) {
+						address = e.detail.address;
+						mui('.com-local-desc')[0].innerText = address.userinfo + address.info;
+					});
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							wv.close();
+						}, false);
+				},
+				fnSubmitOrder: function() {
+					document.getElementById('submitOrderBtn').addEventListener('tap', function() {
+						if(!address.key) {
+							plus.nativeUI.toast('请先选择收货地址');
+							return;
+						}
+						_fnSubmitOrder();
+					}, false);
+				}
+			}
+			mui.back = function() {
+				wv.close();
+			}
+
+			var _fnSubmitOrder = function() {
+				config.fPost({
+					link: '/CommodityOrder/GenerateOrder',
+					params: {
+						OrderHeadDto: {
+							PrimaryKey: '1234567890',
+							OrderOnlyKey: '1234567890',
+							OrderTitle: 'CQ商品订单',
+							OrderTotalPrice: info.CommodityPrice,
+							CreateTime: null,
+							OrderStatus: 1, //1:待支付  2：待收货  0：订单完成 - 1：订单已取消  3:已发货
+							CustomerKey: userInfo.PrimaryKey,
+							CommodityOrderBodyDtoCollection: [{
+								PrimaryKey: '1234567890',
+								CommodityInfoKey: info.PrimaryKey,
+								BuyNum: 1,
+								OrderHeadKey: '1234567890',
+								CommodityPrice: info.CommodityPrice
+							}],
+							ContactUserName: address.userinfo.split('(')[0],
+							ContactPhone: address.userinfo.split('(')[1].replace(')', ''),
+							AddressDesc: address.info
+						}
+					},
+					callback: function(res) {
+						var data = JSON.parse(res).Data;
+						if(data && data.PrimaryKey != null) {
+							plus.nativeUI.toast('商品下单成功！');
+							document.getElementById('submitOrderBtn').style.display = true;
+
+							// TODO 调用支付接口，如果支付成功，更新OrderStatus 为2：待收货
+								
+							// TODO 推送消息给卖家
+
+							// TODO 跳转到下单结果页面
+
+						} else {
+							plus.nativeUI.toast('商品下单失败！请稍后再试');
+
+						}
+					}
+				});
+			}
+
+			var fnBindData = function(userInfo, dataInfo) {
+				userInfo = config.fGetLoginUserInfo();
+				mui('.buyer-info')[0].innerText = userInfo.UserNickName + "(" + userInfo.TelPhone + ")";
+				mui('#com-img')[0].setAttribute('src', info.ShowImage.split(',')[0]);
+				mui('#com-title')[0].innerText = info.CommodityTitle;
+				mui('.com-status')[0].innerText = info.CommoditySellStatus;
+				mui('.com-price')[0].innerText = '￥' + info.CommodityPrice + '元';
+				mui('.com-local')[0].innerText = info.CommodityLocationDesc;
+
+			}
+		</script>
+	</body>
+
+</html>

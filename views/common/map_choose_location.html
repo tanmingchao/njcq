@@ -1,0 +1,673 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/app.css" />
+		<style type="text/css">
+			#choose-location {
+				width: 100%;
+				height: 40%;
+				position: fixed;
+				/*top: 44px;*/
+				line-height: 200px;
+				text-align: center;
+				background: #FFFFFF;
+				z-index: 1;
+			}
+			
+			.mui-content {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+			}
+			
+			#locations {
+				width: 100%;
+				height: 60%;
+				position: fixed;
+				top: 40%;
+				z-index: 1;
+			}
+			
+			#current-location-info {
+				padding: 4px 10px;
+				font-size: 12px;
+				background: #007aff;
+				color: #fff;
+				margin-top: 44px;
+			}
+			
+			.local-name {
+				font-size: 14px;
+			}
+			
+			.local-strees {
+				font-size: 12px;
+				color: #999999;
+				flex: 1;
+			}
+			
+			#locations .mui-table-view-cell {
+				padding: 10px 15px;
+				/*line-height: 17px;*/
+				width: 100%;
+				position: relative;
+				z-index: 1;
+			}
+			
+			.full-div {
+				position: absolute;
+				z-index: 2;
+				width: 100%;
+				top: 0px;
+				left: 0px;
+				height: 62px;
+			}
+			
+			.mui-segmented-control-locals ul {
+				overflow-y: auto;
+				height: 300px;
+				overflow-x: hidden;
+			}
+			
+			.local-name {
+				display: block;
+				color: #000;
+			}
+			
+			.mui-segmented-control-locals ul li {
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+			}
+			
+			.mui-icon-checkmarkempty {
+				color: transparent;
+			}
+			
+			.mui-segmented-control {
+				border-radius: 0px;
+				margin-top: 1px;
+			}
+			
+			.mui-segmented-control a.mui-control-item {
+				height: 30px !important;
+				border-radius: 0px;
+				font-size: 14px;
+				border: 0px;
+			}
+			
+			.mui-segmented-control .mui-active {
+				height: 30px;
+			}
+			
+			.mui-segmented-control .mui-control-item {
+				line-height: 30px;
+				border-radius: 0px;
+			}
+			
+			.check-active {
+				color: #0062CC !important;
+			}
+			/*关键字智能提示返回的数据显示区域*/
+			
+			.queryedLocations {
+				position: absolute;
+				z-index: 3;
+				top: 44px;
+				left: 0px;
+				width: 100%;
+			}
+			
+			#key-word-local-list .mui-table-view-cell {
+				padding: 10px 15px;
+				/*line-height: 17px;*/
+				width: 100%;
+				position: relative;
+				z-index: 1;
+				display: flex;
+				display: -webkit-flex;
+				flex-direction: row;
+				line-height: 18px;
+			}
+			
+			span.mui-icon-clear {
+				top: 11px !important;
+			}
+			
+			#key-word-local-list {
+				overflow-y: auto;
+			}
+			
+			.hideSearchArea {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav map-choose-search-box">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+
+			<form>
+				<h1 class="mui-title">
+			
+					<div class="mui-input-row mui-search">
+					<input type="search" id="search-box" class="mui-input-clear" placeholder="搜索">
+				</div>
+			</h1>
+				<a class=" mui-icon mui-pull-right">
+					<button id="finished-btn" type="button" class="mui-btn mui-btn-blue " style="height: 25px;line-height: 12px;font-size: 12px;top: 0px;">完成</button>
+				</a>
+			</form>
+
+		</header>
+		<div id="queryedLocations" class="queryedLocations hideSearchArea">
+			<ul id="key-word-local-list" class="mui-table-view">
+
+			</ul>
+		</div>
+
+		<div class="mui-content">
+			<div id="map-area" style="position: relative;">
+				<div id="choose-location">
+				</div>
+			</div>
+			<div id="locations">
+				<!--当前地点-->
+				<div id="current-location-info" class="mui-tab-label">【当前】</div>
+				<div class="more-local">
+					<div class="mui-segmented-control">
+						<a class="mui-control-item mui-active" href="#local-all">全部</a>
+						<a class="mui-control-item" href="#local-xiezilou">写字楼</a>
+						<a class="mui-control-item" href="#local-jiudian">酒店</a>
+						<a class="mui-control-item" href="#local-xiaoqu">小区</a>
+					</div>
+					<div class="mui-segmented-control-locals">
+						<ul id="local-all" class="mui-control-content mui-table-view mui-active" style="">
+
+						</ul>
+						<ul id="local-xiezilou" class="mui-control-content mui-table-view">
+
+						</ul>
+						<ul id="local-jiudian" class="mui-control-content mui-table-view">
+
+						</ul>
+						<ul id="local-xiaoqu" class="mui-control-content mui-table-view">
+
+						</ul>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=246efe2d7f16f5a175546f230b8807ef"></script>
+		<script src="../../js/njcq.plugin.map.api.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/njcq.plugin.map.js"></script>
+		<script src="../../js/imagecropper/jquery-3.1.1.min.js"></script>
+		<script src="../../js/njcq.plugin.util.js"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript">
+			//存放选中的地点信息，并返回给打开该页面的 父页面
+			var selectedLocation = {};
+			selectedLocation.citycode = null;
+			selectedLocation.city = null;
+			selectedLocation.adname = null;
+			selectedLocation.adcode = null;
+			selectedLocation.pname = null;
+			selectedLocation.lng = null;
+			selectedLocation.lat = null;
+			
+
+			var config = config();
+			var cqMap = CQMap();
+			var mUtil = new MapUtil();
+			var util = njcqUtil();
+			mui.init();
+
+			var ws = null,
+				wo = null;
+			var em = null,
+				map = null,
+				pcenter = null;
+			var cityCode = null;
+			// H5 plus事件处理
+			function plusReady() {
+				if(!em || ws) {
+					return
+				};
+				// 获取窗口对象
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+
+				setTimeout(function() {
+
+					var localJson = config.fGetLocaltion()
+					var userLocal = {
+						longitude: '',
+						latitude: ''
+					};
+					if(location && location != '') {
+						userLocal.longitude = localJson.coords.longitude;
+						userLocal.latitude = localJson.coords.latitude;
+					}
+					mUtil.m(em, localJson.coords.longitude, localJson.coords.latitude, localJson.address.street || '' +
+						localJson.address.streetNum || '');
+					//					cqMap.fCreateMap({
+					//						targetId: "choose-location",
+					//						UserLocationData: userLocal
+					//					});
+					document.getElementById("current-location-info").innerHTML = '【当前】' + localJson.address.province +
+						localJson.address.city +
+						localJson.address.district +
+						localJson.address.street || '' +
+						localJson.address.streetNum || '';
+
+					cityCode = localJson.address.cityCode;
+					//					//初始化写字楼数据
+					//					var pt = new plus.maps.Point(localJson.coords.longitude, localJson.coords.latitude);
+					//					initAroundByCityAndKeyWords_xiezilou(null, pt, null);
+					//					initAroundByCityAndKeyWords_jiudian(null, pt, null);
+					//					initAroundByCityAndKeyWords_xiaoqu(null, pt, null);
+					initialAroundDatas(cityCode, localJson.coords.longitude, localJson.coords.latitude);
+					//					UtilMapNearBy_xiezilou(null, null, cityCode, localJson.coords.longitude, localJson.coords.latitude);
+					//					UtilMapNearBy_jiudian(null, null, cityCode, localJson.coords.longitude, localJson.coords.latitude);
+					//					UtilMapNearBy_xiaoqu(null, null, cityCode, localJson.coords.longitude, localJson.coords.latitude);
+					//					UtilMapNearBy_All(null, cityCode, localJson.coords.longitude, localJson.coords.latitude);
+
+					//绑定行点击事件
+					liClickEveht();
+
+					//搜索框
+					initialSearch(localJson.address.city);
+
+					//搜索框清除
+					mui('.mui-search').on('tap', 'span.mui-icon-clear', function(e) {
+
+						clearChildNodes(document.getElementById("key-word-local-list"));
+						var parent_target = document.getElementById("queryedLocations");
+						if(!util.hasClass(parent_target, "hideSearchArea")) {
+							util.addClass(parent_target, "hideSearchArea");
+						}
+
+					});
+					//搜索结果点击事件
+					searchResultRowEvent();
+					//完成按钮事件
+					funished();
+
+				}, 300);
+			}
+
+			if(window.plus) {
+				plusReady();
+			} else {
+				document.addEventListener("plusready", plusReady, false);
+			}
+			// DOMContentloaded事件处理
+			document.addEventListener("DOMContentLoaded", function() {
+				em = document.getElementById("choose-location");
+				window.plus && plusReady();
+			}, false);
+
+			//根据城市和关键字搜索周边信息——写字楼
+			function UtilMapNearBy_xiezilou(key, type, cityCode, lng, lat) {
+				var xiezilist = document.getElementById("local-xiezilou");
+				clearChildNodes(xiezilist);
+				var html = '';
+
+				mUtil.fSearchNearByKeyAndType(key, type || '写字楼', cityCode, lng, lat, function(result) {
+					if(result && result.poiList && result.poiList.pois.length > 0) {
+						mui.each(result.poiList.pois, function(i, item) {
+							//绑定到 写字楼列表
+							html += '<li class="mui-table-view-cell">';
+							html += '			<div class=" local-strees">';
+							html += '			<span class=" local-name">';
+							html += item.name;
+							html += '	</span>';
+							html += '<span class="local-address">' + item.address + '</span>';
+							html += '			<span class="local-strees-lat-lng" style="display:none">';
+							html += item.location.lng + '|' + item.location.lat;
+							html += '			</span>';
+							html += '			<span class="local-strees-adcode" style="display:none">';
+							html += item.adcode||'';
+							html += '			</span>';
+							html += '			</div>';
+
+							html += '<span class="mui-icon mui-icon-checkmarkempty"></span>';
+							html += '<div class="full-div"></div>';
+							html += '		</li>';
+						});
+						xiezilist.innerHTML = html;
+					}
+				});
+			}
+
+			//根据城市和关键字搜索周边信息——酒店
+			function UtilMapNearBy_jiudian(key, type, cityCode, lng, lat) {
+				var xiezilist = document.getElementById("local-jiudian");
+				clearChildNodes(xiezilist);
+				var html = '';
+
+				mUtil.fSearchNearByKeyAndType(key, type || '酒店', cityCode, lng, lat, function(result) {
+					if(result && result.poiList && result.poiList.pois.length > 0) {
+						mui.each(result.poiList.pois, function(i, item) {
+							//绑定到 写字楼列表
+							html += '<li class="mui-table-view-cell">';
+							html += '			<div class=" local-strees">';
+							html += '			<span class=" local-name">';
+							html += item.name;
+							html += '	</span>';
+							html += '<span class="local-address">' + item.address + '</span>';
+							html += '			<span class="local-strees-lat-lng" style="display:none">';
+							html += item.location.lng + '|' + item.location.lat;
+							html += '			</span>';
+							html += '			<span class="local-strees-adcode" style="display:none">';
+							html += item.adcode||'';
+							html += '			</span>';
+							html += '			</div>';
+
+							html += '<span class="mui-icon mui-icon-checkmarkempty"></span>';
+							html += '<div class="full-div"></div>';
+							html += '		</li>';
+						});
+						xiezilist.innerHTML = html;
+					}
+				});
+			}
+			//根据城市和关键字搜索周边信息——小区
+			function UtilMapNearBy_xiaoqu(key, type, cityCode, lng, lat) {
+				var xiezilist = document.getElementById("local-xiaoqu");
+				clearChildNodes(xiezilist);
+				var html = '';
+
+				mUtil.fSearchNearByKeyAndType(key, type || '小区', cityCode, lng, lat, function(result) {
+					if(result && result.poiList && result.poiList.pois.length > 0) {
+						mui.each(result.poiList.pois, function(i, item) {
+							//绑定到 写字楼列表
+							html += '<li class="mui-table-view-cell">';
+							html += '			<div class=" local-strees">';
+							html += '			<span class=" local-name">';
+							html += item.name;
+							html += '	</span>';
+							html += '<span class="local-address">' + item.address + '</span>';
+							html += '			<span class="local-strees-lat-lng" style="display:none">';
+							html += item.location.lng + '|' + item.location.lat;
+							html += '			</span>';
+							html += '			<span class="local-strees-adcode" style="display:none">';
+							html += item.adcode||'';
+							html += '			</span>';
+							html += '			</div>';
+
+							html += '<span class="mui-icon mui-icon-checkmarkempty"></span>';
+							html += '<div class="full-div"></div>';
+							html += '		</li>';
+						});
+						xiezilist.innerHTML = html;
+					}
+				});
+			}
+			//根据城市和关键字搜索周边信息——全部，同时。默认选中 第一个选项
+			function UtilMapNearBy_All(key, cityCode, lng, lat) {
+				var xiezilist = document.getElementById("local-all");
+				clearChildNodes(xiezilist);
+				var html = '';
+
+				mUtil.fSearchNearByKeyAndType(key, null, cityCode, lng, lat, function(result) {
+					if(result && result.poiList && result.poiList.pois.length > 0) {
+						mui.each(result.poiList.pois, function(i, item) {
+							var selected = (i == 0 ? 'check-active' : '');
+							var lngAndLat = item.location.lng + '|' + item.location.lat;
+							html += '<li class="mui-table-view-cell">';
+							html += '			<div class=" local-strees">';
+							html += '			<span class=" local-name" data-rel="' + lngAndLat + '">';
+							html += item.name;
+							html += '	</span>';
+							html += '<span class="local-address">' + item.address + '</span>';
+							html += '			<span class="local-strees-lat-lng" style="display:none">';
+							html += lngAndLat;
+							html += '			</span>';
+							html += '			<span class="local-strees-adcode" style="display:none">';
+							html += item.adcode||'';
+							html += '			</span>';
+							html += '			</div>';
+
+							html += '<span class="mui-icon mui-icon-checkmarkempty ' + selected + '"></span>';
+							html += '<div class="full-div"></div>';
+							html += '		</li>';
+						});
+						xiezilist.innerHTML = html;
+					}
+				});
+			}
+
+			//清除指定对象的所有子对象
+			function clearChildNodes(parentNode) {
+				var childNodes = parentNode.childNodes;
+				if(childNodes && childNodes.length > 0) {
+					for(var i = 0; i < childNodes.length; i++) {
+						parentNode.removeChild(childNodes[i]);
+					}
+				}
+			}
+
+			//行点击事件
+			function liClickEveht() {
+
+				//行点击事件
+				mui('.mui-segmented-control-locals').on('tap', 'div.full-div', function(e) {
+					var target = e.target.parentNode;
+					var childs = $(target).children();
+
+					var address = childs.find('span.local-name').text();
+					var name = childs.find('span.local-address').text();
+					var lngAndLat = childs.find('span.local-strees-lat-lng').text();
+					var active_target = childs.parent().find('.mui-icon-checkmarkempty');
+					var clazz = '' + active_target.attr('class') + '';
+
+					document.getElementById("current-location-info").innerText = "【当前】" + address;
+
+					//移除其他选中状态
+					removelActive();
+
+					//为当前选中对象 iocn添加样式
+					active_target.addClass('check-active');
+
+					//重新设置地图 center以及 中心点
+					var lng = lngAndLat.split('|')[0];
+					var lat = lngAndLat.split('|')[1];
+					mUtil.markPoint(lng, lat, name, true);
+
+					selectedLocation.name = name;
+					selectedLocation.address = address;
+					selectedLocation.lng = lng;
+					selectedLocation.lat = lat;
+
+				});
+
+			}
+
+			function removelActive() {
+				var targets = $('.mui-icon-checkmarkempty');
+				for(var i = 0; i < targets.length; i++) {
+					if($(targets[i]).attr('class').indexOf("check-active") > -1) {
+						$(targets[i]).removeClass("check-active");
+					}
+				}
+			}
+			//搜索
+			function toSearch(city) {
+
+				var target = document.getElementById("search-box");;
+				clearChildNodes(document.getElementById("key-word-local-list"));
+				var parent_target = document.getElementById("queryedLocations");
+				if(util.hasClass(parent_target, "hideSearchArea")) {
+					util.removeClass(parent_target, "hideSearchArea");
+				}
+
+				mUtil.bindSearchInput(target.value, city, function(e) {
+					var tips = e.tips;
+					if(tips && tips.length > 0) {
+						var parentdom = document.getElementById("key-word-local-list");
+						var html = '';
+						//						console.info(JSON.stringify(tips));
+						/*
+						 * tips:
+						 *  [{"id":"","name":"青口镇","district":"江苏省连云港市赣榆区","adcode":"320707","location":"","address":[],"typecode":"190106"},{"id":"B020601TI5","name":"赣榆县青口法律援助工作站","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.823297,"J":119.115096,"lng":119.115096,"lat":34.823297},"address":"青口镇","typecode":"070701"},{"id":"B020600VMD","name":"时代广场","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.837693,"J":119.12698599999999,"lng":119.126986,"lat":34.837693},"address":"华中路95号附近","typecode":"110105"},{"id":"B0FFFWQNHW","name":"奥邦城","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.827295,"J":119.105704,"lng":119.105704,"lat":34.827295},"address":"青口镇镇海西路888号","typecode":"120203"},{"id":"B02060PB5G","name":"赣榆县西关蔬菜速冻厂","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.833817,"J":119.14955500000002,"lng":119.149555,"lat":34.833817},"address":"怀仁路108号","typecode":"170300"},{"id":"B0FFF2Y8HQ","name":"赣榆县青口易品烟酒经营部","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.842581,"J":119.11981400000002,"lng":119.119814,"lat":34.842581},"address":"新兴路108号","typecode":"061210"},{"id":"B020601PIV","name":"赣榆县青口镇绿泉水产苗种场","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.868874,"J":119.17538000000002,"lng":119.17538,"lat":34.868874},"address":"沿海公路东50米","typecode":"170400"},{"id":"B0FFG9ONW4","name":"赣榆县青口镇中心幼儿园(南门)","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.833175,"J":119.12592599999999,"lng":119.125926,"lat":34.833175},"address":"华中路与繁荣路交叉口东50米","typecode":"991400"},{"id":"B020601YHE","name":"赣榆县青口镇畜牧兽医站","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.797817,"J":119.09824600000002,"lng":119.098246,"lat":34.797817},"address":"振兴路与204国道交叉口西100米","typecode":"090702"},{"id":"B0FFHWB6LC","name":"赣榆县青口镇红苹果幼儿园","district":"江苏省连云港市赣榆区","adcode":"320707","location":{"N":34.836553,"J":119.14090699999997,"lng":119.140907,"lat":34.836553},"address":"时代东路18号附近","typecode":"141204"}]
+						 */
+						mui.each(tips, function(i, item) {
+
+							var lngAndLat = item.location.lng + '|' + item.location.lat;
+							html += '<li class="mui-table-view-cell">';
+							html += '			<div class=" local-strees">';
+							html += '			<span class=" local-name" data-rel="' + lngAndLat + '">';
+							html += item.name;
+							html += '	</span>';
+							html += '<span class="local-address">' + item.address + '</span>';
+							html += '			<span class="local-strees-lat-lng" style="display:none">';
+							html += lngAndLat;
+							html += '			</span>';
+							html += '			<span class="local-strees-adcode" style="display:none">';
+							html += item.adcode;
+							html += '			</span>';
+							html += '			</div>';
+
+							html += '<span class="mui-icon mui-icon-checkmarkempty"></span>';
+							html += '<div class="full-div"></div>';
+							html += '		</li>';
+
+						});
+						parentdom.innerHTML = html;
+						//初始化搜索下拉列表高度
+						//						var height = document.documentElement.clientHeight || document.body.clientHeight;
+						//						var height2 = plus.display.resolutionHeight;
+						//						console.info(plus.android.invoke(plus.android.currentWebview(),"getHeight"));
+
+						//以上几种方式都可以获取高度，但是都是可操作区域（除去键盘）的剩余高度，下面的方式包含了键盘高度的整体高度
+						if(plus.os.name == "Android") {
+							var height = plus.screen.resolutionHeight * plus.screen.scale;
+							$("#key-word-local-list").height(height);
+							console.info('安卓:' + height);
+						} else {
+							var height = document.documentElement.clientHeight || document.body.clientHeight;
+							$("#key-word-local-list").height(height);
+							console.info('IOS:' + height);
+						}
+
+					}
+				});
+			}
+
+			function initialSearch(city) {
+				document.getElementById("search-box").addEventListener('keypress', function(event) {
+					var parent_target = document.getElementById("queryedLocations");
+					if(event.keyCode == "13") {
+						document.activeElement.blur(); //收起虚拟键盘
+						if(event.target.value && event.target.value.length > 0) {
+							toSearch(city); //TODO 完成搜索事件
+							event.preventDefault(); // 阻止默认事件---阻止页面刷新
+						} else {
+							util.addClass(parent_target, "hideSearchArea");
+						}
+						event.target.value = "";
+						event.preventDefault(); // 阻止默认事件---阻止页面刷新
+					}
+				});
+			}
+
+			//搜索结果行点击事件
+			function searchResultRowEvent() {
+				//行点击事件
+				mui('#key-word-local-list').on('tap', 'div.full-div', function(e) {
+					var target = e.target.parentNode;
+					var childs = $(target).children();
+
+					var address = childs.find('span.local-name').text();
+
+					var name = childs.find('span.local-address').text();
+					var lngAndLat = childs.find('span.local-strees-lat-lng').text();
+					var adcode = childs.find('span.local-strees-adcode').text();
+
+					//重新设置地图 center以及 中心点
+					var lng = lngAndLat.split('|')[0];
+					var lat = lngAndLat.split('|')[1];
+
+					selectedLocation.name = name;
+					selectedLocation.address = address;
+					selectedLocation.lng = lng;
+					selectedLocation.lat = lat;
+					selectedLocation.adcode = adcode;
+
+					//逆向地理解析（根据经纬度），获取 城市名称，编码，区域名称和编码
+					mUtil.address([lng, lat], function(res) {
+						if(res) {
+							selectedLocation.city = res.regeocode.addressComponent.city;
+							selectedLocation.citycode = res.regeocode.addressComponent.citycode;
+							selectedLocation.adname = res.regeocode.addressComponent.district; //区域名称
+							selectedLocation.adcode = res.regeocode.addressComponent.adcode; //区域编码
+							selectedLocation.pname = res.regeocode.addressComponent.province; //省份名称
+						}
+					});
+
+					//初始化周边数据
+					initialAroundDatas(cityCode, lng, lat);
+					//隐藏搜索弹出层,同时清除列表数据
+					clearChildNodes(document.getElementById("key-word-local-list"));
+					var parent_target = document.getElementById("queryedLocations");
+					if(!util.hasClass(parent_target, "hideSearchArea")) {
+						util.addClass(parent_target, "hideSearchArea");
+					}
+					//将选中点设置为地图中心点
+					mUtil.markPoint(lng, lat, name, true);
+
+				});
+			}
+			//初始化周边数据
+			function initialAroundDatas(cityCode, longitude, latitude) {
+				UtilMapNearBy_xiezilou(null, null, cityCode, longitude, latitude);
+				UtilMapNearBy_jiudian(null, null, cityCode, longitude, latitude);
+				UtilMapNearBy_xiaoqu(null, null, cityCode, longitude, latitude);
+				UtilMapNearBy_All(null, cityCode, longitude, latitude);
+			}
+
+			//完成按钮事件
+			function funished() {
+				document.getElementById("finished-btn").addEventListener("tap", function(e) {
+					if(!selectedLocation || selectedLocation.name == '') {
+						mui.toast('请选择一个地点');
+						return;
+					} else {
+						if(!selectedLocation.city || selectedLocation.city == '') {
+							var l = config.fGetLocaltion();
+							selectedLocation.city = l.address.city; //TODO
+							selectedLocation.citycode = l.address.cityCode;
+							selectedLocation.adname = l.address.district; //区域名称
+							selectedLocation.adcode = l.address.adcode || ''; //区域编码
+							selectedLocation.pname = l.address.province; //省份名称
+						}
+
+						mui.fire(wo, 'getLocation', {
+							location: selectedLocation
+						})
+						mui.back();
+					}
+				});
+			}
+
+			mui.back = function() {
+				var self = plus.webview.currentWebview();
+				self.hide();
+				self.close();
+			}
+		</script>
+	</body>
+
+</html>

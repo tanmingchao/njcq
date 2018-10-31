@@ -1,0 +1,1094 @@
+{
+	"index.html": {
+		"href": "index.html",
+		"resources": [
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"js/config.js",
+			"plugins/web-im/demo/javascript/dist/webim.config.js",
+			"img/logo.png",
+			"css/app.css"
+		],
+		"refer": [
+			"main.html"
+		],
+		"priority": 0
+	},
+	"main.html": {
+		"href": "main.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/njcq.plugin.geomap.js",
+			"fonts/mui.ttf",
+			"views/activity/index/index.html",
+			"views/activity/index/index2.html",
+			"views/activity/index/index3.html",
+			"views/activity/index/index4.html",
+			"js/config.js",
+			"views/message/index.html"
+		],
+		"refer": [
+			"views/circle/index/pullrefresh_main.html",
+			"views/transaction/index/pullrefresh_main.html",
+			"views/activity/index/index.html",
+			"views/ucenter/index/index.html",
+			"views/activity/index/index2.html",
+			"views/activity/index/index3.html",
+			"views/activity/index/index4.html",
+			"views/activity/index/index5.html",
+			"views/circle/index/index.html",
+			"views/transaction/index/index.html",
+			"views/message/index.html"
+		],
+		"priority": 0
+	},
+	"views/circle/index/pullrefresh_main.html": {
+		"resources": [
+			"views/circle/index/pullrefresh_sub.html"
+		],
+		"refer": [
+			"views/circle/index/pullrefresh_sub.html"
+		]
+	},
+	"views/activity/index/index.html": {
+		"resources": [
+			"js/common.js",
+			"css/app.css",
+			"js/config.js",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/njcq.plugin.util.js",
+			"views/activity/index/list_jingxuan.html",
+			"views/activity/index/list_guanzhu.html"
+		],
+		"refer": [
+			"views/activity/index/list_jingxuan.html",
+			"views/activity/index/list_guanzhu.html",
+			"views/activity/index/list_fujin.html",
+			"views/activity/index/list_jiari.html",
+			"views/activity/index/list_shuozoujiuzou.html",
+			"views/activity/index/list_qinzi.html",
+			"views/activity/publish/publish.html",
+			"views/activity/publish/publish2.html",
+			"views/activity/index/search.html",
+			"views/common/choose_city.html"
+		]
+	},
+	"views/transaction/index/pullrefresh_main.html": {
+		"resources": [
+			"views/transaction/index/pullrefresh_sub.html"
+		],
+		"refer": [
+			"views/transaction/index/pullrefresh_sub.html"
+		]
+	},
+	"views/activity/index/index2.html": {
+		"resources": [
+			"js/mui.pullToRefresh.js",
+			"js/njcq.plugin.util.js",
+			"js/mui.pullToRefresh.material.js",
+			"js/config.js",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"views/activity/index/index3.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"js/njcq.plugin.util.js",
+			"js/common.js",
+			"fonts/mui.ttf",
+			"js/config.js",
+			"css/app.css",
+			"views/activity/index/listActivity.html"
+		],
+		"refer": [
+			"views/activity/index/listActivity.html"
+		]
+	},
+	"views/activity/index/index4.html": {
+		"resources": [
+			"js/mui.pullToRefresh.js",
+			"js/mui.min.js",
+			"js/mui.pullToRefresh.material.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"views/activity/index/index5.html": {
+		"resources": [
+			"js/mui.pullToRefresh.js",
+			"js/mui.min.js",
+			"js/mui.pullToRefresh.material.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"views/activity/index/list_jingxuan.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"fonts/mui.ttf",
+			"img/temp/01.jpg",
+			"css/app.css",
+			"img/temp/01.png",
+			"img/temp/02.png",
+			"js/config.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [
+			"views/activity/detail/detail.html"
+		]
+	},
+	"views/activity/index/list_fujin.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"css/mui.min.css",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"views/activity/detail/detail.html"
+		]
+	},
+	"views/activity/detail/detail.html": {
+		"resources": [
+			"js/layer_mobile/layer.js",
+			"js/layer_mobile/need/layer.css",
+			"img/temp/01.png",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js",
+			"js/njcq.plugin.base64.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [
+			"views/ucenter/login/login.html",
+			"views/activity/order/preview/preview.html"
+		]
+	},
+	"views/activity/publish/publish.html": {
+		"resources": [
+			"js/mui.picker.min.js",
+			"img/add-img.png",
+			"css/mui.picker.min.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"css/mui.min.css",
+			"js/config.js",
+			"fonts/mui.ttf",
+			"js/njcq.plugin.camera.js"
+		],
+		"refer": []
+	},
+	"views/circle/index/pullrefresh_sub.html": {
+		"resources": [
+			"css/mui.min.css"
+		],
+		"refer": []
+	},
+	"views/activity/publish/publish2.html": {
+		"resources": [
+			"js/imagecropper/cropper.css",
+			"js/imagecropper/bootstrap.min.js",
+			"js/imagecropper/bootstrap.min.css",
+			"js/imagecropper/cropper.js",
+			"js/imagecropper/jquery-3.1.1.min.js",
+			"js/mui.min.js",
+			"css/mui.min.css",
+			"fonts/mui.ttf",
+			"js/mui.picker.min.js",
+			"img/add-img.png",
+			"css/mui.picker.min.css",
+			"js/config.js",
+			"css/app.css",
+			"js/njcq.plugin.base64.js"
+		],
+		"refer": [
+			"views/common/map_choose_location.html",
+			"views/activity/publish/publish_desc.html",
+			"views/ucenter/login/login.html"
+		]
+	},
+	"views/common/map_choose_location.html": {
+		"resources": [
+			"js/njcq.plugin.map.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/njcq.plugin.map.api.js",
+			"js/imagecropper/jquery-3.1.1.min.js",
+			"js/njcq.plugin.util.js",
+			"views/common/map_choose_location.html",
+			"js/config.js"
+		],
+		"refer": [
+			"views/common/map_choose_location.html"
+		]
+	},
+	"views/activity/publish/publish_desc.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/njcq.plugin.camera.js",
+			"js/common.js",
+			"img/temp/02.png",
+			"img/temp/01.png",
+			"js/config.js",
+			"js/imagecropper/jquery-3.1.1.min.js",
+			"js/njcq.plugin.base64.js"
+		],
+		"refer": []
+	},
+	"views/circle/index/list_circle.html": {
+		"resources": [
+			"fonts/mui-icons-extra.ttf",
+			"img/temp/02.png",
+			"css/icons-extra.css",
+			"fonts/mui.ttf",
+			"js/mui.min.js",
+			"css/app.css",
+			"css/mui.min.css",
+			"js/config.js",
+			"js/njcq.plugin.util.js",
+			"img/video-play.png",
+			"img/video-all-screen.png",
+			"js/njcq.plugin.time.js",
+			"js/njcq.plugin.location.distance.js",
+			"js/lib/circle.list.js",
+			"js/njcq.plugin.base64.js"
+		],
+		"refer": [
+			"views/ucenter/login/login.html",
+			"views/circle/detail/detail.html"
+		]
+	},
+	"views/circle/index/index.html": {
+		"resources": [
+			"views/circle/index/list_circle.html",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		],
+		"refer": [
+			"views/circle/index/list_circle.html",
+			"views/circle/index/list_guanzhu.html",
+			"views/circle/index/list_qingsongyike.html",
+			"views/circle/publish/publish_choose.html",
+			"views/circle/index/list_zijiafenxiang.html"
+		]
+	},
+	"views/circle/index/list_guanzhu.html": {
+		"resources": [
+			"js/njcq.plugin.util.js",
+			"js/njcq.plugin.time.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"js/njcq.plugin.location.distance.js",
+			"css/mui.min.css",
+			"js/lib/circle.list.js",
+			"css/icons-extra.css",
+			"js/config.js"
+		],
+		"refer": []
+	},
+	"views/ucenter/login/login.html": {
+		"resources": [
+			"views/ucenter/login/js/app.js",
+			"views/ucenter/login/js/mui.enterfocus.js",
+			"js/mui.js",
+			"css/mui.css",
+			"js/config.js",
+			"views/ucenter/login/images/sinaweibo.png",
+			"views/ucenter/login/images/qq.png",
+			"views/ucenter/login/images/weixin.png",
+			"fonts/mui.ttf",
+			"js/njcq.plugin.hx.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js"
+		],
+		"refer": [
+			"views/ucenter/login/forget_password.html",
+			"views/ucenter/login/main.html",
+			"views/ucenter/login/unlock.html",
+			"views/ucenter/login/reg.html"
+		]
+	},
+	"views/circle/publish/publish_choose.html": {
+		"resources": [
+			"img/pub-kaixinyike.png",
+			"img/pub-dongtai2.png",
+			"img/pub-zijiafenxiang.png",
+			"img/pub-jiakaozhishi.png",
+			"img/pub-other.png",
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [
+			"views/circle/publish/publish_zijia.html",
+			"views/circle/publish/publish_yule.html",
+			"views/circle/publish/publish_jiakao.html",
+			"views/circle/publish/publish_qita.html",
+			"views/circle/publish/publish_dongtai.html"
+		]
+	},
+	"views/circle/publish/publish_zijia.html": {
+		"resources": [
+			"js/njcq.plugin.camera.js",
+			"js/imagecropper/jquery-3.1.1.min.js",
+			"js/njcq.plugin.base64.js",
+			"js/common.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		],
+		"refer": []
+	},
+	"views/circle/index/list_zijiafenxiang.html": {
+		"resources": [
+			"js/njcq.plugin.base64.js",
+			"js/njcq.plugin.util.js",
+			"js/njcq.plugin.time.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"js/njcq.plugin.location.distance.js",
+			"css/mui.min.css",
+			"js/lib/circle.list.js",
+			"css/icons-extra.css",
+			"js/config.js"
+		],
+		"refer": []
+	},
+	"views/transaction/index/index.html": {
+		"resources": [
+			"img/temp/01.png",
+			"img/temp/02.png",
+			"img/trans-baoyang.png",
+			"img/trans-wanju.png",
+			"img/trans-other.png",
+			"img/trans-fuwu.png",
+			"img/trans-free.png",
+			"img/trans-shiwu.png",
+			"fonts/mui-icons-extra.ttf",
+			"css/icons-extra.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js",
+			"js/njcq.plugin.time.js",
+			"js/njcq.plugin.location.distance.js"
+		],
+		"refer": [
+			"views/transaction/list/list_commodity.html",
+			"views/transaction/publish/publish.html",
+			"views/ucenter/login/login.html",
+			"views/transaction/publish/commodity_publish.html",
+			"views/transaction/comPublish/commodity_publish.html",
+			"views/transaction/detail/detail.html"
+		]
+	},
+	"views/transaction/list/list_commodity.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"css/app.css",
+			"css/icons-extra.css",
+			"fonts/mui-icons-extra.ttf",
+			"js/config.js",
+			"img/temp/01.png"
+		],
+		"refer": []
+	},
+	"views/activity/order/preview/order_result.html": {
+		"resources": [
+			"img/success.png",
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"img/temp/02.png"
+		],
+		"refer": [
+			"views/activity/order/preview/pingzheng.html"
+		]
+	},
+	"views/activity/order/preview/preview.html": {
+		"refer": [
+			"views/activity/order/preview/order_result.html"
+		],
+		"resources": [
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"img/temp/02.png",
+			"fonts/mui-icons-extra.ttf",
+			"css/icons-extra.css"
+		]
+	},
+	"views/ucenter/login/forget_password.html": {
+		"href": "views/ucenter/login/forget_password.html",
+		"resources": [
+			"views/ucenter/login/css/style.css",
+			"views/ucenter/login/js/app.js",
+			"css/mui.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/login/main.html": {
+		"href": "views/ucenter/login/main.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"views/ucenter/login/js/app.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/login/unlock.html": {
+		"href": "views/ucenter/login/unlock.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"views/ucenter/login/js/mui.locker.js",
+			"views/ucenter/login/js/app.js"
+		],
+		"refer": [
+			"views/ucenter/login/login.html",
+			"views/ucenter/login/main.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/login/reg.html": {
+		"href": "views/ucenter/login/reg.html",
+		"resources": [
+			"css/mui.css",
+			"views/ucenter/login/css/style.css",
+			"js/mui.min.js",
+			"views/ucenter/login/js/app.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.min.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/demo/javascript/dist/webim.config.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"js/config.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js",
+			"js/njcq.plugin.hx.js"
+		],
+		"refer": [
+			"views/ucenter/login/login.html"
+		],
+		"priority": 0
+	},
+	"views/circle/detail/detail.html": {
+		"href": "views/circle/detail/detail.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"css/icons-extra.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"js/njcq.plugin.base64.js",
+			"img/temp/01.png",
+			"js/njcq.plugin.time.js",
+			"js/layer_mobile/need/layer.css",
+			"js/layer_mobile/layer.js"
+		],
+		"refer": [
+			"views/ucenter/login/login.html"
+		],
+		"priority": 0
+	},
+	"views/circle/publish/publish_jiakao.html": {
+		"href": "views/circle/publish/publish_jiakao.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/njcq.plugin.camera.js",
+			"js/common.js",
+			"js/config.js",
+			"js/imagecropper/jquery-3.1.1.min.js",
+			"js/njcq.plugin.base64.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/circle/publish/publish_qita.html": {
+		"href": "views/circle/publish/publish_qita.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/njcq.plugin.camera.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/circle/publish/publish_yule.html": {
+		"href": "views/circle/publish/publish_yule.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/njcq.plugin.camera.js",
+			"js/config.js",
+			"img/temp/02.png"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/circle/publish/publish_dongtai.html": {
+		"href": "views/circle/publish/publish_dongtai.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/njcq.plugin.camera.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/index/index.html": {
+		"href": "views/ucenter/index/index.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"css/icons-extra.css",
+			"js/config.js",
+			"img/trans-wanju.png",
+			"fonts/mui-icons-extra.ttf",
+			"img/logo.png",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"views/ucenter/login/login.html",
+			"views/ucenter/order/tuikuan.html",
+			"views/ucenter/order/waitingDeliverOrder.html",
+			"views/ucenter/order/myJoinOrder.html",
+			"views/ucenter/address/address.html",
+			"views/ucenter/order/mypublishActmanage.html",
+			"views/ucenter/address/addres_manage_list.html",
+			"views/ucenter/setting/setting.html",
+			"views/ucenter/myfav/myfav_activity.html",
+			"views/ucenter/myfav/myfav_customer.html",
+			"views/ucenter/scan/scan_ticket.html",
+			"views/ucenter/myfav/myfav_circle.html"
+		],
+		"priority": 0
+	},
+	"views/transaction/publish/publish.html": {
+		"href": "views/transaction/publish/publish.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/transaction/publish/commodity_publish.html": {
+		"href": "views/transaction/publish/commodity_publish.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/transaction/comPublish/commodity_publish.html": {
+		"href": "views/transaction/comPublish/commodity_publish.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"css/app.css",
+			"js/njcq.plugin.camera.js",
+			"fonts/mui.ttf"
+		],
+		"refer": [
+			"views/common/map_choose_location.html"
+		],
+		"priority": 0
+	},
+	"views/transaction/detail/detail.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"css/app.css",
+			"fonts/mui-icons-extra.ttf",
+			"css/icons-extra.css",
+			"js/config.js",
+			"js/njcq.plugin.time.js",
+			"js/njcq.plugin.location.distance.js",
+			"js/layer_mobile/need/layer.css",
+			"js/layer_mobile/layer.js",
+			"img/temp/01.png"
+		],
+		"refer": [
+			"views/transaction/order/order_preview.html",
+			"views/ucenter/login/login.html"
+		]
+	},
+	"views/ucenter/address/address_add.html": {
+		"href": "views/ucenter/address/address_add.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/address/address.html": {
+		"href": "views/ucenter/address/address.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [
+			"views/ucenter/address/address_add.html"
+		],
+		"priority": 0
+	},
+	"views/transaction/order/order_preview.html": {
+		"href": "views/transaction/order/order_preview.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"img/temp/01.png"
+		],
+		"refer": [
+			"views/ucenter/address/address.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/order/tuikuan.html": {
+		"href": "views/ucenter/order/tuikuan.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/waitingDeliverOrder.html": {
+		"href": "views/ucenter/order/waitingDeliverOrder.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/myJoinOrder.html": {
+		"href": "views/ucenter/order/myJoinOrder.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"js/config.js"
+		],
+		"refer": [
+			"views/activity/order/preview/pingzheng.html"
+		],
+		"priority": 0
+	},
+	"views/activity/order/preview/pingzheng.html": {
+		"href": "views/activity/order/preview/pingzheng.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"img/temp/02.png"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/beFavlist.html": {
+		"href": "views/ucenter/order/beFavlist.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/baominguserlist.html": {
+		"href": "views/ucenter/order/baominguserlist.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"img/temp/01.png",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/orderlist.html": {
+		"href": "views/ucenter/order/orderlist.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/order/currentActManage.html": {
+		"href": "views/ucenter/order/currentActManage.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [
+			"views/activity/publish/publish.html",
+			"views/activity/detail/detail.html",
+			"views/ucenter/order/beFavlist.html",
+			"views/ucenter/order/baominguserlist.html",
+			"views/ucenter/order/orderlist.html",
+			"views/ucenter/order/ordermanage.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/order/mypublishActmanage.html": {
+		"href": "views/ucenter/order/mypublishActmanage.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [
+			"views/ucenter/order/currentActManage.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/address/addres_manage_list.html": {
+		"href": "views/ucenter/address/addres_manage_list.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"js/config.js"
+		],
+		"refer": [
+			"views/ucenter/address/address_add.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/order/ordermanage.html": {
+		"href": "views/ucenter/order/ordermanage.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"css/app.css",
+			"js/config.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/setting/setting.html": {
+		"href": "views/ucenter/setting/setting.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"fonts/mui.ttf",
+			"img/temp/01.png",
+			"css/app.css",
+			"js/njcq.plugin.hx.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/myfav/myfav_activity.html": {
+		"resources": [
+			"img/temp/01.png",
+			"js/njcq.plugin.time.js",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		],
+		"refer": [
+			"views/activity/detail/detail.html"
+		]
+	},
+	"views/activity/index/search.html": {
+		"resources": [
+			"views/activity/index/search.html",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		],
+		"refer": [
+			"views/activity/index/search.html",
+			"views/activity/index/search_activity.html"
+		]
+	},
+	"views/activity/index/search_activity.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js",
+			"img/temp/01.png"
+		],
+		"refer": [
+			"views/activity/detail/detail.html"
+		]
+	},
+	"views/message/index.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"css/app.css",
+			"img/temp/01.png",
+			"img/temp/02.png",
+			"js/njcq.plugin.hx.js",
+			"js/config.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js",
+			"fonts/mui-icons-extra.ttf",
+			"css/icons-extra.css",
+			"plugins/web-im/demo/javascript/dist/demo-1.4.11.js",
+			"js/njcq.plugin.time.js",
+			"views/message/index.js",
+			"views/message/index_friend_list.js",
+			"img/logo.png",
+			"img/msg-ring.png"
+		],
+		"refer": [
+			"views/message/tongxunlu.html",
+			"views/message/tochatPage.html",
+			"views/message/chat_single.html",
+			"views/message/chat_single2.html",
+			"views/message/search_friend.html",
+			"views/message/apply_friend_list.html"
+		]
+	},
+	"views/message/tongxunlu.html": {
+		"href": "views/message/tongxunlu.html",
+		"resources": [
+			"css/mui.min.css",
+			"js/mui.min.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js",
+			"js/njcq.plugin.hx.js",
+			"js/config.js",
+			"fonts/mui.ttf",
+			"img/temp/01.png",
+			"css/app.css"
+		],
+		"refer": [
+			"views/message/tochatPage.html"
+		],
+		"priority": 0
+	},
+	"views/common/choose_city.html": {
+		"href": "views/common/choose_city.html",
+		"resources": [
+			"js/mui.min.js",
+			"js/mui.indexedlist.js",
+			"js/config.js",
+			"css/mui.min.css",
+			"css/app.css",
+			"css/mui.indexedlist.css"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/scan/barcode_scan.html": {
+		"href": "views/ucenter/scan/barcode_scan.html",
+		"resources": [
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/scan/scan_ticket.html": {
+		"href": "views/ucenter/scan/scan_ticket.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js"
+		],
+		"refer": [
+			"views/ucenter/scan/barcode_scan.html"
+		],
+		"priority": 0
+	},
+	"views/ucenter/myfav/myfav_customer.html": {
+		"href": "views/ucenter/myfav/myfav_customer.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [],
+		"priority": 0
+	},
+	"views/ucenter/myfav/myfav_circle.html": {
+		"href": "views/ucenter/myfav/myfav_circle.html",
+		"resources": [
+			"css/mui.min.css",
+			"css/app.css",
+			"css/icons-extra.css",
+			"js/mui.min.js",
+			"js/config.js",
+			"js/njcq.plugin.time.js"
+		],
+		"refer": [
+			"views/circle/detail/detail.html"
+		],
+		"priority": 0
+	},
+	"views/message/tochatPage.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/njcq.plugin.hx.js",
+			"plugins/web-im/sdk/dist/strophe-1.2.8.min.js",
+			"plugins/web-im/sdk/dist/websdk-1.4.11.js",
+			"js/config.js"
+		]
+	},
+	"views/message/chat_single.html": {
+		"resources": [
+			"js/mui.imageViewer.js",
+			"views/message/index.css",
+			"views/message/chat.js",
+			"css/mui.imageviewer.css",
+			"js/arttmpl.js",
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js",
+			"views/message/chat_single.js",
+			"css/app.css",
+			"img/temp/01.png",
+			"fonts/mui-icons-extra.ttf",
+			"css/icons-extra.css"
+		]
+	},
+	"views/message/chat_single2.html": {
+		"resources": [
+			"js/mui.min.js",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"img/add-img.png"
+		]
+	},
+	"views/message/search_friend.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"img/logo.png",
+			"js/config.js"
+		],
+		"refer": [
+			"views/ucenter/uinfo/udetail.html"
+		]
+	},
+	"views/ucenter/uinfo/udetail.html": {
+		"resources": [
+			"img/login-bg2.jpg",
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		]
+	},
+	"views/message/apply_friend_list.html": {
+		"refer": [
+			"views/message/apply_friend_setting.html"
+		],
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"img/logo.png",
+			"js/config.js"
+		]
+	},
+	"views/message/apply_friend_setting.html": {
+		"refer": [
+			"views/message/friend_group_manage.html"
+		],
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"img/temp/02.png",
+			"js/config.js"
+		]
+	},
+	"views/message/friend_group_manage.html": {
+		"resources": [
+			"js/mui.min.js",
+			"css/app.css",
+			"fonts/mui.ttf",
+			"css/mui.min.css",
+			"js/config.js"
+		]
+	}
+}

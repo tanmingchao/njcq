@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<style type="text/css">
+			.mui-icon-checkmarkempty {
+				color: #007AFF;
+			}
+			
+			.group {
+				border-top: 1px solid #EFEFF4;
+			}
+			
+			.group:first-child {
+				border-top: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">选择分组</h1>
+			<a href="#" id="new-group" class="mui-icon mui-icon-plusempty mui-pull-right" style="font-weight: bold;"></a>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row-nopadding groups flex-direction-column" style="margin: 10px 0px;">
+
+				<!--<div class="cq-row flex-direction-row spaace-between">
+					<span class="group-name">我的好友</span>
+					<span class="mui-icon mui-icon-checkmarkempty"></span>
+				</div>-->
+
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript">
+			var ws = null,
+				wo = null,
+				friendGroup = [],
+				config = config();
+
+			mui.init();
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				friendGroup = ws.friendGroup; //好友分组
+				fnBack();
+				fnInitFriendRows(friendGroup);
+				fnRowTapEvent();
+				fnCreateNewGroup();
+
+				//自定义事件
+				fnCustomerEvent_ReciveNewGroupInfo();
+
+			});
+
+			// 自定义事件 —— 子页面 传过来的分组信息
+			function fnCustomerEvent_ReciveNewGroupInfo() {
+				window.addEventListener('newGroupInfo', function(e) {
+					var groupInfo = e.detail.groupInfo;
+					var parentNode = document.querySelector('.groups');
+					fnCreateSingleRow(groupInfo, false, parentNode);
+					var currentRow = parentNode.querySelector('div[data-pkey=' + groupInfo.PrimaryKey + ']');
+					_fnAddSelectedSign(currentRow);
+				});
+			}
+
+			//新建分组
+			function fnCreateNewGroup() {
+				document.querySelector('#new-group').addEventListener('tap', function() {
+					//跳转到新建页面
+					mui.openWindow({
+						url: "friend_group_manage_create.html",
+						id: 'friend_group_manage_create.html',
+						preload: true,
+						createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false, //自动显示等待框，默认为true
+						}
+					});
+				}, false);
+			}
+
+			//行点击事件
+			function fnRowTapEvent() {
+				mui('.groups').on('tap', '.group', function() {
+					var self = this;
+					var groupKey = self.getAttribute('data-pkey');
+					//样式变化，选中点击的对象
+					_fnAddSelectedSign(self);
+					//返回给上个页面
+					var groupName = self.querySelector('span.group-name');
+					mui.fire(wo, 'settingGroup', {
+						groupKey: groupKey,
+						groupName: groupName.innerText
+					});
+					mui.back();
+				});
+			}
+
+			//为点击行 添加选中标识
+			function _fnAddSelectedSign(selectedNode) {
+				var isOkIcon = selectedNode.querySelector('span.mui-icon');
+				//移除其他行的 对号，
+				var groups = document.querySelectorAll('span.mui-icon');
+				if(groups && groups.length > 0) {
+					for(var i = 0; i < groups.length; i++) {
+						var item = groups[i];
+						if(item != isOkIcon) {
+							if(item.classList.contains('mui-icon-checkmarkempty')) {
+								//移除
+								item.classList.remove('mui-icon-checkmarkempty');
+							}
+						} else {
+							//为当前行添加选中 对号
+							if(!isOkIcon.classList.contains('mui-icon-checkmarkempty')) {
+								isOkIcon.classList.add('mui-icon-checkmarkempty');
+							}
+						}
+					}
+				}
+			}
+
+			//初始化行数据
+			function fnInitFriendRows(groups) {
+				if(groups && groups.length > 0) {
+					var parentNode = document.querySelector('.groups');
+					groups.forEach(function(item, index, input) {
+						fnCreateSingleRow(item, index == 0, parentNode);
+					});
+				}
+			}
+
+			//创建单行
+			function fnCreateSingleRow(groupInfo, selected, parentNode) {
+				var div = document.createElement('div');
+				div.setAttribute('class', 'cq-row flex-direction-row spaace-between group');
+				div.setAttribute('data-pkey', groupInfo.PrimaryKey);
+				var isOk = selected ? 'mui-icon-checkmarkempty' : '';
+				var html = '';
+				html += '		<span class="group-name">' + groupInfo.GroupName + '</span>';
+				html += '		<span class="mui-icon ' + isOk + ' "></span>';
+				div.innerHTML = html;
+				parentNode.appendChild(div);
+			}
+
+			function fnBack() {
+				//返回按钮
+				document.querySelector('#mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				}, false);
+			}
+
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview();
+				ws.close();
+			}
+		</script>
+	</body>
+
+</html>

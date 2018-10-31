@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>车友圈-主页</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			div.mui-scroll-wrapper {
+				background: #fff;
+				/*overflow: hidden !important;*/
+				position: relative;
+			}
+			
+			#circle-type-menu {
+				/*position: absolute;*/
+				overflow-x: scroll !important;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				-webkit-overflow-scrolling: touch !important;
+				/*z-index: 99999999999;*/
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav act-head">
+			<button id="do-publish-act" type="button" class="mui-btn mui-btn-link mui-pull-right">
+				<span class="mui-icon mui-icon-plusempty"></span>
+			</button>
+			<h1 class="mui-title">
+		    	我的车友圈
+		   </h1>
+		</header>
+
+		<div class="mui-content">
+			<!--头部滚动菜单-->
+			<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="overflow: hidden;">
+				<div id="circle-type-menu" class="mui-scroll">
+
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			// 子窗口样式
+			var subStyles = {
+				top: "85px",
+				bottom: "0px"
+			};
+			var csubWvs = [];
+			// 当前页面索引，初始化为""；
+			var cactiveIndex = 0;
+			var self = null;
+
+			mui.init();
+			mui.plusReady(function() {
+				self = plus.webview.currentWebview();
+				fInitialMenu();
+				fMenuTapEvent(self);
+				//跳转到发布页面
+				document.getElementById("do-publish-act").addEventListener('tap', function() {
+					mui.openWindow({
+						url: '../publish/publish_choose.html',
+						id: 'publish_choose.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				});
+
+			});
+
+			/*----事件绑定，数据加载-------------------------------------*/
+			/**
+			 *	@description 初始化菜单
+			 */
+			function fInitialMenu() {
+				var menus = localStorage.getItem("circleType");
+				if(menus && menus != '') {
+					var data = JSON.parse(menus);
+					_initialMenuHtml(data);
+				} else {
+					config.fGet({
+						link: '/ActivityShareType/Type',
+						callback: function(res) {
+							var at = JSON.parse(data).Data;
+							localStorage.setItem("circleType", JSON.stringify(at));
+							_initialMenuHtml(at);
+						}
+					});
+				}
+			}
+			/** 
+			 * 绑定menu点击事件 
+			 */
+			function fMenuTapEvent(self) {
+				mui("#circle-type-menu").on('tap', '.circle-type-item', function() {
+					//获取id
+					var url = this.getAttribute("url");
+					var pkey = this.getAttribute("ref");
+					var index = this.getAttribute("data-index");
+					if(url && url.length > 3 && url != "null") {
+						if(cactiveIndex != index) {
+							if(!contains(parseInt(index))) {
+
+								var subWv = plus.webview.create(url, url, subStyles, {
+									pkey: pkey
+								});
+
+								csubWvs.push({
+									inx: parseInt(index),
+									obj: subWv
+								});
+								self.append(subWv);
+							}
+
+							for(var i = 0; i < csubWvs.length; i++) {
+								if(parseInt(csubWvs[i].inx) === parseInt(index)) {
+									csubWvs[i].obj.show();
+								}
+								if(parseInt(csubWvs[i].inx) === cactiveIndex) {
+									csubWvs[i].obj.hide();
+								}
+							}
+
+							//更改当前活跃的选项卡
+							cactiveIndex = parseInt(index);
+						}
+					}
+				});
+			}
+
+			/*----主方法-------------------------------------*/
+
+			/*----私有方法----------------------------------*/
+			/**
+			 *	判断数组中是否已经存在 
+			 * @param {Object} obj
+			 */
+			function contains(obj) {
+				for(var i = 0; i < csubWvs.length; i++) {
+					if(parseInt(csubWvs[i].inx) == obj) {
+						return true;
+					}
+				}
+				return false;
+			}
+			/**
+			 *初始化菜单 子方法，创建html内容 
+			 * @param {Object} 分类json数组
+			 */
+			function _initialMenuHtml(data) {
+				var html = '';
+				mui.each(data, function(index, item) {
+					var active = index == 0 ? "mui-active" : "";
+					var firsturl = index == 0 ? 'list_circle.html' : item.Url;
+					var firsturlPkey = index == 0 ? '-1' : item.PrimaryKey;
+					if(item.TypeName.indexOf('动态') == -1)
+						html += '<a data-index="' + index + '" type="button"class="mui-btn mui-control-item circle-type-item ' + active + '"  url="' + firsturl + '"  ref="' + firsturlPkey + '" >' + item.TypeName + '</a>';
+					//					console.info(item.Url);
+				});
+				var typeDoms = document.getElementById("circle-type-menu");
+				typeDoms.innerHTML = html;
+
+				//页面加载时，只初始化第一个子页面
+				cactiveIndex = 0;
+				var sub = plus.webview.create('list_circle.html', 'list_circle.html', subStyles, {
+					index: 0
+				});
+				if(csubWvs.length == 0 || !contains(cactiveIndex)) {
+					csubWvs.push({
+						inx: cactiveIndex,
+						obj: sub
+					})
+					self.append(sub);
+				}
+				//重新计算 #circle-type-menu 宽度
+				var childs = document.getElementsByClassName('circle-type-item');
+				var width = 0;
+				for(var i = 0; i < childs.length; i++) {
+					var crut = childs[i].clientWidth;
+					width = width + crut;
+				}
+				typeDoms.style.width = (width + 30) + "px";
+			}
+		</script>
+	</body>
+
+</html>

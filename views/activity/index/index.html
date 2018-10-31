@@ -1,0 +1,255 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>南京车趣</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../css/app.css" rel="stylesheet" />
+		<style type="text/css">
+			div.mui-scroll-wrapper {
+				background: #fff;
+				/*overflow: hidden !important;*/
+				position: relative;
+			}
+			
+			#act-type-menu {
+				/*position: absolute;*/
+				overflow-x: scroll !important;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				-webkit-overflow-scrolling: touch !important;
+				/*z-index: 99999999999;*/
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--
+        	作者：1365101128@qq.com
+        	时间：2017-05-26
+        	描述：header
+        -->
+		<header class="mui-bar mui-bar-nav act-head">
+			<button type="button" class="mui-btn mui-btn-link mui-pull-left btn-city">
+		            <label id="city"></label>
+		            <span class="mui-icon mui-icon-arrowright"></span>
+		   </button>
+			<div class="do-to-search" style="display: flex;flex-direction: row;justify-content: center;align-items: baseline;flex: 1;background: #EFEFF4;height: 30px;
+				border-radius: 5px;line-height: 30px;">
+				<span class="mui-icon mui-icon-search" style="font-size: 14px;color: #999999;font-weight: normal;display: block;">
+					关键字\名称 
+				</span>
+			</div>
+			<button id="do-publish-act" type="button" class="mui-btn mui-btn-link mui-pull-right"> 
+		            <span class="mui-icon mui-icon-plusempty"></span>
+		    </button>
+		</header>
+
+		<!--
+        	作者：1365101128@qq.com
+        	时间：2017-05-26
+        	描述：content
+        -->
+		<div class="mui-content">
+			<!--
+            	作者：1365101128@qq.com
+            	时间：2017-05-26
+            	描述：头部滚动菜单
+            -->
+			<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="overflow: hidden;">
+				<div id="act-type-menu" class="mui-scroll">
+
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script src="../../../js/config.js" type="text/javascript"></script>
+		<script src="../../../js/common.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var local = config.fGetLocaltion();
+			// 子窗口样式
+			var subStyles = {
+				top: "85",
+				bottom: "0px"
+			};
+			var subWvs = [];
+			// 当前页面索引，初始化为""；
+			var activeIndex = 0;
+			mui.init();
+			mui.plusReady(function() {
+				document.querySelector('.do-to-search').addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'search.html',
+						id: 'search.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				}, false);
+
+				//自定义事件，接收选择的城市信息
+				window.addEventListener('cityName', function(e) {
+					var cityName = e.detail.cityName;
+					document.getElementById('city').innerText = cityName;
+				});
+
+				var cityname = '';
+				if(localStorage.getItem('cityName'))
+					cityname = localStorage.getItem('cityName');
+				else {
+					cityname = local.address.city
+				}
+				document.getElementById('city').innerText = cityname;
+
+				var self = plus.webview.currentWebview();
+				//绑定活动分类数据
+				config.fGet({
+					link: '/ActivityType/GetAllType',
+					callback: function(res) {
+						var data = JSON.parse(res).Data;
+						var str = JSON.stringify(data);
+						var html = '';
+						mui.each(data, function(index, item) {
+							var active = index == 0 ? "mui-active" : "";
+							html += '<a data-index="' + index + '" type="button"class="mui-btn mui-control-item atc-type-item ' + active + '" url="' + item.Url + '"  ref="' + item.PrimaryKey + '" >' + item.ActTypeName + '</a>';
+
+						});
+						var typeDoms = document.getElementById("act-type-menu");
+						typeDoms.innerHTML = html;
+
+						//页面加载时，只初始化第一个子页面
+						activeIndex = 0;
+						var sub = plus.webview.create(data[0].Url, data[0].Url, subStyles, {
+							index: 0
+						});
+						if(subWvs.length == 0 || !contains(activeIndex)) {
+							subWvs.push({
+								inx: activeIndex,
+								obj: sub
+							})
+							self.append(sub);
+						}
+						//重新计算 #act-type-menu 宽度
+						var childs = document.getElementsByClassName('atc-type-item');
+						var width = 0;
+						if(childs && childs.length > 0)
+							for(var i = 0; i < childs.length; i++) {
+								var crut = childs[i].clientWidth;
+								width = width + crut;
+							}
+						typeDoms.style.width = (width + 30) + "px";
+					}
+				});
+
+				mui("#act-type-menu").on('tap', '.atc-type-item', function() {
+					//获取id
+					var url = this.getAttribute("url");
+					var pkey = this.getAttribute("ref");
+					var index = this.getAttribute("data-index");
+					if(url && url.length > 3 && url != "null") {
+						if(activeIndex != index) {
+							if(!contains(parseInt(index))) {
+
+								var subWv = plus.webview.create(url, url, subStyles, {
+									pkey: pkey
+								});
+
+								subWvs.push({
+									inx: parseInt(index),
+									obj: subWv
+								});
+								self.append(subWv);
+							}
+
+							if(subWvs && subWvs.length > 0)
+								for(var i = 0; i < subWvs.length; i++) {
+									if(parseInt(subWvs[i].inx) === parseInt(index)) {
+										subWvs[i].obj.show();
+									}
+									if(parseInt(subWvs[i].inx) === activeIndex) {
+										subWvs[i].obj.hide();
+									}
+								}
+
+							//更改当前活跃的选项卡
+							activeIndex = parseInt(index);
+						}
+					}
+				});
+
+				//判断数组中是否已经存在
+				function contains(obj) {
+					if(subWvs && subWvs.length > 0)
+						for(var i = 0; i < subWvs.length; i++) {
+							if(parseInt(subWvs[i].inx) == obj) {
+								return true;
+							}
+						}
+					return false;
+				}
+
+				//右上角 发布活动点击事件
+				document.getElementById("do-publish-act").addEventListener('tap', function(event) {
+					mui.openWindow({
+						url: '../publish/publish2.html',
+						id: 'act_publish2.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				}, false);
+
+				document.getElementById('city')
+					.addEventListener('tap', function() {
+						//						alert('开始消息推送');
+						//						var push_url = '/GeTuiPush/' + config.fnGetClientInfo().appid + '/' + config.fnGetClientInfo().clientid + '/0/0/感谢您登录车趣平台/'+config.fGetLoginUserInfo().PrimaryKey+'/PushMessageToSingle';
+						//						//推送消息通知
+						//						console.info(push_url);
+						//						config.fGet({
+						//							link: push_url,
+						//							callback: function(res) {
+						//								alert('推送结果：' + JSON.stringify(res));
+						//							}
+						//						});
+						mui.openWindow({
+							url: "../../common/choose_city.html",
+							id: 'choose_city.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: true, //自动显示等待框，默认为true
+							}
+						});
+
+					}, false);
+
+			});
+		</script>
+	</body>
+
+</html>

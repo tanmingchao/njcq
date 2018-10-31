@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<style type="text/css">
+			.mui-bar-nav {
+				box-shadow: none;
+				border-bottom: 1px solid #EFEFF4;
+			}
+			
+			.userhead {
+				height: 35px;
+				width: 35px;
+				border-radius: 50%;
+				border: 1px solid #EFEFF4;
+			}
+			
+			.username {
+				font-size: 14px;
+			}
+			
+			.lastmsg {
+				font-size: x-small;
+				color: #807e7e;
+			}
+			
+			.row-item {
+				border-bottom: 1px dotted #EFEFF4;
+				padding: 2px 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我的通讯录</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="mui-scroll-wrapper">
+			    <div class="mui-scroll">
+			        <ul class="mui-table-view">
+			                <li class="mui-table-view-cell">
+			                    <a class="mui-navigate-right">
+			                        Item 1
+			                    </a>
+			                </li>
+			                <li class="mui-table-view-cell">
+			                    <a class="mui-navigate-right">
+			                         Item 2
+			                    </a>
+			                </li>
+			                <li class="mui-table-view-cell">
+			                    <a class="mui-navigate-right">
+			                         Item 3
+			                    </a>
+			                </li>
+			            </ul>
+			    </div>
+			</div>
+			
+
+		</div>
+
+		<script src="../../js/mui.min.js "></script>
+		<script type="text/javascript " src="../../plugins/web-im/demo/javascript/dist/WebIM.config.js "></script>
+		<script type="text/javascript " src="../../plugins/web-im/sdk/dist/strophe-1.2.8.min.js "></script>
+		<script type="text/javascript " src="../../plugins/web-im/sdk/dist/websdk-1.4.11.js "></script>
+		<script type="text/javascript " src="../../js/njcq.plugin.hx.js "></script>
+		<script type="text/javascript " src="../../js/config.js "></script>
+		<script type="text/javascript ">
+			var ws = null,
+				wo = null,
+				//				hx = hx(),
+				config = config(),
+				friends = null;
+
+			mui.init()
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+
+				func.fnInitialFriends();
+				func.fnBack();
+				func.fnFriendClickEvent();
+				func.fnFireMsg();
+			});
+
+			var func = {
+				fnFireMsg: function() {
+					window.addEventListener('sendMsgFromChat', function(e) {
+						mui.fire(wo, 'sendMsg', {
+							msgInfo: e.detail.msgInfo
+						})
+					});
+				},
+				//行点击事件
+				fnFriendClickEvent: function() {
+					mui('#friend-group').on('tap', '.mui-collapse-content', function() {
+						var self = this;
+						var to = self.getAttribute('rel');
+						var toName = self.getAttribute('ref');
+						mui.openWindow({
+							url: "tochatPage.html",
+							id: "tochatPage.html",
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: true, //自动显示等待框，默认为true
+							},
+							extras: {
+								to: to,
+								toName: toName
+							}
+						});
+					});
+				},
+				//初始化好友列表
+				fnInitialFriends: function() {
+					var freds = localStorage.getItem('friends');
+					if(freds != null && freds != '' && freds != '[]') {
+						friends = JSON.parse(freds);
+						fnInitFriendGroup(friends);
+
+					} else {
+						plus.nativeUI.toast('获取好友列表失败');
+					}
+
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							mui.back();
+						}, false);
+				}
+			};
+
+			function fnInitFriendGroup(data) {
+				var parentNode = document.getElementById('friend-group');
+				var li = document.createElement('li');
+				li.setAttribute('class', 'mui-table-view-cell mui-collapse ' + style);
+				var html = '';
+				html += '<a class=" mui-navigate-right" href="# ">我的好友</a>';
+				for(var i = 0; i < data.length; i++) {
+					var style = (i == 0) ? 'mui-active' : '';
+					html += '	<div rel="' + data[i].UserLoginAccount + '" ref="' + data[i].UserNickName + '" class="mui-collapse-content row-item">';
+					html += '		<div class="cq-row-nopadding flex-direction-row " style="flex: 1; ">';
+					html += '			<img class="userhead " src="' + data[i].HeadImageUrl + '" />';
+					html += '			<div class="cq-row-nopadding flex-direction-column " style="flex: 1;padding: 0px 10px;line-height: 20px; ">';
+					html += '				<span class="username ">' + data[i].UserNickName + '</span>';
+					html += '				<span class="lastmsg ">[4G在线]我是一个好人</span>';
+					html += '			</div>';
+					html += '		</div>';
+					html += '	</div>';
+				}
+				li.innerHTML = html;
+				parentNode.appendChild(li);
+			}
+
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview().opener();
+				ws.close();
+			};
+		</script>
+	</body>
+
+</html>

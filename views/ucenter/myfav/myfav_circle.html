@@ -1,0 +1,339 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/icons-extra.css" />
+		<style type="text/css">
+			.mui-scroll {
+				top: 44px;
+			}
+			
+			.mui-table-view-cell {
+				padding-bottom: 0px;
+			}
+			
+			h5 {
+				color: #000000;
+				margin-top: 0px;
+				line-height: 18px;
+			}
+			
+			.item-row {
+				margin-top: 8px !important;
+			}
+			
+			.cq-row span {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.cq-row-nopadding span {
+				font-size: 12px;
+				color: #999999;
+			}
+			
+			.info {
+				border-top: 1px solid #EFEFF4;
+				padding: 6px 0px;
+			}
+			
+			#comcreatetime {
+				color: #000000;
+			}
+			
+			.item-info {
+				margin: 0px 5px;
+			}
+			
+			.opt {
+				border-top: 1px solid #EFEFF4;
+				padding: 4px 10px;
+			}
+			
+			.imgs li {
+				padding: 5px !important;
+			}
+			
+			.imgs img {
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我收藏的动态</h1>
+		</header>
+
+		<div class="mui-content">
+			<div id="circle_list" class="mui-scroll-wrapper">
+				<div id="circle_list_scroll" class="mui-scroll">
+
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				ws = null,
+				wo = null,
+				formatter = new Formatter(),
+				userInfo = config.fGetLoginUserInfo();
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			var params = {};
+			params.ActivityShareTitle = '';
+			params.CustomerKey = '';
+			params.CreateTime = null;
+			params.PageIndex = 0;
+			params.PageSize = 0;
+
+			mui.init({
+				pullRefresh: {
+					container: "#circle_list", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					func.fnClearParams();
+					func.fnGetCircleData();
+					mui('#circle_list').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if((params.PageIndex * params.PageSize) < setting.totalRows) {
+						params.PageIndex += 1; //config.fGetPageSize();
+						//获取下一页数据
+						console.info('up')
+						func.fnGetCircleData();
+					}
+
+					mui('#circle_list').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				func.fnBack();
+				func.fnDotoDelete();
+				func.fnDotoDetail();
+
+			});
+			mui.back = function() {
+				wo.reload(true);
+				ws.close();
+			}
+			var func = {
+				fnBack: function() {
+					document.getElementById('mui-action-back').addEventListener('tap', function() {
+						mui.back();
+					}, false);
+				},
+				fnDotoDelete: function() {
+					mui('#circle_list').on('tap', '.do-to-delete', function() {
+						var self = this;
+						var pkey = self.childNodes[0].getAttribute('rel');
+						config.fGet({
+							link: '/FavActivityShare/' + pkey + '/Delete',
+							callback: function(res) {
+								var obj = JSON.parse(res).Data;
+								if(obj) {
+									var topParentNode = document.querySelector('#circle_list_scroll');
+									var parentNode = self.parentNode.parentNode.parentNode.parentNode;
+									topParentNode.removeChild(parentNode);
+								} else {
+									plus.nativeUI.toast('删除失败');
+									return;
+								}
+							}
+						});
+					});
+				},
+				fnDotoDetail: function() {
+					mui('#circle_list').on('tap', '.info', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+						mui.openWindow({
+							url: "../../circle/detail/detail.html",
+							id: 'detail.html',
+							preload: true,
+							createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false, //自动显示等待框，默认为true
+							},
+							extras: {
+								pkey: pkey
+							}
+						});
+
+					});
+				},
+				fnGetCircleData: function() {
+					try {
+						var userInfo = config.fGetLoginUserInfo();
+						if(userInfo && userInfo.PrimaryKey) {
+							plus.nativeUI.showWaiting('加载中...');
+							//防止服务器已经无数据 还继续请求，造成资源浪费
+							if(!setting.firstLoad) {
+								if(params.PageIndex >= setting.totalRows) {
+									plus.nativeUI.closeWaiting();
+									return;
+								}
+							}
+							if(!params.PageSize || params.PageSize == 0)
+								params.PageSize = config.fGetPageSize();
+
+							if(!params.CustomerKey) {
+								params.CustomerKey = userInfo.PrimaryKey;
+							}
+							console.info(JSON.stringify(params));
+							config.fPost({
+								link: '/FavActivityShare/GetFavActShare',
+								params: params,
+								callback: function(res) {
+									var obj = JSON.parse(res).Data;
+									if(setting.firstLoad) {
+										setting.firstLoad = false;
+										setting.totalRows = obj.totalRows;
+									}
+									if(obj.data.length > 0) {
+										_fnInitialList(obj.data);
+									}
+									plus.nativeUI.closeWaiting();
+								}
+							});
+
+						} else {
+							plus.nativeUI.toast('无法获取用户信息，请先登录后再试！');
+							return;
+						}
+					} catch(e) {
+						console.error(e.message);
+					}
+				},
+				fnClearParams: function() {
+					params.ActTitle = '';
+					params.CreateTime = null;
+					params.PageIndex = 0;
+
+					setting.firstLoad = true;
+					setting.totalRows = 0;
+
+					//清除html内容
+					var parentNode = document.querySelector('#circle_list_scroll');
+					var childNodes = parentNode.querySelectorAll('.item-row');
+
+					if(childNodes && childNodes.length > 0) {
+						for(var i = 0; i < childNodes.length; i++) {
+							parentNode.removeChild(childNodes[i]);
+						}
+					}
+				}
+			}
+
+			function _fnInitialList(data) {
+				var parentNode = document.querySelector('#circle_list_scroll');
+				for(var i = 0; i < data.length; i++) {
+					var da = data[i];
+					var title = da.ActivityShareTitle;
+					var showImages = da.ActivityShareShowImage;
+					var desc = da.ActivityShareDesc;
+					var createtime = da.CreateTime;
+
+					var div = document.createElement('div');
+					div.setAttribute('class', 'cq-row flex-direction-column item-row mui-table-view-cell');
+					var html = '';
+					html += '<div class="mui-slider-handle">';
+					html += '	<div class="cq-row-nopadding spaace-between flex-direction-row">';
+					html += '		<span id="comcreatetime">';
+					html += ' 			' + formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(createtime)) + '收藏';
+					html += '    	</span>';
+					html += '		<div>';
+					html += '			<span class="do-to-delete">';
+					html += '  				<a href="#" rel="' + da.PrimaryKey + '">删除</a>';
+					html += '   		</span>';
+					html += '		</div>';
+					html += '	</div>';
+					html += '	<div rel="' + da.ActivityShareKey + '" class="cq-row flex-direction-row info">';
+
+					if(title && title.length > 0)
+						html += '			<h5>' + title + '</h5>';
+					else if(showImages && showImages.length > 0) {
+						html += '<p>' + desc + '</p>';
+						html += '<ul class="mui-table-view mui-grid-view mui-grid-9 imgs">';
+						var imgs = showImages.split(',');
+						for(var j = 0; j < imgs.length; j++) {
+							html += '		<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">';
+							html += '			<a href="#">';
+							html += '				<img src="' + imgs[j] + '"/>';
+							html += '			</a>';
+							html += '		</li>';
+						}
+						html += '	</ul>';
+					} else { //目前不考虑视频
+						html += '<p>' + desc + '</p>';
+					}
+					html += '		</div>';
+					html += '		<div class="cq-row flex-direction-row spaace-between opt">';
+					html += '			<div class="">';
+					html += '				<span class=" mui-icon-extra mui-icon-extra-like mui-text-left" id="zan-count">';
+					html += '					' + da.ClickLike || 0;
+					html += '				</span> &nbsp;&nbsp;';
+					html += '				<span class=" mui-icon-extra mui-icon-extra-share mui-text-left" id="zan-share">';
+					html += '					' + da.ShareTimes || 0;
+					html += '				</span>';
+					html += '			</div>';
+					html += '			<div class="">';
+					html += '				<span class="mui-icon mui-icon-eye" id="zan-viewtimes">';
+					html += '					' + da.ViewTimes || 0;
+					html += '				</span>';
+					html += '			</div>';
+					html += '		</div>';
+					html += '	</div>';
+					div.innerHTML = html;
+					parentNode.appendChild(div);
+				}
+			}
+		</script>
+	</body>
+
+</html>

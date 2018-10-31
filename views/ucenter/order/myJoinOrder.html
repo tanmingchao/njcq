@@ -1,0 +1,351 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<style type="text/css">
+			.font-size-14 {
+				font-size: 14px;
+			}
+			
+			.font-size-13 {
+				font-size: 13px;
+			}
+			/*.mui-scroll {
+				top: 44px;
+			}*/
+			
+			.opt-btn {
+				border-radius: 0px;
+				height: 22px;
+				font-size: 12px;
+				line-height: 12px;
+				padding: 2px 10px;
+			}
+			
+			.act-image {
+				width: 30%;
+				max-height: 80px;
+			}
+			
+			.act-info {
+				padding: 0px 5px;
+				flex: 1;
+			}
+			
+			.act-info span {
+				display: block;
+				color: #999999;
+				font-size: 12px;
+				padding: 0px 0px;
+			}
+			
+			.act-info span#act-title {
+				font-size: 13px !important;
+				color: #000000 !important;
+			}
+			
+			.act-row {
+				margin-top: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我参与的活动订单</h1>
+		</header>
+		<div class="mui-content">
+			<div id="myJoinOrderWrapper" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+
+				</div>
+			</div>
+
+		</div>
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config(),
+				userInfo = null,
+				local = config.fGetLocaltion(),
+				params = {};
+			params.PageIndex = 0;
+			params.PageSize = config.fGetPageSize();
+			params.IsDeleted = false;
+			params.OrderTitle = '';
+			params.CreateTime = '';
+			params.CustomerKey = null;
+
+			var setting = {};
+			setting.firstLoad = true;
+			setting.totalRows = 0;
+
+			mui.init({
+				pullRefresh: {
+					container: "#myJoinOrderWrapper", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+			mui.plusReady(function() {
+				userInfo = config.fGetLoginUserInfo();
+				func.fnDoToPingZhengDetail();
+				func.fnCancelOrder();
+				func.fnDeleteOrder();
+			});
+
+			var func = {
+				fnGetOrder: function() {
+					userInfo = userInfo || config.fGetLoginUserInfo();
+					params.CustomerKey = userInfo.PrimaryKey;
+					config.fPost({
+						link: '/ActivityOrder/GetMyActOrders',
+						params: params,
+						callback: function(res) {
+							var data = JSON.parse(res).Data;
+							if(setting.firstLoad) {
+								setting.totalRows = data.totalRows;
+								setting.firstLoad = false;
+							}
+							_fnInitHtml(data.data);
+						}
+					});
+				},
+				fnDoToPingZhengDetail: function() {
+					mui('.mui-content').on('tap', 'div.do-to-pingzheng-detail', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+						_fnToPingZhengDetail(pkey);
+					});
+				},
+				fnDeleteOrder: function() {
+					mui('.mui-content').on('tap', '.delete-order', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+
+						var btnArray = ['否', '是'];
+						mui.confirm('确认删除该订单？', '订单删除提示', btnArray, function(e) {
+							if(e.index == 1) {
+								config.fGet({
+									link: '/ActivityOrder/' + pkey + '/LogicDelete',
+									callback: function(res) {
+										var data = JSON.parse(res).Data;
+										if(data > 0) {
+											//移除对应html
+											var parentNode = self.parentNode.parentNode.parentNode.parentNode;
+											var currentNode = self.parentNode.parentNode.parentNode;
+											parentNode.removeChild(currentNode);
+
+											plus.nativeUI.toast('订单删除成功');
+											return false;
+										} else {
+											plus.nativeUI.toast('服务器错误，删除订单操作失败');
+										}
+									}
+								});
+							}
+						});
+
+					});
+				},
+				//取消订单
+				fnCancelOrder: function() {
+					mui('.mui-content').on('tap', '.cancel-order', function() {
+						var self = this;
+						var pkey = self.getAttribute('rel');
+						// 判断是否可删除，如果有任意一张凭证已验票，则不可删除，同时已验票凭证不可作废（此处获取订单详细，
+						// 判断报名人数和已验票张数+作废张数是否相当即可判断是否可以取消订单）
+						config.fGet({
+							link: '/ActivityOrder/' + pkey + '/Detail',
+							callback: function(res) {
+								var data = JSON.parse(res).Data;
+								var participateNum = parseInt(data.ParticipateNum);
+								var waitScan = parseInt(data.WaitScanPingZhengNum); // 待扫描张数
+								var tempNum = parseInt(data.WaitScanPingZhengNum) + parseInt(data.ZuoFeiPingNum);
+								if(participateNum == tempNum) { // 没有已经被验票的凭证，所以直接删除（逻辑删除，只有管理员可见，用户不可见）/取消订单
+									// 弹窗提示，是否确定删除
+									if(waitScan > 0) {
+										var btnArray = ['否', '是'];
+										mui.confirm('该订单下有【' + waitScan + '】张凭证,取消后所有凭证都将作废，是否继续取消操作？', '订单取消提示', btnArray, function(e) {
+											if(e.index == 1) {
+												_fnCancelOrder(pkey, function(r) {
+													if(r) {
+														self.innerText = '已取消';
+													}
+												});
+											}
+										});
+									} else {
+										_fnCancelOrder(pkey, function(r) {
+											if(r) {
+												self.innerText = '已取消';
+											}
+										});
+									}
+								} else {
+									plus.nativeUI.toast('该订单存在一张或多张凭证已被验票，不能进行取消操作');
+									return false;
+								}
+							}
+						})
+
+					});
+				}
+			};
+
+			function _fnCancelOrder(okey) {
+				config.fGet('/ActivityOrder/' + okey + '/CancelOrder', function(r) {
+					var res = JSON.parse(r).Data;
+					if(res > 0) {
+						plus.nativeUI.toast('订单已取消');
+						return callBack(true);
+					} else {
+						plus.nativeUI.toast('服务器错误，取消订单操作失败');
+						return callBack(false);
+					}
+				}, function(s, x) {
+					plus.nativeUI.toast('Http错误，取消订单操作失败');
+					return callBack(false);
+				});
+			}
+
+			function _fnToPingZhengDetail(pkey) {
+				mui.openWindow({
+					url: "../../activity/order/preview/pingzheng.html",
+					id: 'pingzheng.html',
+					preload: true,
+					createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false, //自动显示等待框，默认为true
+					},
+					extras: {
+						okey: pkey
+					}
+				});
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					clearParam();
+					func.fnGetOrder();
+					mui('#myJoinOrderWrapper').pullRefresh().endPulldownToRefresh();
+				}, 1000);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					if((params.PageIndex * params.PageSize) < setting.totalRows) {
+						params.PageIndex += 1;
+						//获取下一页数据
+						func.fnGetOrder();
+					}
+					mui('#myJoinOrderWrapper').pullRefresh().endPullupToRefresh();
+				}, 1000);
+			}
+
+			function clearParam() {
+				params.PageIndex = 0;
+				params.OrderTitle = '';
+				params.CreateTime = '';
+
+				setting.firstLoad = true;
+				setting.totalRows = 0;
+
+				//清除mui-context中的html内容
+				var parentNode = document.querySelector('.mui-scroll');
+				var childNodes = parentNode.querySelectorAll('div.act-row');
+				if(childNodes && childNodes.length > 0) {
+					for(var i = 0; i < childNodes.length; i++) {
+						parentNode.removeChild(childNodes[i]);
+					}
+				}
+			}
+
+			function _fnInitHtml(data) {
+				if(data && data.length > 0) {
+					var list = document.querySelector('.mui-scroll');
+					for(var i = 0; i < data.length; i++) {
+						var html = '';
+						var div = document.createElement('div');
+						div.setAttribute('class', 'cq-row-nopadding flex-direction-column act-row');
+						html += '<div class="cq-row flex-direction-row spaace-between" style="align-items: center;">';
+						html += '	<div class="font-size-13">';
+						html += '		<span>';
+						html += '				单据';
+						html += '			</span>';
+						html += '		<span id="orderNo">';
+						html += '				' + data[i].OrderOnlyKey;
+						html += '			</span>';
+						html += '	</div>';
+						html += '	<div class="">'; //ActOrderStatus
+						var visible = data[i].ActOrderStatus == '已取消' ? 'visible' : 'hidden';
+						html += '		<button rel="' + data[i].PrimaryKey + '"  type="button" class="mui-btn mui-btn-red opt-btn mui-btn-outlined delete-order" style="visibility:' + visible + '">删除</button>';
+						html += '		<button rel="' + data[i].PrimaryKey + '" type="button" class="mui-btn mui-btn-blue opt-btn mui-btn-outlined cancel-order">取消</button>';
+						html += '	</div>';
+						html += '</div>';
+						html += '<div class="cq-row flex-direction-row">';
+						html += '	<img src="' + data[i].ActivityShowImage.split(',')[0] + '" class="act-image">';
+						html += '	<div class="act-info">';
+						html += '		<span id="act-title">';
+						html += '			' + data[i].ActivityTitle;
+						html += '		</span>';
+						html += '		<span id="act-end-time">';
+						html += '			报名截止：' + data[i].ActEndSignTime;
+						html += '		</span>';
+						html += '		<span id="act-depart-time">';
+						html += '			下单时间：' + data[i].CreateTime;
+						html += '		</span>';
+						html += '	</div>';
+						html += '</div>';
+						html += '<div class="cq-row flex-direction-row spaace-between" style="border-top: 1px solid #EFEFF4;">';
+						html += '	<div class="font-size-13">';
+						html += '		<span id="act-price">';
+						html += '		￥' + data[i].ActivityFee + '/人 ';
+						html += '		</span>';
+						html += '		<span id="allnum">';
+						html += '			* 总份数(' + data[i].ParticipateNum + ')';
+						html += '		</span>';
+						html += '	</div>';
+						html += '	<div rel="' + data[i].PrimaryKey + '" class="font-size-13 do-to-pingzheng-detail">';
+						html += '		<span id="pingzhengnum">';
+						html += '			待扫描凭证(' + data[i].WaitScanPingZhengNum + ')张/';
+						html += '		</span>';
+						html += '		<span id="zuofeinum" class="" style="color: green;">';
+						html += '			作废(' + data[i].ZuoFeiPingNum + ')张';
+						html += '		</span>';
+						html += '	</div>';
+						html += '</div>';
+						div.innerHTML = html;
+						list.appendChild(div);
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

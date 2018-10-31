@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/app.css" />
+		<style type="text/css">
+			input {
+				font-size: 16px;
+			}
+			
+			input[type=color],
+			input[type=date],
+			input[type=datetime-local],
+			input[type=datetime],
+			input[type=email],
+			input[type=month],
+			input[type=number],
+			input[type=password],
+			input[type=search],
+			input[type=tel],
+			input[type=text],
+			input[type=time],
+			input[type=url],
+			input[type=week],
+			select,
+			textarea {
+				margin-bottom: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新建好友分组</h1>
+			<a href="#" id="add-new" class="mui-icon mui-pull-right" style="font-size: 16px;margin: 4px;">新增</a>
+		</header>
+
+		<div class="mui-content">
+			<div class="cq-row" style="margin: 10px 0px;">
+				<input type="text" name="groupName" id="groupName" value="" placeholder="请输入分组名称" />
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/config.js"></script>
+		<script type="text/javascript">
+			var ws = null,
+				wo = null,
+				config = config();
+
+			mui.init();
+			mui.plusReady(function() {
+				ws = plus.webview.currentWebview();
+				wo = ws.opener();
+				fnBack();
+				fnAddNew(function(groupInfo) {
+					console.info(JSON.stringify(groupInfo));
+					mui.fire(wo, 'newGroupInfo', {
+						groupInfo: groupInfo
+					});
+					plus.nativeUI.toast('分组添加成功');
+					setTimeout(function() {
+						mui.back();
+					}, 1500)
+				});
+
+			});
+
+			/**
+			 * 创建新分组， 并返回新创建的分组信息
+			 * @param {Object} fnCallback 创建成功之后 需要执行的函数，
+			 */
+			function fnAddNew(fnCallback) {
+				document.querySelector('#add-new').addEventListener('tap', function() {
+					var name = document.querySelector('#groupName').value;
+					if(!name || name.length == 0) {
+						plus.nativeUI.toast('请输入分组名称');
+						return;
+					}
+					plus.nativeUI.showWaiting('请求中..');
+					config.fPost({
+						link: '/CustomerFriendGroup/Create',
+						params: {
+							GroupName: name,
+							MemberCount: 0,
+							Remark: '',
+							Sort: 0,
+							CustomerKey: config.fGetLoginUserInfo().PrimaryKey
+						},
+						callback: function(res) {
+							plus.nativeUI.closeWaiting();
+							var groupData = null;
+							var obj = JSON.parse(res);
+							if(obj.ResultType == 3) {
+								//成功创建，并返回创建的分组信息
+								groupData = obj.Data;
+							} else {
+								plus.nativeUI.toast(obj.Message);
+							}
+							return fnCallback(groupData);
+						}
+					})
+
+				}, false);
+			}
+
+			function fnBack() {
+				//返回按钮
+				document.querySelector('#mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				}, false);
+			}
+
+			mui.back = function() {
+				ws = ws || plus.webview.currentWebview();
+				ws.close();
+			}
+		</script>
+	</body>
+
+</html>

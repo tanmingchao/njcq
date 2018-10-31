@@ -1,0 +1,655 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../../css/app.css" />
+		<link rel="stylesheet" href="../../../js/imagecropper/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../../js/imagecropper/cropper.css" />
+		<link rel="stylesheet" href="../../../css/mui.picker.min.css" />
+		<style type="text/css">
+			#showImage {
+				max-height: 500px;
+				/*background-size: 100% 100%;*/
+				width: 100%;
+			}
+			
+			.mui-pull-right {
+				font-size: 16px;
+			}
+			
+			.act-desc-box {
+				position: relative;
+				width: 100%;
+			}
+			
+			.act-desc-box img {
+				width: 100%;
+			}
+			
+			.display-none {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<button id="act-pub-btn" onclick="postAvatar()" class="mui-btn mui-btn-link mui-btn-mini mui-pull-right mui-icon mui-icon-compose">发布</button>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发布活动</h1>
+		</header>
+		<div class="mui-content act-pub">
+			<div class="order-preview">
+				<div id="showImagebox" class="order-preview-row display-none">
+					<!--默认展示图片 以及剪切之后的效果-->
+					<img id="showImage" src="">
+				</div>
+				<div class="order-preview-row act-pub-row">
+					<div class="mui-input-row" style="flex: 1;">
+						<input id="acttitle" type="text" class="mui-input-clear" placeholder="活动主题">
+					</div>
+					<img id="add-show-img" src="../../../img/add-img.png" onclick="showActionSheet()" />
+				</div>
+
+				<div class="order-preview-row act-pub-row">
+					<div class="mui-input-row">
+						<label>开始时间</label>
+						<input id="actstarttime" type="text" class="mui-input-clear choose-time" placeholder="活动开始时间">
+					</div>
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>结束时间</label>
+						<input id="actendtime" type="text" class="mui-input-clear choose-time" placeholder="活动结束时间">
+					</div>
+
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>截止报名</label>
+						<input id="actendparttime" type="text" class="mui-input-clear choose-time" placeholder="截止报名时间">
+					</div>
+				</div>
+
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>开展地点</label>
+						<input id="actlocation" type="text" onclick="toChooseLocation(this)" class="mui-input-clear act-location" placeholder="设置地点">
+						<span class="mui-icon mui-icon-arrowright mui-pull-right"></span>
+					</div>
+				</div>
+
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<input id="actlocationdesc" type="text" class="mui-input-clear act-location-desc" placeholder="详细地址">
+					</div>
+				</div>
+
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<div class="act-desc-box" style="color: #999999;">
+							编辑详情
+						</div>
+					</div>
+				</div>
+
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>费用设置</label>
+						<input id="actfee" type="text" class="mui-input-clear act-fee" placeholder="输入费用" value="0">
+						<span class="mui-icon mui-icon-arrowright mui-pull-right"></span>
+					</div>
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>分类标签</label>
+						<input type="text" id="act-type" class="mui-input-clear act-type" placeholder="请选择所属分类标签">
+						<span class="mui-icon mui-icon-arrowright mui-pull-right"></span>
+					</div>
+				</div>
+				<div class="order-preview-row act-pub-row" style="margin-top: 1px;">
+					<div class="mui-input-row">
+						<label>名额限制</label>
+						<input id="act-total-num" type="number" class="mui-input-clear act-total-num" value="0" placeholder="请输入活动限额人数">
+					</div>
+				</div>
+				<div class="order-preview-row act-pub-row">
+					<div class="mui-input-row">
+						<div class="mui-input-row mui-checkbox mui-left">
+							<label>已知晓<span>《车趣平台活动发布规定条例》</span></label>
+							<input id="checkbox1" name="checkbox1" type="checkbox" checked>
+						</div>
+
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<footer style="width: 100%;height: 10px;    background: #efeff4;">
+		</footer>
+
+		<div style="text-align: center;z-index: 99;width: 100%;height: 2000px;background-color: #f2f2f2 ;position: absolute;top:40px;left: 0px;display: none;" id="spinner">
+			<div style="width:90px;padding-top:200px;margin:0 auto;height: 100%;">
+				<div style="width:30px;float: left;">
+					<span class="mui-spinner" style="height: 20px;"></span>
+					<!--//等待动画-->
+				</div>
+				<div style="width:60px;float: left;">请稍等...</div>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div id="showEdit" style="width:100%;height: 100%;background-color: #fff;position: absolute;top:60;left: 0;z-index: 9;display: none;">
+			<div id="report" style="width:100%;height: 100%;z-index: 10;">
+				<img id="readyimg" style="width:100%;">
+			</div>
+			<div class="mui-content-padded" style="width:100%;height: 100px;z-index: 110;position: absolute;top:60px;left:0px;">
+				<div class="flex-container" style="">
+					<!--//关闭裁剪窗口-->
+					<a><span class="mui-icon mui-icon-closeempty" onclick="closepop()"></span></a>
+					<!--//左旋转90度-->
+					<a><span class="mui-icon mui-icon-undo" onclick="rotateimgleft()"></span></a>
+					<!--//右旋转90度-->
+					<a><span class="mui-icon mui-icon-redo" onclick="rotateimg()"></span></a>
+					<!--//确定-->
+					<a><span class="mui-icon mui-icon-checkmarkempty" onclick="confirm()"></span></a>
+				</div>
+			</div>
+		</div>
+
+		<!--<script type="text/javascript" src="../../../js/imagecropper/jquery-3.1.1.min.js"></script>-->
+		<script src="../../../js/mui.min.js"></script>
+		<!--<script type="text/javascript" src="js/pet.js"></script>-->
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/imagecropper/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="../../../js/imagecropper/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../../../js/imagecropper/cropper.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.base64.js"></script>
+		<script src="../../../js/mui.picker.min.js"></script>
+		<script type="text/javascript">
+			//提交发布的参数
+			var actDesc = {};
+			actDesc.PrimaryKey = "1234567890";
+			actDesc.ActTitle = ""; // 活动标题
+			actDesc.ActStartTime = ""; // 结束时间
+			actDesc.ActEndTime = ""; // 开始时间
+			actDesc.ActLocation = ""; // 活动地点
+			actDesc.ActLocationDesc = "";
+			actDesc.ActLocationLagAndLngDesc = "";
+			actDesc.ActFee = 0.00; // 活动费用
+			actDesc.ShowImage = ""; // 展示海报
+			actDesc.ActDesc = "";
+			actDesc.ActLimitPlace = 0; // 报名名额限制
+			actDesc.ActEndSignUpTime = "无限制"; // 截止报名时间
+			actDesc.CustomerKey = ""; // 报名人外键
+			actDesc.ActTypeKey = ""; // 活动分类外键
+			actDesc.ActTypeName = "";
+			actDesc.CityCode = null;
+			actDesc.AdName = "";
+			actDesc.AdCode = null;
+			actDesc.CityName = "";
+			actDesc.PName = "";
+			actDesc.Longitude = 0;
+			actDesc.Latitude = 0;
+
+			var base64 = new Base64();
+			var config = config();
+			var dtPicker = new mui.DtPicker({});
+			//地图选择的地点信息{name,address,lng,lat}
+			var actLocation = null;
+			var isChecked = true; //同意条款
+
+			var textAreasContext = ''; //详情页传过来的 textarea内容
+			var inputAreaImageStr = ''; //详情页传过来的 html内容
+			var descImageArray = [];
+
+			mui.init();
+			mui.plusReady(function() {
+
+				selectActTime();
+				selectActType();
+				agreePublishCheck(); //同意条款点击事件
+				toEditorActDescPage(); //跳转到详情编辑页面
+
+				//自定义事件，勇于接收 地图子页面回传的地理信息数据
+				window.addEventListener('getLocation', function(e) {
+					actLocation = e.detail.location;
+					mui('.act-location')[0].value = actLocation.address;
+					mui('.act-location-desc')[0].value = actLocation.name;
+				});
+
+				window.addEventListener('GetDesc', function(e) {
+					var desc = e.detail;
+					textAreasContext = desc.textAreasContext;
+					inputAreaImageStr = desc.inputAreaImageStr;
+					descImageArray = JSON.parse(desc.descImageArray);
+					_previewDesc(desc.textAreasContext, desc.inputAreaImageStr);
+				});
+
+				//返回按钮
+				document.querySelector('.mui-action-back').addEventListener('tap', function() {
+					mui.back();
+				});
+				mui.back = function() {
+					var wv = plus.webview.currentWebview();
+					wv.hide();
+					wv.close();
+				}
+			});
+			//跳转到活动详情编辑页面
+			function toEditorActDescPage() {
+				document.querySelector('.act-desc-box').addEventListener('tap', function() {
+					mui.openWindow({
+						url: 'publish_desc.html',
+						id: 'publish_desc.html',
+						extras: {
+							textAreasContext: textAreasContext,
+							inputAreaImageStr: inputAreaImageStr
+						},
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+				});
+			}
+
+			function agreePublishCheck() {
+				document.querySelector("#checkbox1").addEventListener('change', function() {
+					//					alert(this.checked); 
+					isChecked = this.checked;
+				});
+			}
+
+			function selectActTime() {
+				//时间选择
+				mui('.act-pub').on('tap', '.choose-time', function(event) {
+					var target = event.target;
+					target.blur();
+					dtPicker.show(function(selectedItem) {
+						var selected_time = selectedItem.y.value +
+							'-' + selectedItem.m.value +
+							'-' + selectedItem.d.value +
+							' ' + selectedItem.h.value +
+							':' + selectedItem.i.value;
+
+						target.value = selected_time;
+					});
+				}, false);
+			}
+
+			//选择活动分类
+			function selectActType() {
+				document.querySelector("#act-type").addEventListener('tap', function(e) {
+					$(e).blur();
+					var roadPick = new mui.PopPicker(); //获取弹出列表组建，假如是二联则在括号里面加入{layer:2}
+					var type = JSON.parse(localStorage.getItem("actType"));
+					var popData = [];
+					$.each(type, function(i, item) {
+						if(item.IsPubType) {
+							popData.push({
+								value: item.PrimaryKey,
+								text: item.ActTypeName
+							});
+						}
+					});
+					roadPick.setData(popData);
+					roadPick.show(function(item) { //弹出列表并在里面写业务代码
+						var itemCallback = roadPick.getSelectedItems();
+						actDesc.ActTypeKey = itemCallback[0].value;
+						var text = itemCallback[0].text;
+						mui("#act-type")[0].value = text;
+					});
+				});
+			}
+
+			//发布按钮
+			function postAvatar() {
+				if(!isChecked) {
+					mui.toast('请(勾选)确认已经阅读并知晓车趣活动发布条例规定');
+					return;
+				}
+
+				var petimage = $("#showImage").attr("src"); //此时取到的图片已经是base64形式  
+				//上传到服务器
+				var fileName = $("#showImage").attr('rel');
+				if(petimage && fileName) {
+					plus.nativeUI.showWaiting('数据提交中，请稍后...');
+					//先上传展示图片
+					config.fPost({
+						link: '/Upload/UploadImage',
+						params: {
+							fileName: fileName,
+							file: petimage,
+							saveFilePath: "Activity"
+						},
+						contextType: "application/x-www-form-urlencoded",
+						callback: function(res) {
+							if(res) {
+								var data = JSON.parse(res);
+								if(data.ResultType == 3) {
+									//1.上传之后新生成的文件路径和名称
+									var newUri = data.Data; // eg:20170601/20170601211923408.jpg
+									//2.执行创建活动方法
+									fSubmitAct(newUri);
+								}
+							}
+						}
+					});
+				} else {
+					plus.nativeUI.toast('请先选择展示(海报)图片');
+					return;
+				}
+
+			}
+
+			/**
+			 * 发布活动方法
+			 * @param {Object} 海报展示图片上传之后返回的服务器地址
+			 */
+			function fSubmitAct(showImageServerPath) {
+				checklogin(function() {
+					actDesc.ActTitle = mui('#acttitle')[0].value;
+					actDesc.ActStartTime = mui('#actstarttime')[0].value;
+					actDesc.ActEndTime = mui('#actendtime')[0].value;
+					if(mui('#actendparttime')[0].value.length > 0) {
+						actDesc.ActEndSignUpTime = mui('#actendparttime')[0].value;
+					}
+					actDesc.ActFee = mui('#actfee')[0].value || 0.00;
+					actDesc.ShowImage = '/Activity/' + showImageServerPath;
+					actDesc.ActLimitPlace = mui('#act-total-num')[0].value;
+					actDesc.CustomerKey = config.fGetLoginUserInfo().PrimaryKey;
+					if(actDesc.ActTypeKey.length == 0) {
+						plus.nativeUI.toast('请选择活动分类标签');
+						return;
+					}
+
+					//------地理信息------------------------------------------------
+					actDesc.ActLocation = mui('#actlocation')[0].value;
+					actDesc.ActLocationDesc = mui('#actlocationdesc')[0].value;
+					actDesc.ActLocationLagAndLngDesc = ''; //包含name,address,lng,lat,addressComponets,location,等
+					actDesc.CityCode = actLocation.citycode;
+					actDesc.CityName = actLocation.city;
+					actDesc.AdName = actLocation.adname; //区域名称
+					actDesc.AdCode = actLocation.adcode; //区域编码
+					actDesc.PName = actLocation.pname; //poi所在省份名称
+					actDesc.Longitude = actLocation.lng;
+					actDesc.Latitude = actLocation.lat;
+
+					document.getElementById("act-pub-btn").setAttribute("disabled", "disabled");
+					//1.上传活动详情中的图片
+					_fUploadDescImage(function() {
+						//提交成功
+						config.fPost({
+							link: '/Activity/Create',
+							params: actDesc,
+							callback: function(res) {
+								var data = JSON.parse(res).Data;
+								if(data) {
+									plus.nativeUI.closeWaiting();
+									plus.nativeUI.toast('发布成功!');
+									mui.back();
+								}
+							}
+						});
+					});
+
+				});
+			}
+
+			/**
+			 * 上传 详细内容中的图片 
+			 */
+			function _fUploadDescImage(callback) {
+				var resultStr = "";
+				//1.上传descImageArray 中的 图片
+				var task = plus.uploader.createUpload(host.api + '/Upload/Activity/Image2', {
+					method: 'POST',
+					headers: {
+						"Content-Type": "multipart/form-data"
+					}
+				}, function(t, status) {
+					if(status == 200) {
+						var result = JSON.parse(t.responseText);
+						console.info('上传结果：' + JSON.parse(result).Data);
+						var imageServerPaths = JSON.parse(result).Data;
+						// TODO 2.获取 所有div.desc-box-item-imgs ，并循环处理每个对象中的 image，替换image 的src attribute
+						actDesc.ActDesc = textAreasContext + '|' + _fGetAllImageBox(imageServerPaths);
+						return callback();
+					} else {
+						console.error("上传失败", t.responseText);
+					}
+				});
+				for(var i = 0; i < descImageArray.length; i++) {
+					var f = descImageArray[i];
+					if(f.path && f.name) {
+						task.addData("uid", Math.floor(Math.random() * 100000000 + 10000000).toString()) //随机数
+						task.addFile(f.path, {
+							key: f.name
+						});
+					}
+				}
+				task.addEventListener("statechanged", onStateChanged, false);
+				task.start();
+
+				return resultStr;
+			}
+			// 监听上传任务状态
+			function onStateChanged(upload, status) {
+				if(upload.state == 4 && status == 200) {
+					// 上传完成
+					console.info('上传成功');
+				}
+			}
+
+			function _fGetAllImageBox(imageServerPaths) {
+				var base64str = '';
+				var index = 0;
+				var serverImageArray = imageServerPaths.split(',');
+				var imageBoxs = inputAreaImageStr.split(',');
+				if(imageBoxs && imageBoxs.length > 0) {
+					//循环反转base64,添加到临时对象，从临时对象中取出 img，并更换src属性
+					for(var i = 0; i < imageBoxs.length; i++) {
+						var oneItem = base64.utf8to16(base64.decode64(imageBoxs[i]));
+						var tempDiv = document.createElement('div');
+						tempDiv.innerHTML = oneItem;
+						var images = tempDiv.querySelectorAll("img");
+						for(var j = 0; j < images.length; j++) {
+							index = (i != 0 || j != 0) ? (index + 1) : 0;
+							var img = images[j];
+							img.setAttribute("src", host.resource + '/Images/Activity/' + serverImageArray[index]);
+						}
+						//再转换为base64
+						base64str += (base64.encode64(base64.utf16to8(tempDiv.innerHTML)) + ',');
+					}
+					base64str = base64str.substr(0, base64str.length - 1);
+				}
+				return base64str;
+			}
+
+			/**
+			 *	判断是否已经登录 
+			 * @param {Object} callback：如果已经登录，直接执行的函数
+			 */
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../../ucenter/login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+					return;
+				} else {
+					return callback();
+				}
+			}
+			//拍照  
+			function getImage() {
+				var cmr = plus.camera.getCamera();
+				cmr.captureImage(function(p) {
+					plus.io.resolveLocalFileSystemURL(p, function(entry) {
+						var localurl = entry.toLocalURL(); //  
+						var fileName = localurl.substr(localurl.lastIndexOf('/') + 1);
+						$("#showImage").attr('rel', fileName);
+						$("#report").html('<img src="' + localurl + '" data-original="' + localurl + '">');
+						cutImg();
+						mui('#picture').popover('toggle');
+					});
+				});
+			}
+			//相册选取  
+			function galleryImgs() {
+				plus.gallery.pick(function(e) {
+					//alert(e);  
+					$("#readyimg").attr("src", e);
+					var fileName = e.substr(e.lastIndexOf('/') + 1);
+
+					$("#showImage").attr('rel', fileName);
+					cutImg();
+					mui('#picture').popover('toggle');
+				}, function(e) {
+					//outSet( "取消选择图片" );  
+				}, {
+					filter: "image"
+				});
+			}
+			//照片裁剪类  
+			function cutImg() {
+				$(".mui-content").hide();
+				$("#showEdit").fadeIn();
+				var $image = $('#report > img');
+				$image.cropper({
+					checkImageOrigin: true,
+					aspectRatio: 1 / 1,
+					autoCropArea: 0.3,
+					zoom: -0.2
+				});
+				//                  $image.cropper('zoom',-0.5);  
+			}
+			//确认照片，展示效果  
+			function confirm() {
+				$("#showEdit").fadeOut();
+				var $image = $('#report > img');
+				var dataURL = $image.cropper("getCroppedCanvas");
+				//              var imgurl = dataURL.toDataURL("image/png", 0.5);  
+				//换成下边的方法，转成jpeg，但是把质量降低，  
+				//经测试51k的png，转成0.3质量，大小为3k多，0.5质量大小为4k多，  
+				//这回应该不会出现卡的情况了，  
+				//既然差别1k多，还是用0.5的质量，还是要兼顾下显示效果的。  
+				var imgurl = dataURL.toDataURL("image/jpeg", 0.5);
+
+				$("#showImagebox").removeClass("display-none");
+
+				$("#showImage").attr("src", imgurl);
+				$("#showImage").attr("width", "100%");
+				//              $("#divbtn").show();  
+				//				$(".mui-content").show();
+				closepop();
+			}
+			//旋转照片  
+			function rotateimg() {
+				$("#readyimg").cropper('rotate', 90);
+			}
+
+			function rotateimgleft() {
+				$("#readyimg").cropper('rotate', -90);
+			}
+
+			function closepop() {
+				$("#showEdit").fadeOut();
+				var $image = $('#report > img');
+				$image.cropper('destroy');
+				$(".mui-content").show();
+			}
+
+			function showActionSheet() {
+				var bts = [{
+					title: "拍照"
+				}, {
+					title: "从相册选择"
+				}];
+				plus.nativeUI.actionSheet({
+						cancel: "取消",
+						buttons: bts
+					},
+					function(e) {
+						if(e.index == 1) {
+							getImage();
+						} else if(e.index == 2) {
+							galleryImgs();
+						}
+						//outLine( "选择了\""+((e.index>0)?bts[e.index-1].title:"取消")+"\"");  
+					}
+				);
+			}
+			//跳转到选择地点页面（地图）
+			function toChooseLocation(e) {
+				$(e).blur();
+				mui.openWindow({
+					url: '../../common/map_choose_location.html',
+					id: "map_choose_location.html",
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}
+			/*------------私有方法---------------*/
+			function _previewDesc(baseContexts, htmlNodes) {
+				var descContainer = document.createElement('div');
+				var nodes = htmlNodes.split(',');
+				var contexts = baseContexts.split(",");
+				var html = '';
+				for(var i = 0; i < contexts.length; i++) {
+					//文本
+					html += '<p>' + base64.utf8to16(base64.decode64(contexts[i])) + '</p>';
+					html += '<div>' + base64.utf8to16(base64.decode64(nodes[i])) + '</div>';
+				}
+				descContainer.innerHTML = html;
+				var targetDesc = document.querySelector(".act-desc-box");
+				//TODO 清除动作
+				$(".act-desc-box").empty();
+				targetDesc.appendChild(descContainer);
+
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,495 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>交易主页面</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/icons-extra.css" />
+		<style type="text/css">
+			.mui-slider {
+				height: 130px;
+				top: 8px;
+			}
+			
+			.mui-slider img {
+				height: 130px;
+			}
+			
+			.mui-grid-view {
+				background: #FFFFFF !important;
+				margin-top: 15px !important;
+			}
+			
+			.mui-grid-view.mui-grid-9 .mui-table-view-cell {
+				padding: 0px 15px;
+			}
+			
+			.mui-segmented-control {
+				border-radius: 0px;
+				border: 0px;
+				padding: 0px 10px;
+			}
+			
+			.trans-commodity a.mui-control-item {
+				border-right: 0px;
+				border-left: 0px;
+			}
+			
+			.trans-commodity a.mui-active {
+				border-right: 0px;
+				border-left: 0px;
+				color: #007aff !important;
+				background: #FFFFFF !important;
+				border-bottom: 2px solid #007aff;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav act-head">
+			<button type="button" class="mui-btn mui-btn-link mui-pull-left btn-city">
+		            <label id="city">南京</label>
+		            <span class="mui-icon mui-icon-arrowright"></span>
+		    </button>
+			<a id="commodity-pub" class="mui-icon mui-icon-plusempty mui-pull-right"></a>
+			<h1 class="mui-title">
+		    	<input id="field-search" type="text" placeholder="活动关键字、分类"/>
+		    </h1>
+			<span class="mui-icon mui-icon-search"></span>
+		</header>
+		<div class="mui-content">
+
+			<div id="commodity-list" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+
+					<!--轮播开始-->
+					<div id="slider" class="mui-slider">
+						<div class="mui-slider-group mui-slider-loop">
+							<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#">
+									<img src="../../../img/temp/01.png">
+								</a>
+							</div>
+							<!-- 第一张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="../../../img/temp/02.png">
+								</a>
+							</div>
+							<!-- 第二张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="../../../img/temp/01.png">
+								</a>
+							</div>
+							<!-- 第三张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="../../../img/temp/02.png">
+								</a>
+							</div>
+							<!-- 第四张 -->
+							<div class="mui-slider-item">
+								<a href="#">
+									<img src="../../../img/temp/01.png">
+								</a>
+							</div>
+							<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+							<div class="mui-slider-item mui-slider-item-duplicate">
+								<a href="#">
+									<img src="../../../img/temp/02.png">
+								</a>
+							</div>
+						</div>
+						<div class="mui-slider-indicator">
+							<div class="mui-indicator mui-active"></div>
+							<div class="mui-indicator"></div>
+							<div class="mui-indicator"></div>
+							<div class="mui-indicator"></div>
+						</div>
+					</div>
+					<!--轮播结束-->
+
+					<!--分类开始-->
+					<ul id="trans-type-list" class="mui-table-view mui-grid-view mui-grid-9">
+					</ul>
+
+					<!--分类结束-->
+
+					<div class="trans-commodity" style="margin-top: 10px;background: #FFFFFF;">
+
+						<div id="segmentedControl" class="mui-segmented-control new-or-fujin-mui-segmented-control">
+							<a class="mui-control-item mui-active" href="#trans-commodity-news">最新发布</a>
+							<a class="mui-control-item" href="#trans-commodity-fujin">附近发布</a>
+						</div>
+
+						<div id="trans-commodity-news" class="mui-control-content mui-active">
+							<ul id="trans-commodity-news-ul" class="mui-table-view">
+
+							</ul>
+
+						</div>
+
+						<div id="trans-commodity-fujin" class="mui-control-content">
+							<ul id="trans-commodity-fujin-ul" class="mui-table-view">
+
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.location.distance.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var formatter = new Formatter();
+			var distance = new Distance();
+			var newParams = {};
+			newParams.CmdityTypeKey = '';
+			newParams.CmdityTitle = '';
+			newParams.PageIndex = 0;
+			newParams.PageSize = config.fGetPageSize();
+
+			var fujinParams = {};
+			fujinParams.Lat = config.fGetLocaltion() != null ? config.fGetLocaltion().coords.latitude : '';
+			fujinParams.Long = config.fGetLocaltion() != null ? config.fGetLocaltion().coords.longitude : '';
+			fujinParams.PageIndex = 0;
+			fujinParams.PageSize = config.fGetPageSize();
+
+			var setting = [{
+				firstLoad: true,
+				totalRows: 0
+			}, {
+				firstLoad: true,
+				totalRows: 0
+			}];
+
+			//用于标识是哪个 处于激活状态的tab
+			var active_index = 0;
+
+			mui.plusReady(function() {
+				plus.webview.currentWebview().setStyle({
+					scrollIndicator: 'none'
+				});
+				fnInitTypes();
+				fnTypeClickEventHandler();
+				fnNewOrFujin();
+				fnPublishCommodity();
+				fnToDetail();
+			});
+			mui.init({
+				swipeBack: false,
+				pullRefresh: {
+					container: "#commodity-list", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					down: {
+						height: 50, //可选,默认50.触发下拉刷新拖动距离,
+						auto: true, //可选,默认false.自动下拉刷新一次
+						contentdown: "", //可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+						contentover: "释放立即刷新", //可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+						contentrefresh: "正在刷新...", //可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+						callback: afterDownCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					},
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: afterUpCallback //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			});
+
+			function fnToDetail() {
+				mui('.trans-commodity').on('tap', '.todetail', function() {
+					var key = this.getAttribute('rel');
+					mui.openWindow({
+						url: '../detail/detail.html',
+						id: 'detail.html',
+						preload: true,
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						},
+						extras: {
+							key: key
+						}
+					});
+				});
+			}
+
+			function fnPublishCommodity() {
+
+				document.getElementById('commodity-pub')
+					.addEventListener('tap', function() {
+						checklogin(function() {
+							mui.openWindow({
+								url: '../comPublish/commodity_publish.html',
+								id: 'commodity_publish.html',
+								preload: true,
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false
+								}
+							});
+						});
+					}, false);
+
+			}
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					plus.nativeUI.closeWaiting();
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../../ucenter/login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+					return;
+				} else {
+					return callback();
+				}
+			}
+
+			function afterDownCallback() {
+				setTimeout(function() {
+					fnClearParam();
+					fnGetData();
+					mui('#commodity-list').pullRefresh().endPulldownToRefresh();
+				}, 1500);
+			}
+
+			function afterUpCallback() {
+				setTimeout(function() {
+					fnGetData();
+					mui('#commodity-list').pullRefresh().endPullupToRefresh();
+					//					document.querySelector('.overflow').classList.add('.dooverflow');
+				}, 1500)
+			}
+
+			function fnGetData() {
+				var parentNode = document.getElementById(active_index == 0 ? 'trans-commodity-news-ul' : 'trans-commodity-fujin-ul');
+
+				if(!setting[active_index].firstLoad) {
+					if(active_index == 0) {
+						if(newParams.PageSize * newParams.PageIndex < setting[active_index].totalRows) {
+							newParams.PageIndex += 1;
+						}
+					} else {
+						if(fujinParams.PageIndex < setting[active_index].totalRows) {
+							fujinParams.PageIndex += fujinParams.PageSize;
+						}
+					}
+				}
+
+				var pram = active_index == 0 ? newParams : fujinParams;
+				config.fPost({
+					link: active_index == 0 ? '/CommodityInfo/CommodityInfo' : '/CommodityInfo/FuJinCommodityInfo',
+					params: pram,
+					callback: function(res) {
+						var obj = JSON.parse(res).Data;
+						var data = obj.data;
+						if(setting[active_index].firstLoad) {
+							setting[active_index].totalRows = obj.totalRows;
+							setting[active_index].firstLoad = false;
+						}
+
+						if(data && data.length > 0) {
+							for(var i = 0; i < data.length; i++) {
+								fnInitHtml(parentNode, data[i]);
+							}
+						}
+					}
+				});
+
+			}
+
+			function fnInitHtml(parentNode, data) {
+				var li = document.createElement('li');
+				li.setAttribute('class', "comm-item");
+				var html = '';
+				html += '<div class="user-info">';
+				html += '		<img class="user-head" src="' + data.CustomerHeadImage + '" alt="" />';
+				html += '		<div class="user-box">';
+				html += '			<div class="user-name">' + data.CustomerNickName + '</div>';
+				html += '			<span class="user-remark">' + formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(data.CreateTime)) + ' 发布</span>';
+				html += '		</div>';
+				html += '		<span class="price">';
+				html += '			￥' + data.CommodityPrice;
+				html += '		</span>';
+				html += '</div>';
+
+				html += '<ul rel="' + data.PrimaryKey + '" class="mui-table-view mui-grid-view mui-grid-9 todetail" style="margin-top: 0px !important;">';
+				if(data.ShowImage) {
+					var imageArr = data.ShowImage.split(',');
+					if(imageArr && imageArr.length > 0) {
+						for(var i = 0; i < imageArr.length; i++) {
+							html += '	<li class="mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3">';
+							html += '		<img src="' + imageArr[i] + '" alt="">';
+							html += '	</li>';
+						}
+					}
+				}
+
+				html += '</ul>';
+
+				var dis = '';
+				if(data.Latitude && data.Longitude) {
+					dis = distance.fGetDistance(
+						config.fGetLocaltion().coords.latitude,
+						config.fGetLocaltion().coords.longitude,
+						data.Latitude,
+						data.Longitude
+					);
+				}
+
+				html += '	<h5 class="todetail" rel="' + data.PrimaryKey + '">' + data.CommodityTitle + '</h5>';
+				html += '	<div class="local-info">';
+				html += '		<span class="local-desc">';
+				html += '			 ' + data.CommodityLocationDesc + ' ' + dis;
+				html += '		</span>';
+				html += '		<span class="zan">';
+				html += '			' + data.ClickGood + '赞';
+				html += '		</span>';
+				html += '	</div>';
+
+				li.innerHTML = html;
+				parentNode.appendChild(li);
+			}
+
+			function fnClearParam() {
+				if(active_index == 0) {
+					newParams.CmdityTypeKey = '';
+					newParams.CmdityTitle = '';
+					newParams.PageIndex = 0;
+					var target = document.getElementById("trans-commodity-news-ul");
+					var childs = target.querySelectorAll("li.comm-item");
+
+					for(var i = 0; i < childs.length; i++) {
+						target.removeChild(childs[i]);
+					}
+				} else {
+					fujinParams.PageIndex = 0;
+					var target = document.getElementById("trans-commodity-fujin-ul");
+					var childs = target.querySelectorAll("li.comm-item");
+
+					for(var i = 0; i < childs.length; i++) {
+						target.removeChild(childs[i]);
+					}
+				}
+				setting[active_index].firstLoad = true;
+				setting[active_index].totalRows = 0;
+			}
+
+			function fnNewOrFujin() {
+				mui('.new-or-fujin-mui-segmented-control').on('tap', 'a', function(e) {
+					var　 innerText = this.innerText;
+					active_index = innerText == '附近发布' ? 1 : 0;
+					if(active_index == 1) {
+						var list = document.getElementById('trans-commodity-fujin-ul');
+						var childNode = list.querySelector('comm-item');
+						if(!childNode || childNode.length == 0) {
+							fnGetData();
+						}
+					}
+
+				});
+			}
+
+			function fnInitTypes() {
+				var parentNode = document.querySelector('#trans-type-list');
+				var types = [];
+				var typestr = localStorage.getItem("transType");
+				if(!typestr || typestr == '') {
+					config.fGet({
+						link: '/CommodityType/CommodityTypes',
+						callback: function(data) {
+							types = JSON.parse(data).Data;
+							localStorage.setItem("transType", JSON.stringify(types));
+						}
+					});
+				} else {
+					types = JSON.parse(typestr);
+				}
+				var html = '';
+				//拼接type分类html
+				if(types && types.length > 0) {
+					for(var i = 0; i < types.length; i++) {
+						var icon = types[i].Icon.substr(types[i].Icon.lastIndexOf('/') + 1).replace('Images', '');
+						html += ' <li rel="' + types[i].PrimaryKey + '" class = "mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2 trans-type"> ';
+						html += '	<a rel="' + types[i].PrimaryKey + '" href="#">';
+						html += '		<span  rel="' + types[i].PrimaryKey + '"  class="mui-icon " style="height: 48px;width: 48px;background: url(../../../img/' + icon + '); background-repeat: no-repeat;"></span>';
+						html += '		<div rel="' + types[i].PrimaryKey + '" class="mui-media-body" style="margin: 0px;font-size: xx-small;color: #999999;">' + types[i].TypeName + '</div>';
+						html += '	</a>';
+						html += '</li>';
+					}
+					parentNode.innerHTML = html;
+				}
+			}
+
+			function fnTypeClickEventHandler() {
+				mui('#trans-type-list').on('tap', 'li.trans-type', function() {
+					var tkey = this.getAttribute('rel');
+					if(tkey) {
+						mui.openWindow({
+							url: '../list/list_commodity.html',
+							id: 'list_commodity.html',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							},
+							extras: {
+								tkey: tkey
+							}
+						});
+
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

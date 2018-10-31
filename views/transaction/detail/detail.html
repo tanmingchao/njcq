@@ -1,0 +1,449 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../../css/app.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/icons-extra.css" />
+		<style type="text/css">
+			.mui-content {
+				margin-bottom: 50px;
+			}
+			
+			.trans-commodity .user-info {
+				background: #FFFFFF;
+			}
+			
+			.user-box {
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.desc-box-row {
+				display: flex;
+				display: -webkit-flex;
+				width: 100%;
+				padding: 10px;
+				font-size: 14px;
+				background: #FFFFFF;
+			}
+			
+			.desc-box-row .showImages {
+				width: 100%;
+			}
+			
+			.desc-box-row .showImages .img {
+				width: 100% !important;
+				padding: 2px;
+				max-height: 250px;
+			}
+			
+			.leave-msg {
+				width: 100%;
+				padding: 0px;
+			}
+			
+			.leave-msg li {
+				display: flex;
+				flex-direction: row;
+				width: 100%;
+				border-top: 1px solid #EFEFF4;
+				padding: 10px;
+			}
+			
+			.leave-msg .msg {
+				flex: 1;
+			}
+			
+			.leave-msg .msg-user-head {
+				width: 40px;
+				height: 40px;
+				border: 1px solid #efeff4;
+				border-radius: 50%;
+			}
+			
+			.leave-msg .time {
+				font-size: x-small;
+				color: #999999;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="mui-action-back" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">商品详情</h1>
+		</header>
+
+		<div class="mui-content trans-commodity">
+
+			<div class="desc-box">
+				<div class="user-info">
+					<img id="comuserhead" class="user-head" src="../../../img/temp/01.png" />
+					<div class="user-box">
+						<span id="comusername" class="user-name">
+							tanminchao
+						</span>
+						<span id="comcreatetime" class="user-remark">
+							三小时前 发布
+						</span>
+					</div>
+				</div>
+
+				<div class="desc-box-row">
+					<p id="comdesc" style="color: #000000;">这是个九成新的商品，需要的联系我，错过这个村，没了这个店，要的抓紧了</p>
+				</div>
+				<div class="desc-box-row">
+					<div id="showImages" class="showImages">
+
+					</div>
+				</div>
+
+				<div class="desc-box-row" style="border-top: 10px solid #efeff4;flex-direction: column;">
+					<h5 id="msgcount">留言</h5>
+					<ul id="commsg" class="leave-msg">
+
+					</ul>
+
+				</div>
+
+				<!--
+                	作者：1365101128@qq.com
+                	时间：2017-06-09
+                	描述：相关分类商品 推荐
+                -->
+				<div style="border-top: 10px solid #efeff4;">
+					<p style="padding: 10px 10px 0px 10px;margin-bottom: 0px;">猜你喜欢</p>
+					<div id="relat-recommend" class="commodity-box">
+
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+		<nav id="nav-bottom-menu" class="mui-bar mui-bar-tab act-desc-mui-bar-tab" style="    height: 44px;">
+			<a class="do-ask" style="color: #999999;    font-size: 14px;    line-height: 44px;">
+				<span class="mui-icon-extra mui-icon-extra-like" style="font-size: 14px;"></span>
+				<span class="mui-tab-label">点赞</span>
+			</a>
+			<button id="do-comment" class="tab-leave-msg" style="color: #999999;    font-size: 14px;    line-height: 44px;border: none;padding: 0px;margin: 0px;background: transparent;">
+				<span class="mui-icon mui-icon-compose"></span>
+				<span class="mui-tab-label">留言</span>
+			</button>
+			<a style="flex: 1;"></a>
+			<a class="">
+				<button id="do-want" type="button" class="mui-btn mui-btn-blue mui-btn-block mui-icon mui-icon-personadd">我想要</button>
+			</a>
+		</nav>
+
+		<script src="../../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../../js/config.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.time.js"></script>
+		<script type="text/javascript" src="../../../js/njcq.plugin.location.distance.js"></script>
+
+		<link href="../../../js/layer_mobile/need/layer.css" />
+		<script src="../../../js/layer_mobile/layer.js"></script>
+
+		<script type="text/javascript">
+			var config = config(),
+				formatter = new Formatter(),
+				distance = new Distance(),
+				userInfo = config.fGetLoginUserInfo(),
+				wv = null,
+				isSelf = false,
+				info = null, //商品详情
+				ctype = null, //商品所属分类
+				key = null;
+
+			mui.init();
+			mui.plusReady(function() {
+				wv = plus.webview.currentWebview();
+				key = wv.key;
+				if(key) {
+					func.fnBack();
+					func.fnGetDetail(key);
+					func.fnGetCommends(key);
+					func.fnAddCommend(key);
+					func.fnIwant();
+					fnRelatToDetail();
+
+				}
+			});
+
+			var func = {
+				fnGetDetail: function(key) {
+					if(key.length > 0)
+						config.fGet({
+							link: "/CommodityInfo/" + key + "/Detail",
+							callback: function(res) {
+								var obj = JSON.parse(res).Data;
+								info = obj;
+								ctype = obj.CommodityTypeKey;
+								mui('#comuserhead')[0].setAttribute('src', obj.CustomerHeadImage);
+								mui('#comcreatetime')[0].innerText = formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(obj.CreateTime));
+								mui('#comdesc')[0].innerHTML = '<h5>' + obj.CommodityTitle + '</h5>' + obj.CommodityDesc;
+								//showImages
+								var imgBox = document.getElementById('showImages');
+								//移除子元素
+								var imgBoxChilds = imgBox.childNodes;
+								if(imgBoxChilds && imgBoxChilds.length > 0) {
+									for(var i = 0; i < imgBoxChilds.length; i++) {
+										imgBox.removeChild(imgBoxChilds[i]);
+									}
+								}
+								if(obj.ShowImage && obj.ShowImage.split(',').length > 0) {
+									var imgArr = obj.ShowImage.split(',');
+									for(var i = 0; i < imgArr.length; i++) {
+										var img = document.createElement('img');
+										img.setAttribute('src', imgArr[i]);
+										img.setAttribute('class', 'img');
+										imgBox.appendChild(img);
+									}
+								}
+
+								if(!isSelf)
+									setTimeout(function() {
+										func.fnGetRelatTypeData(ctype);
+									}, 1500);
+
+							}
+						})
+
+				},
+				fnGetCommends: function(key) {
+					if(key.length > 0)
+						var prams = {
+							PageSize: 200,
+							PageIndex: 0,
+							CommodityKey: key,
+							SortConditions: []
+						};
+					config.fPost({
+						link: '/CommodityComment/Comments',
+						params: prams,
+						callback: function(res) {
+							var d = JSON.parse(res).Data.data;
+							document.getElementById('msgcount').innerText = '留言' + d.length || 0;
+							if(d.length > 0) {
+								var msgbox = document.getElementById('commsg');
+								for(var i = 0; i < d.length; i++) {
+									var li = document.createElement('li');
+									var html = '';
+									html += '	<img class="msg-user-head" src="' + d[i].CustomerHeadImage + '" />';
+									html += '	<div class="msg" style="flex:1;padding:0px 10px">';
+									html += '		<span class="userinfo">';
+									html += '			' + d[i].CustomerNickName;
+									html += '		</span>';
+									html += '		<p>' + d[i].CommentContext + '</p>';
+									html += '	</div>';
+									html += '	<span class="time">';
+									html += ' 	 ' + formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(d[i].CreateTime));
+									html += '	</span>';
+									li.innerHTML = html;
+									msgbox.appendChild(li);
+								}
+							}
+						}
+					});
+				},
+				fnAddCommend: function(key) {
+					document.getElementById('do-comment').addEventListener('tap', function(e) {
+						e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+						if(key.length > 0) {
+							checklogin(function() {
+								layer.open({
+									type: 1,
+									skin: 'layui-layer-rim', //加上边框
+									btn: ['确定', '取消'],
+									content: '<h6 class="" style="padding:0px 10px 0px 20px">添加留言</h6><div class="msg-box"><textarea id="comment-field" type="text" class="comment-field" placeholder="点我，说点什么吧！"></textarea></div>',
+									anim: 'up',
+									style: '  padding:10px 0px 0px 0px; border:none;',
+									yes: function(index) {
+										var commenttx = document.getElementById("comment-field");
+										var text = commenttx.value;
+										var ukey = userInfo.PrimaryKey;
+										config.fPost({
+											link: '/CommodityComment/Create',
+											params: {
+												PrimaryKey: "12321321",
+												CommentContext: text,
+												CustomerKey: ukey,
+												CommodityInfoKey: key,
+												ClickGood: 0,
+												ParentCommentKey: null,
+												Remark: "商品-留言"
+											},
+											callback: function(res) {
+												var data = JSON.parse(res).Data;
+												if(data) {
+													// 更新留言列表
+													var table = document.getElementById("commsg");
+
+													var li = document.createElement('li');
+													var html = '';
+													html += '<img class="msg-user-head" src="' + userInfo.HeadImageUrl + '">';
+													html += '<div class="msg" style="flex:1;padding:0px 10px">';
+													html += '	<span class="userinfo">';
+													html += '		' + userInfo.UserNickName;
+													html += '	</span>';
+													html += '	<p> ' + text + '</p>';
+													html += '</div>';
+													html += '<span class="time">';
+													html += formatter.fGetFormatterTimeStr(formatter.fGetTimestampFormDateTime(data.CreateTime));
+													html += '</span>';
+													li.innerHTML = html;
+
+													table.insertBefore(li, table.childNodes[0]);
+													mui.toast('留言成功！', {
+														duration: 'short',
+														type: 'div'
+													});
+												} else {
+													//提示留言失败
+													mui.toast('留言操作失败！', {
+														duration: 'short',
+														type: 'div'
+													});
+												}
+												layer.close(0);
+											}
+										});
+									},
+									close: function(index) {}
+								});
+							});
+						} else {
+							plus.nativeUI.toast('出现错误！');
+							return;
+						}
+					}, false);
+				},
+				/*相关推荐*/
+				fnGetRelatTypeData: function(typeKey) {
+					var parentNode = document.querySelector('#relat-recommend');
+					config.fPost({
+						link: '/CommodityInfo/CommodityInfo',
+						params: {
+							CmdityTypeKey: typeKey,
+							CmdityTitle: '',
+							PageIndex: 0,
+							PageSize: 10
+						},
+						callback: function(res) {
+							var obj = JSON.parse(res).Data;
+							var data = obj.data;
+							if(data && data.length > 0) {
+								for(var i = 0; i < data.length; i++) {
+									fnInitHtml(parentNode, data[i]);
+								}
+							}
+						}
+					});
+				},
+				fnBack: function() {
+					document.getElementById('mui-action-back')
+						.addEventListener('tap', function() {
+							wv.close();
+						});
+				},
+				fnIwant: function() {
+					document.getElementById('do-want')
+						.addEventListener('tap', function() {
+							mui.openWindow({
+								url: '../order/order_preview.html',
+								id: 'order_preview.html',
+								preload: true,
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false
+								},
+								extras: {
+									key: key,
+									info: info
+								}
+							});
+						}, false);
+				}
+			};
+
+			var fnRelatToDetail = function(key) {
+				mui('#relat-recommend').on('tap', 'a.commodity-item', function() {
+					isSelf = true;
+					var cKey = this.getAttribute('rel');
+					if(key != cKey) {
+						key = wv.key = cKey;
+
+						func.fnGetDetail(key);
+						func.fnGetCommends(key);
+						window.scrollTo(0, 0);
+					}
+				});
+			}
+
+			var fnInitHtml = function(parentNode, dataItem) {
+				var html = '';
+				var a = document.createElement('a');
+				a.setAttribute('class', 'commodity-item');
+				a.setAttribute('rel', dataItem.PrimaryKey);
+
+				var singleImg = dataItem.ShowImage.split(',')[0];
+				html += '				<img src="' + singleImg + '" class="show-image">';
+				html += '				<p class="commodity-title">' + dataItem.CommodityTitle + '</p>';
+				html += '				<p class="commodity-price">￥' + dataItem.CommodityPrice + '</p>';
+				html += '				<div class="options">';
+				html += '					<span class="zan">';
+				html += '						' + (dataItem.ClickGood || 0) + '赞';
+				html += '					</span>';
+				html += '					<span class="zan">';
+				html += '						' + (dataItem.LeaveMsgCount || 0) + '评论';
+				html += '					</span>';
+				html += '				</div>';
+				a.innerHTML = html;
+				parentNode.appendChild(a);
+			}
+
+			var checklogin = function(callback) {
+				if(config.fGetLoginUserInfo() == null) {
+					var btnArray = ['取消', '登录'];
+					mui.confirm('您尚未登录，请先 登录/注册 后再操作！', '登录提示',
+						btnArray,
+						function(e) {
+							if(e.index == 1) {
+								mui.openWindow({
+									url: "../../ucenter/login/login.html",
+									id: 'ucenter_login.html',
+									preload: true,
+									createNew: false, //是否重复创建同样id的webview，默认为false:不重复创建，直接显示
+									show: {
+										aniShow: 'pop-in'
+									},
+									styles: {
+										popGesture: 'hide'
+									},
+									waiting: {
+										autoShow: false, //自动显示等待框，默认为true
+									}
+								});
+								return;
+							} else {
+								//								alert('取消操作');
+							}
+						});
+				} else {
+					return callback();
+				}
+			}
+		</script>
+	</body>
+
+</html>

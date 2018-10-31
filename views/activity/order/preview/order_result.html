@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../../../css/app.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">下单结果</h1>
+		</header>
+
+		<div class="mui-content">
+			<div class="order-preview">
+				<div class="order-preview-row act-order-result">
+					<img src="../../../../img/success.png" />
+					<div class="act-order-result-info">报名成功</div>
+				</div>
+
+				<div class="order-preview-row">
+					<!--活动信息-->
+					<div class="order-preview-act">
+						<img class="act-img" src="../../../../img/temp/02.png" />
+						<div class="order-preview-act-infos">
+							<div class="order-preview-act-infos-title"></div>
+							<div class="order-preview-act-infos-remark act-time"></div>
+							<div class="order-preview-act-infos-remark act-local"></div>
+						</div>
+					</div>
+				</div>
+				<div class="order-preview-row choose-size">
+					<div class="order-preview-row-size" style="display: flex;flex-direction:row;width:100%;justify-content: space-between;">
+						<div style="display: flex;display: -webkit-flex; flex-direction: row;">
+							<div class="order-preview-act-price"></div>
+							<span class="order-num"></span>
+						</div>
+						<span style="color:red;font-weight: bold;" class="order-total-money"></span>
+					</div>
+				</div>
+
+				<div class="order-preview-row">
+					<button id="toViewPingZheng" type="button" class="mui-btn mui-btn-green mui-btn-block">查看凭证</button>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../../../js/mui.min.js"></script>
+		<script src="../../../../js/config.js"></script>
+		<script type="text/javascript">
+			var config = config();
+			var actInfo = null;
+			var orderKey = null;
+			mui.init();
+			mui.plusReady(function() {
+				var data = plus.webview.currentWebview();
+				var totalPrice = data.totalPrice; //总价格
+				var paretNum = data.num; //报名数量
+				var actInfo = JSON.parse(data.actInfo);
+				var orderKey = data.orderKey;
+
+				//登录之后的用户信息
+				var userInfo = config.fGetLoginUserInfo();
+
+				//绑定页面数据信息
+				mui(".act-img")[0].setAttribute("src", actInfo.ShowImage);
+				mui(".order-preview-act-infos-title")[0].innerText = actInfo.ActTitle;
+				mui(".act-time")[0].innerText = actInfo.ActStartTime + "开始";
+				mui(".act-local")[0].innerText = actInfo.ActLocation;
+				mui(".order-preview-act-price")[0].innerText = "￥" + actInfo.ActFee + "/份  x";
+				mui(".order-num")[0].innerText = paretNum + "人次";
+				mui(".order-total-money")[0].innerText = ".    总价：￥" + totalPrice;
+
+				//查看凭证按钮事件
+				document.getElementById("toViewPingZheng").addEventListener('tap', function(event) {
+					mui.openWindow({
+						url: 'pingzheng.html',
+						id: 'pingzheng.html',
+						preload: true,
+						extras: {
+							okey: orderKey
+						},
+						show: {
+							aniShow: 'pop-in'
+						},
+						styles: {
+							popGesture: 'hide'
+						},
+						waiting: {
+							autoShow: false
+						}
+					});
+
+				}, false);
+
+			});
+		</script>
+	</body>
+
+</html>
